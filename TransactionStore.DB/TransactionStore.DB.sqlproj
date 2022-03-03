@@ -60,7 +60,6 @@
     <Folder Include="Tables" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Tables\Account.sql" />
     <Build Include="Tables\Transaction.sql" />
   </ItemGroup>
   <ItemGroup>
