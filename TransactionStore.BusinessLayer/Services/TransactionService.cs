@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services.Interfaces;
+using TransactionStore.DataLayer.Entities;
+using TransactionStore.DataLayer.Repository;
 
 namespace TransactionStore.BusinessLayer.Services
 {
@@ -17,7 +19,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public int AddTransaction(TransactionModel transactionModel)
         {
-            var transaction = _mapper.Map<Transaction>(transactionModel);
+            var transaction = _mapper.Map<TransactionA>(transactionModel);
 
             return _transactionRepository.AddTransaction(transaction);
         }

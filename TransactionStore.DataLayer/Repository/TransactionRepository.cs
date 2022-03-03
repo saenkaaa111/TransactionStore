@@ -20,10 +20,10 @@ namespace TransactionStore.DataLayer.Repository
                     procName,
                     new
                     {
-                        Amount = transaction.Amount,
-                        Date = transaction.Date,
-                        AccountId = transaction.Account,
-                        Type = transaction.Type
+                        transaction.Amount,
+                        transaction.Date,
+                        transaction.AccountId,
+                        Type = 1
                     },
                     commandType: CommandType.StoredProcedure
                 );

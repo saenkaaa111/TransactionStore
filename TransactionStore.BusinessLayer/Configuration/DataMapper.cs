@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using TransactionStore.BusinessLayer.Models;
+using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.API.Configuration
 {
@@ -7,7 +8,7 @@ namespace TransactionStore.API.Configuration
     {
         public DataMapper()
         {
-            CreateMap<TransactionModel, Transaction>().ReverseMap();
+            CreateMap<TransactionModel, TransactionA>().ReverseMap();
         }
     }
 }
