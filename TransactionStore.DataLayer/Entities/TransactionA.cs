@@ -1,6 +1,6 @@
 ﻿namespace TransactionStore.DataLayer.Entities
 {
-    public class Transaction
+    public class TransactionA
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
