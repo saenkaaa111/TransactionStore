@@ -5,7 +5,7 @@ using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.DataLayer.Repository
 {
-    public class TransactionRepository
+    public class TransactionRepository : ITransactionRepository
     {
         private const string _connectionString = "Data Source = 80.78.240.16; Database=Transaction;User Id = student; Password=qwe!23;";
 
