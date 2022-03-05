@@ -2,7 +2,7 @@
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
 
-namespace TransactionStore.API.Configuration
+namespace TransactionStore.BuisnessLayer.Configuration
 {
     public class DataMapper : Profile
     {
