@@ -13,8 +13,7 @@ namespace TransactionStore.DataLayer.Repository
         public int AddTransaction(TransactionA transaction)
         {
             using var connection = new SqlConnection(_connectionString);
-            connection.Open();
-
+            
             string procName = "dbo.Transaction_Insert";
             return connection.QueryFirstOrDefault<int>(
                     procName,

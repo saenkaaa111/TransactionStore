@@ -63,9 +63,7 @@
     <Build Include="Tables\Transaction.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Procedures\Transaction_Delete.sql" />
     <None Include="Procedures\Transaction_Insert.sql" />
-    <None Include="Procedures\Transaction_Update.sql" />
     <None Include="Procedures\Transaction_SelectAll.sql" />
     <None Include="Procedures\Transaction_SelectById.sql" />
   </ItemGroup>
