@@ -1,5 +1,5 @@
 ﻿CREATE proc dbo.Transaction_Insert
-			@Date date, 
+			@Date datetime2, 
 			@Amount int, 
 			@AccountId int,
 			@Type int

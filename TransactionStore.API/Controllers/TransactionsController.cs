@@ -22,12 +22,12 @@ namespace TransactionStore.API.Controller
 
         // api/transaction/
         [HttpPost]
-        [SwaggerOperation(Summary = "Add transaction")]
+        [SwaggerOperation(Summary = "Add deposit")]
         [SwaggerResponse(201, "Transaction added")]
-        public ActionResult AddTransaction([FromBody] TransactionRequestModel transaction)
+        public ActionResult AddDeposit([FromBody] TransactionRequestModel transaction)
         {
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
-            var transactionId = _transactionService.AddTransaction(transactionModel);
+            var transactionId = _transactionService.AddDeposit(transactionModel);
 
             return StatusCode(201, transactionId);
         }
