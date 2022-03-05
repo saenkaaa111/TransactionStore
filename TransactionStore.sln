@@ -11,7 +11,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "TransactionStore.DB", "Tran
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionStore.API", "TransactionStore.API\TransactionStore.API.csproj", "{A21FBAEE-EB03-4FCC-8295-1DE4FFB7BEC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionStore.BusinessLayer.Tests", "TestProject1\TransactionStore.BusinessLayer.Tests.csproj", "{56CB4447-4DD4-449F-9696-F90DAFCD3144}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionStore.BusinessLayer.Tests", "TransactionStore.BusinessLayer.Tests\TransactionStore.BusinessLayer.Tests.csproj", "{1859E1F1-6670-4911-8DC6-EDA972B57232}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +37,10 @@ Global
 		{A21FBAEE-EB03-4FCC-8295-1DE4FFB7BEC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A21FBAEE-EB03-4FCC-8295-1DE4FFB7BEC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A21FBAEE-EB03-4FCC-8295-1DE4FFB7BEC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56CB4447-4DD4-449F-9696-F90DAFCD3144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56CB4447-4DD4-449F-9696-F90DAFCD3144}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56CB4447-4DD4-449F-9696-F90DAFCD3144}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56CB4447-4DD4-449F-9696-F90DAFCD3144}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1859E1F1-6670-4911-8DC6-EDA972B57232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1859E1F1-6670-4911-8DC6-EDA972B57232}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1859E1F1-6670-4911-8DC6-EDA972B57232}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1859E1F1-6670-4911-8DC6-EDA972B57232}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
