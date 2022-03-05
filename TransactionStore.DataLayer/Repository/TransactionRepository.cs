@@ -8,15 +8,14 @@ namespace TransactionStore.DataLayer.Repository
     public class TransactionRepository : ITransactionRepository
     {
         private const string _connectionString = "Data Source = 80.78.240.16; Database=Transaction;User Id = student; Password=qwe!23;";
-
+        private const string _transactionAddProcedure = "dbo.Transaction_Insert";
 
         public int AddTransaction(TransactionDto transaction)
         {
             using var connection = new SqlConnection(_connectionString);
             
-            string procName = "dbo.Transaction_Insert";
             return connection.QueryFirstOrDefault<int>(
-                    procName,
+                    _transactionAddProcedure,
                     new
                     {
                         transaction.Amount,
