@@ -17,11 +17,11 @@ namespace TransactionStore.BusinessLayer.Services
             _mapper = mapper;
         }
 
-        public int AddTransaction(TransactionModel transactionModel)
+        public int AddDeposit(TransactionModel transactionModel)
         {
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
-            return _transactionRepository.AddTransaction(transaction);
+            return _transactionRepository.AddDeposit(transaction);
         }
     }
 }

@@ -4,6 +4,6 @@ namespace TransactionStore.DataLayer.Repository
 {
     public interface ITransactionRepository
     {
-        int AddTransaction(TransactionDto transaction);
+        int AddDeposit(TransactionDto transaction);
     }
 }

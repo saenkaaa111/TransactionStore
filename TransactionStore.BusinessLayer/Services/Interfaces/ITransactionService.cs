@@ -4,6 +4,6 @@ namespace TransactionStore.BusinessLayer.Services.Interfaces
 {
     public interface ITransactionService
     {
-        int AddTransaction(TransactionModel transactionModel);
+        int AddDeposit(TransactionModel transactionModel);
     }
 }
