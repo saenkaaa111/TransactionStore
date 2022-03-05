@@ -2,7 +2,7 @@
 
 namespace TransactionStore.API.Models
 {
-    public class TransactionInputModel
+    public class TransactionRequestModel
     {
         public DateTime Date { get; set; }
         public TypeTransaction Type { get; set; }
