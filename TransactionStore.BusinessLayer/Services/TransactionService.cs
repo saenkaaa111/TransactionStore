@@ -19,7 +19,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public int AddTransaction(TransactionModel transactionModel)
         {
-            var transaction = _mapper.Map<TransactionA>(transactionModel);
+            var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
             return _transactionRepository.AddTransaction(transaction);
         }

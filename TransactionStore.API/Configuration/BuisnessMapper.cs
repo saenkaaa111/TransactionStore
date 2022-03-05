@@ -8,8 +8,8 @@ namespace TransactionStore.API.Configuration
     {
         public BuisnessMapper()
         {
-            CreateMap<TransactionInputModel, TransactionModel>();
-            CreateMap<TransactionModel, TransactionOutputModel>();
+            CreateMap<TransactionRequestModel, TransactionModel>();
+            CreateMap<TransactionModel, TransactionResponseModel>();
         }
     }
 }

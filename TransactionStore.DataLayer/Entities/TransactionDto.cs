@@ -1,9 +1,8 @@
-﻿using TransactionStore.DataLayer.Entities;
-
-namespace TransactionStore.API.Models
+﻿namespace TransactionStore.DataLayer.Entities
 {
-    public class TransactionInputModel
+    public class TransactionDto
     {
+        public int Id { get; set; }
         public DateTime Date { get; set; }
         public TransactionType Type { get; set; }
         public decimal Amount { get; set; }

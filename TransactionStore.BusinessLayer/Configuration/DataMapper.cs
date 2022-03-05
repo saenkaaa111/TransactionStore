@@ -8,7 +8,7 @@ namespace TransactionStore.API.Configuration
     {
         public DataMapper()
         {
-            CreateMap<TransactionModel, TransactionA>().ReverseMap();
+            CreateMap<TransactionModel, TransactionDto>().ReverseMap();
         }
     }
 }

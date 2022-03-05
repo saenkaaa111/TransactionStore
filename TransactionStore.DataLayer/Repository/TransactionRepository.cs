@@ -10,7 +10,7 @@ namespace TransactionStore.DataLayer.Repository
         private const string _connectionString = "Data Source = 80.78.240.16; Database=Transaction;User Id = student; Password=qwe!23;";
 
 
-        public int AddTransaction(TransactionA transaction)
+        public int AddTransaction(TransactionDto transaction)
         {
             using var connection = new SqlConnection(_connectionString);
             

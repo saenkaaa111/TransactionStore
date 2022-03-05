@@ -1,6 +1,8 @@
-﻿namespace TransactionStore.DataLayer.Entities
+﻿using TransactionStore.DataLayer.Entities;
+
+namespace TransactionStore.API.Models
 {
-    public class TransactionA
+    public class TransactionResponseModel
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }

@@ -24,7 +24,7 @@ namespace TransactionStore.API.Controller
         [HttpPost]
         [SwaggerOperation(Summary = "Add transaction")]
         [SwaggerResponse(201, "Transaction added")]
-        public ActionResult AddTransaction([FromBody] TransactionInputModel transaction)
+        public ActionResult AddTransaction([FromBody] TransactionRequestModel transaction)
         {
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             var transactionId = _transactionService.AddTransaction(transactionModel);
