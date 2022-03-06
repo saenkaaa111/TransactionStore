@@ -17,6 +17,7 @@ namespace TransactionStore.API
         {
             services.AddScoped<ITransactionRepository, TransactionRepository>();
         }
+
         public static void AddConnectionString(this IServiceCollection services)
         {
             services.AddTransient<IDbConnection>(sp => 
