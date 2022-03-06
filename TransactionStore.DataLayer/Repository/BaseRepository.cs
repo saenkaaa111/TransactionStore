@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
 
 namespace TransactionStore.DataLayer.Repository
 {
     public class BaseRepository
     {
+        public IDbConnection _connection;
 
+        public BaseRepository(IDbConnection dbConnection)
+        {
+            _connection = dbConnection;
+        }
     }
 }
