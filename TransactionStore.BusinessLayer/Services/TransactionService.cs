@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CurrencyEnum;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services.Interfaces;
 using TransactionStore.DataLayer.Entities;
@@ -25,16 +26,17 @@ namespace TransactionStore.BusinessLayer.Services
             return _transactionRepository.AddTransaction(transaction);
         }
         
-        public List<int> AddTransfer(TransactionModel transactionModel, int accountIdTo)
+        public List<int> AddTransfer(TransactionModel transactionModel, int accountIdTo, int currencyTo)
         {
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
             transaction.Amount *= -1;
             transaction.Date = DateTime.Now;
-            transaction.Type=TransactionType.Transfer;            
+            transaction.Type=TransactionType.Transfer; 
             var idTransactionFrom = _transactionRepository.AddTransaction(transaction);
             //TODO transfer to another currency
             transaction.Amount *= -1;
             transaction.AccountId = accountIdTo;
+            transaction.Currency = (Currency)currencyTo;               
             var idTransactionTo = _transactionRepository.AddTransaction(transaction);
 
             return new List<int>() { idTransactionFrom, idTransactionTo };

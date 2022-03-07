@@ -34,13 +34,13 @@ namespace TransactionStore.API.Controller
 
 
         // api/transaction/
-        [HttpPost("transfer-to-{accountId}")]
+        [HttpPost("transfer-to-{accountId}-in-{currencyTo}")]
         [SwaggerOperation(Summary = "Add transfer")]
         [SwaggerResponse(201, "Transaction added")]
-        public ActionResult AddTransfer([FromBody] TransactionRequestModel transaction, int accountId)
+        public ActionResult AddTransfer([FromBody] TransactionRequestModel transaction, int accountId, int currencyTo)
         {
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
-            var transactionId = _transactionService.AddTransfer(transactionModel, accountId);
+            var transactionId = _transactionService.AddTransfer(transactionModel, accountId, currencyTo);
 
             return StatusCode(201, transactionId);
         }

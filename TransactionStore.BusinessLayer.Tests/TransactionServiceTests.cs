@@ -58,7 +58,7 @@ namespace TransactionStore.BusinessLayer.Tests
             var deposit = new TransactionModel() { Type = TransactionType.Deposit, Amount = 600, AccountId = 6 };
 
             // when
-            var actual = _service.AddTransfer(deposit, expected);
+            var actual = _service.AddTransfer(deposit, expected, expected);
 
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Exactly(2));
