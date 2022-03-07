@@ -21,13 +21,26 @@ namespace TransactionStore.API.Controller
         }
 
         // api/transaction/
-        [HttpPost]
+        [HttpPost("deposit")]
         [SwaggerOperation(Summary = "Add deposit")]
         [SwaggerResponse(201, "Transaction added")]
         public ActionResult AddDeposit([FromBody] TransactionRequestModel transaction)
         {
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             var transactionId = _transactionService.AddDeposit(transactionModel);
+
+            return StatusCode(201, transactionId);
+        }
+
+
+        // api/transaction/
+        [HttpPost("transfer-to-{accountId}")]
+        [SwaggerOperation(Summary = "Add transfer")]
+        [SwaggerResponse(201, "Transaction added")]
+        public ActionResult AddTransfer([FromBody] TransactionRequestModel transaction, int accountId)
+        {
+            var transactionModel = _mapper.Map<TransactionModel>(transaction);
+            var transactionId = _transactionService.AddTransfer(transactionModel, accountId);
 
             return StatusCode(201, transactionId);
         }

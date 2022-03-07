@@ -37,14 +37,32 @@ namespace TransactionStore.BusinessLayer.Tests
         public void AddDepositTest(int expected)
         {
             // given
-            _transactionRepositoryMock.Setup(d => d.AddDeposit(It.IsAny<TransactionDto>())).Returns(expected);
+            _transactionRepositoryMock.Setup(d => d.AddTransaction(It.IsAny<TransactionDto>())).Returns(expected);
             var deposit = new TransactionModel() { Type = TransactionType.Deposit, Amount = 600, AccountId = 6 };
+            
             // when
-            int actual = _service.AddDeposit(new TransactionModel());
+            int actual = _service.AddDeposit(deposit);
 
             // then
-            _transactionRepositoryMock.Verify(s => s.AddDeposit(It.IsAny<TransactionDto>()), Times.Once);
+            _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
             Assert.AreEqual(expected, actual);
+        }
+        
+        [TestCase( 4)]
+        [TestCase(896)]
+        public void AddTransferTest(int expected )
+        {
+            // given
+            _transactionRepositoryMock.Setup(d => d.AddTransaction(It.IsAny<TransactionDto>())).Returns(expected);
+            var listExpected = new[] { expected, expected };
+            var deposit = new TransactionModel() { Type = TransactionType.Deposit, Amount = 600, AccountId = 6 };
+
+            // when
+            var actual = _service.AddTransfer(deposit, expected);
+
+            // then
+            _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Exactly(2));
+            Assert.AreEqual(listExpected, actual);
         }
     }
 }

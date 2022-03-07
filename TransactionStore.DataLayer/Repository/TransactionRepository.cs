@@ -10,19 +10,19 @@ namespace TransactionStore.DataLayer.Repository
 
         public TransactionRepository(IDbConnection dbConnection) : base(dbConnection) { }
 
-        public int AddDeposit(TransactionDto transaction)
+        public int AddTransaction(TransactionDto transaction)
         {
             return _connection.QueryFirstOrDefault<int>(
                     _transactionAddProcedure,
                     new
                     {
                         transaction.Amount,
-                        Date = DateTime.Now,
+                        transaction.Date,
                         transaction.AccountId,
-                        Type = TransactionType.Deposit
+                        transaction.Type
                     },
                     commandType: CommandType.StoredProcedure
                 );
-        }
+        }    
     }
 }
