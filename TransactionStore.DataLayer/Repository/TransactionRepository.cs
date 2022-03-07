@@ -7,6 +7,7 @@ namespace TransactionStore.DataLayer.Repository
     public class TransactionRepository : BaseRepository, ITransactionRepository
     {
         private const string _transactionAddProcedure = "dbo.Transaction_Insert";
+        private const string _transactionGetByAccountIdProcedure = "dbo.Transaction_SelectByAccountId";
 
         public TransactionRepository(IDbConnection dbConnection) : base(dbConnection) { }
 
@@ -24,6 +25,15 @@ namespace TransactionStore.DataLayer.Repository
                     },
                     commandType: CommandType.StoredProcedure
                 );
+        } 
+        
+        public List<TransactionDto> GetByAccountId(int id)
+        {            
+            return _connection.Query<TransactionDto>(
+                    _transactionGetByAccountIdProcedure,
+                    new { AccountId = id },
+                    commandType: CommandType.StoredProcedure
+                ).ToList();
         }    
     }
 }

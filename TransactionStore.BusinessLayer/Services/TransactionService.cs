@@ -41,5 +41,13 @@ namespace TransactionStore.BusinessLayer.Services
 
             return new List<int>() { idTransactionFrom, idTransactionTo };
         }
+
+        public List<TransactionModel> GetByAccountId(int id)
+        {
+            var transactions = _transactionRepository.GetByAccountId(id);
+            return _mapper.Map<List<TransactionModel>>(transactions);
+            
+        }
+        
     }
 }

@@ -6,5 +6,6 @@ namespace TransactionStore.BusinessLayer.Services.Interfaces
     {
         int AddDeposit(TransactionModel transactionModel);
         List<int> AddTransfer(TransactionModel transactionModel, int accountIdTo, int currencyTo);
+        List<TransactionModel> GetByAccountId(int id);
     }
 }
