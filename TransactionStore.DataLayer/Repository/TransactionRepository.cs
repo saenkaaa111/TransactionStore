@@ -19,7 +19,8 @@ namespace TransactionStore.DataLayer.Repository
                         transaction.Amount,
                         transaction.Date,
                         transaction.AccountId,
-                        transaction.Type
+                        transaction.Type,
+                        transaction.Currency
                     },
                     commandType: CommandType.StoredProcedure
                 );
