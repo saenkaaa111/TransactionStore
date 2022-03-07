@@ -25,19 +25,19 @@ namespace TransactionStore.BusinessLayer.Services
             return _transactionRepository.AddTransaction(transaction);
         }
         
-        public int AddTransfer(TransactionModel transactionModel, int accountIdTo)
+        public List<int> AddTransfer(TransactionModel transactionModel, int accountIdTo)
         {
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
             transaction.Amount *= -1;
             transaction.Date = DateTime.Now;
             transaction.Type=TransactionType.Transfer;            
-            
-            _transactionRepository.AddTransaction(transaction);
+            var idTransactionFrom = _transactionRepository.AddTransaction(transaction);
             //TODO transfer to another currency
             transaction.Amount *= -1;
             transaction.AccountId = accountIdTo;
+            var idTransactionTo = _transactionRepository.AddTransaction(transaction);
 
-            return _transactionRepository.AddTransaction(transaction);
+            return new List<int>() { idTransactionFrom, idTransactionTo };
         }
     }
 }
