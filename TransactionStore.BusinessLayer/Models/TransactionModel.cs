@@ -1,4 +1,5 @@
-﻿using TransactionStore.DataLayer.Entities;
+﻿using CurrencyEnum;
+using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.BusinessLayer.Models
 {
@@ -9,5 +10,6 @@ namespace TransactionStore.BusinessLayer.Models
         public TransactionType Type { get; set; }
         public decimal Amount { get; set; }
         public int AccountId { get; set; }
+        public Currency Currency { get; set; }
     }
 }

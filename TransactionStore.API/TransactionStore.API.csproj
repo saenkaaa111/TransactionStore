@@ -18,4 +18,10 @@
     <ProjectReference Include="..\TransactionStore.BusinessLayer\TransactionStore.BusinessLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="CurrencyEnum">
+      <HintPath>..\TransactionStore.BusinessLayer\bin\Debug\net6.0\CurrencyEnum.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
