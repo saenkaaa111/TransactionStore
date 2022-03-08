@@ -21,8 +21,10 @@ namespace TransactionStore.BusinessLayer.Services
         public int AddDeposit(TransactionModel transactionModel)
         {
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
+
             transaction.Type = TransactionType.Deposit;
             transaction.Date = DateTime.Now;
+
             return _transactionRepository.AddTransaction(transaction);
         }
         
@@ -40,6 +42,17 @@ namespace TransactionStore.BusinessLayer.Services
             var idTransactionTo = _transactionRepository.AddTransaction(transaction);
 
             return new List<int>() { idTransactionFrom, idTransactionTo };
+        }
+
+        public int Withdraw(TransactionModel transactionModel)
+        {
+            var transaction = _mapper.Map<TransactionDto>(transactionModel);
+
+            transaction.Amount = transactionModel.Amount * (-1);
+            transaction.Type = TransactionType.Withdraw;
+            transaction.Date = DateTime.Now;
+
+            return _transactionRepository.AddTransaction(transaction);
         }
     }
 }
