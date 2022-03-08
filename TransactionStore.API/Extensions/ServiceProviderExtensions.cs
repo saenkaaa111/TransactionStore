@@ -1,6 +1,4 @@
-﻿using System.Data;
-using System.Data.SqlClient;
-using TransactionStore.BusinessLayer.Services;
+﻿using TransactionStore.BusinessLayer.Services;
 using TransactionStore.BusinessLayer.Services.Interfaces;
 using TransactionStore.DataLayer.Repository;
 
