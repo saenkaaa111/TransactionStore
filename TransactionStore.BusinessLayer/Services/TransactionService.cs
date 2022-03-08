@@ -48,11 +48,11 @@ namespace TransactionStore.BusinessLayer.Services
         {
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
             var accountTransactions = GetByAccountId(transactionModel.AccountId);
-            var accountBallance = accountTransactions.Select(t => t.Amount).Sum();
+            var accountBalance = accountTransactions.Select(t => t.Amount).Sum();
 
-            if (withdraw.Amount < accountBallance)
+            if (withdraw.Amount < accountBalance)
             {
-                withdraw.Amount = transactionModel.Amount * (-1);
+                withdraw.Amount = transactionModel.Amount *= -1;
                 withdraw.Type = TransactionType.Withdraw;
                 withdraw.Date = DateTime.Now;
 
@@ -67,8 +67,15 @@ namespace TransactionStore.BusinessLayer.Services
         public List<TransactionModel> GetByAccountId(int id)
         {
             var transactions = _transactionRepository.GetByAccountId(id);
+
             return _mapper.Map<List<TransactionModel>>(transactions);
         }
 
+        public List<TransactionModel> GetByAccountIds(List<int> accountIds)
+        {
+            var transactions = _transactionRepository.GetByAccountIds(accountIds);
+
+            return _mapper.Map<List<TransactionModel>>(transactions);
+        }
     }
 }

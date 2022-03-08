@@ -62,10 +62,13 @@
   <ItemGroup>
     <Build Include="Tables\Transaction.sql" />
     <Build Include="Procedures\Transaction_SelectByAccountId.sql" />
+    <Build Include="Procedures\Transaction_SelectByAccountIds.sql" />
+    <Build Include="Procedures\Function_FnSplitter.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Procedures\Transaction_Insert.sql" />
     <None Include="Procedures\Transaction_SelectAll.sql" />
     <None Include="Procedures\Transaction_SelectById.sql" />
+    <None Include="TransactionStore.DB.publish.xml" />
   </ItemGroup>
 </Project>
