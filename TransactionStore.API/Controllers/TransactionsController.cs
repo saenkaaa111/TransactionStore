@@ -23,7 +23,7 @@ namespace TransactionStore.API.Controller
         // api/transaction/
         [HttpPost("deposit")]
         [SwaggerOperation(Summary = "Add deposit")]
-        [SwaggerResponse(201, "Transaction added")]
+        [SwaggerResponse(201, "Deposit added")]
         public ActionResult AddDeposit([FromBody] TransactionRequestModel transaction)
         {
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
@@ -31,7 +31,6 @@ namespace TransactionStore.API.Controller
 
             return StatusCode(201, transactionId);
         }
-
 
         // api/transaction/
         [HttpPost("transfer-to-{accountId}-in-{currencyTo}")]
@@ -41,6 +40,17 @@ namespace TransactionStore.API.Controller
         {
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             var transactionId = _transactionService.AddTransfer(transactionModel, accountId, currencyTo);
+
+            return StatusCode(201, transactionId);
+        }
+
+        [HttpPost("withdraw")]
+        [SwaggerOperation(Summary = "Withdraw")]
+        [SwaggerResponse(201, "Withdraw successful")]
+        public ActionResult AddWithdraw([FromBody] TransactionRequestModel transaction)
+        {
+            var transactionModel = _mapper.Map<TransactionModel>(transaction);
+            var transactionId = _transactionService.Withdraw(transactionModel);
 
             return StatusCode(201, transactionId);
         }
