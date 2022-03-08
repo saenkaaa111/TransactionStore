@@ -17,17 +17,12 @@ namespace TransactionStore.BusinessLayer.Tests
 
         private Mock<ITransactionRepository> _transactionRepositoryMock;
         private ITransactionService _service;
-        private readonly IMapper _mapper;
-
-        public TransactionServiceTests()
-        {
-            _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<DataMapper>()));
-        }
-
+        private IMapper _mapper;
 
         [SetUp]
         public void Setup()
         {
+            _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<DataMapper>()));
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
             _service = new TransactionService(_transactionRepositoryMock.Object, _mapper);
         }
@@ -83,7 +78,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
         [TestCaseSource(typeof(WithdrawNegativeTestCaseSourse))]
         public void WithdrawNegativeTest_ShouldThrowInsufficientFundsException(TransactionModel transactionModel,
-            List<TransactionDto> accountTransactions, int expected)
+            List<TransactionDto> accountTransactions)
         {
             // given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
