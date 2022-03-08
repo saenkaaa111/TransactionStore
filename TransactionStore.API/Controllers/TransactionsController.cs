@@ -35,7 +35,7 @@ namespace TransactionStore.API.Controller
         // api/transaction/
         [HttpPost("transfer-to-{accountId}-in-{currencyTo}")]
         [SwaggerOperation(Summary = "Add transfer")]
-        [SwaggerResponse(201, "Transaction added")]
+        [SwaggerResponse(201, "List transactions by accountId ")]
         public ActionResult AddTransfer([FromBody] TransactionRequestModel transaction, int accountId, int currencyTo)
         {
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
@@ -53,6 +53,19 @@ namespace TransactionStore.API.Controller
             var transactionId = _transactionService.Withdraw(transactionModel);
 
             return StatusCode(201, transactionId);
+        }
+        
+        
+        // api/transaction/
+        [HttpGet("{accountId}")]
+        [SwaggerOperation(Summary = "Get transactions by accountId")]
+        [SwaggerResponse(201, "Transaction added")]
+        public ActionResult GetByAccountId(int accountId)
+        {
+            var transactionModel = _transactionService.GetByAccountId(accountId);
+            var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModel);
+            return Ok(transactions);
+
         }
     }
 }
