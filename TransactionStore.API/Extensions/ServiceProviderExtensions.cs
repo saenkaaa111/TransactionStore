@@ -17,11 +17,5 @@ namespace TransactionStore.API
         {
             services.AddScoped<ITransactionRepository, TransactionRepository>();
         }
-
-        public static void AddConnectionString(this IServiceCollection services)
-        {
-            services.AddTransient<IDbConnection>(sp => 
-            new SqlConnection("Data Source = 80.78.240.16; Database=Transaction;User Id = student; Password=qwe!23;"));
-        }
     }
 }
