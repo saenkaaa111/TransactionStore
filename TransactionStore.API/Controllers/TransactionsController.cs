@@ -47,7 +47,7 @@ namespace TransactionStore.API.Controller
         [HttpPost("withdraw")]
         [SwaggerOperation(Summary = "Withdraw")]
         [SwaggerResponse(201, "Withdraw successful")]
-        public ActionResult AddWithdraw([FromBody] TransactionRequestModel transaction)
+        public ActionResult Withdraw([FromBody] TransactionRequestModel transaction)
         {
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             var transactionId = _transactionService.Withdraw(transactionModel);

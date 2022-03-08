@@ -20,7 +20,6 @@ namespace TransactionStore.BusinessLayer.Tests
         public TransactionServiceTests()
         {
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<DataMapper>()));
-
         }
 
 
@@ -29,7 +28,6 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
             _service = new TransactionService(_transactionRepositoryMock.Object, _mapper);
-
         }
 
         [TestCase(4)]
@@ -63,6 +61,22 @@ namespace TransactionStore.BusinessLayer.Tests
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Exactly(2));
             Assert.AreEqual(listExpected, actual);
+        }
+
+        [TestCase(77)]
+        public void WithdrawTest(int expected)
+        {
+            // given
+            _transactionRepositoryMock.Setup(d => d.AddTransaction(It.IsAny<TransactionDto>())).Returns(expected);
+            var transactionModel = new TransactionModel() { Type = TransactionType.Withdraw, Amount = 777, AccountId = 7 };
+
+            // when
+            int actual = _service.Withdraw(transactionModel);
+
+            // then
+            _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
+
+            Assert.AreEqual(expected, actual);
         }
     }
 }
