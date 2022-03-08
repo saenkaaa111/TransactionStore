@@ -26,7 +26,7 @@ namespace TransactionStore.DataLayer.Repository
                     commandType: CommandType.StoredProcedure
                 );
         } 
-        
+
         public List<TransactionDto> GetByAccountId(int id)
         {            
             return _connection.Query<TransactionDto>(

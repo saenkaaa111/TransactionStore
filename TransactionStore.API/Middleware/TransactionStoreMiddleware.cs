@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text.Json;
 using TransactionStore.API.Models.Response;
+using TransactionStore.BusinessLayer;
 
 namespace TransactionStore.API.Middleware
 {
@@ -27,6 +28,10 @@ namespace TransactionStore.API.Middleware
             catch (NullReferenceException)
             {
                 await HandleExceptionAsync(context, HttpStatusCode.NotFound, "Не найдено");
+            }
+            catch (InsufficientFundsException ex)
+            {
+                await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message);
             }
             catch (Exception ex)
             {

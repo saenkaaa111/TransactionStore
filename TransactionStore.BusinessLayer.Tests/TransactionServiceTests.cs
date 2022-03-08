@@ -1,10 +1,12 @@
 using AutoMapper;
 using Moq;
 using NUnit.Framework;
+using System.Collections.Generic;
 using TransactionStore.BuisnessLayer.Configuration;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
 using TransactionStore.BusinessLayer.Services.Interfaces;
+using TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
 
@@ -46,7 +48,7 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.AreEqual(expected, actual);
         }
         
-        [TestCase( 4)]
+        [TestCase(4)]
         [TestCase(896)]
         public void AddTransferTest(int expected )
         {
@@ -63,20 +65,38 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.AreEqual(listExpected, actual);
         }
 
-        [TestCase(77)]
-        public void WithdrawTest(int expected)
+        [TestCaseSource(typeof(WithdrawTestCaseSourse))]
+        public void WithdrawTest(TransactionModel transactionModel, List<TransactionDto> accountTransactions, int expected)
         {
             // given
-            _transactionRepositoryMock.Setup(d => d.AddTransaction(It.IsAny<TransactionDto>())).Returns(expected);
-            var transactionModel = new TransactionModel() { Type = TransactionType.Withdraw, Amount = 777, AccountId = 7 };
+            _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>())).Returns(expected);
+            _transactionRepositoryMock.Setup(w => w.GetByAccountId(transactionModel.AccountId))
+                .Returns(accountTransactions);
 
             // when
             int actual = _service.Withdraw(transactionModel);
 
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
-
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestCaseSource(typeof(WithdrawNegativeTestCaseSourse))]
+        public void WithdrawNegativeTest_ShouldThrowInsufficientFundsException(TransactionModel transactionModel,
+            List<TransactionDto> accountTransactions, int expected)
+        {
+            // given
+            _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
+            _transactionRepositoryMock.Setup(w => w.GetByAccountId(transactionModel.AccountId))
+                .Returns(accountTransactions);
+            var expectedMessage = "Недостаточно средств на счете";
+
+            // when
+            InsufficientFundsException? exception = Assert.Throws<InsufficientFundsException>(() =>
+            _service.Withdraw(transactionModel));
+
+            // then
+            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
         }
     }
 }

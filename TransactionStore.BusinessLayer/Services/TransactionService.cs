@@ -27,18 +27,18 @@ namespace TransactionStore.BusinessLayer.Services
 
             return _transactionRepository.AddTransaction(transaction);
         }
-        
+
         public List<int> AddTransfer(TransactionModel transactionModel, int accountIdTo, int currencyTo)
         {
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
             transaction.Amount *= -1;
             transaction.Date = DateTime.Now;
-            transaction.Type=TransactionType.Transfer; 
+            transaction.Type = TransactionType.Transfer;
             var idTransactionFrom = _transactionRepository.AddTransaction(transaction);
             //TODO transfer to another currency
             transaction.Amount *= -1;
             transaction.AccountId = accountIdTo;
-            transaction.Currency = (Currency)currencyTo;               
+            transaction.Currency = (Currency)currencyTo;
             var idTransactionTo = _transactionRepository.AddTransaction(transaction);
 
             return new List<int>() { idTransactionFrom, idTransactionTo };
@@ -46,21 +46,29 @@ namespace TransactionStore.BusinessLayer.Services
 
         public int Withdraw(TransactionModel transactionModel)
         {
-            var transaction = _mapper.Map<TransactionDto>(transactionModel);
+            var withdraw = _mapper.Map<TransactionDto>(transactionModel);
+            var accountTransactions = GetByAccountId(transactionModel.AccountId);
+            var accountBallance = accountTransactions.Select(t => t.Amount).Sum();
 
-            transaction.Amount = transactionModel.Amount * (-1);
-            transaction.Type = TransactionType.Withdraw;
-            transaction.Date = DateTime.Now;
+            if (withdraw.Amount < accountBallance)
+            {
+                withdraw.Amount = transactionModel.Amount * (-1);
+                withdraw.Type = TransactionType.Withdraw;
+                withdraw.Date = DateTime.Now;
 
-            return _transactionRepository.AddTransaction(transaction);
+                return _transactionRepository.AddTransaction(withdraw);
+            }
+            else
+            {
+                throw new InsufficientFundsException("Недостаточно средств на счете");
+            }
         }
 
         public List<TransactionModel> GetByAccountId(int id)
         {
             var transactions = _transactionRepository.GetByAccountId(id);
             return _mapper.Map<List<TransactionModel>>(transactions);
-            
         }
-        
+
     }
 }
