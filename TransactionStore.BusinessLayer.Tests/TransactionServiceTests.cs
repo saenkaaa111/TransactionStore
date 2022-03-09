@@ -93,5 +93,20 @@ namespace TransactionStore.BusinessLayer.Tests
             // then
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
         }
+
+        [TestCaseSource(typeof(GetTransactionsByAccountIdsTestCaseSourse))]
+        public void GetTransactionsByAccountIds(List<int> ids, List<TransactionDto> transactions,
+            List<TransactionModel> expected)
+        {
+            //given
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountIds(ids)).Returns(transactions);
+
+            //when
+            var actual = _service.GetTransactionsByAccountIds(ids);
+
+            //then
+            Assert.AreEqual(actual, expected);
+
+        }
     }
 }

@@ -71,9 +71,9 @@ namespace TransactionStore.BusinessLayer.Services
             return _mapper.Map<List<TransactionModel>>(transactions);
         }
 
-        public List<TransactionModel> GetByAccountIds(List<int> accountIds)
+        public List<TransactionModel> GetTransactionsByAccountIds(List<int> accountIds)
         {
-            var transactions = _transactionRepository.GetByAccountIds(accountIds);
+            var transactions = _transactionRepository.GetTransactionsByAccountIds(accountIds);
 
             return _mapper.Map<List<TransactionModel>>(transactions);
         }

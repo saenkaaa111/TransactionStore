@@ -70,9 +70,9 @@ namespace TransactionStore.API.Controller
         [HttpPost("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
         [SwaggerResponse(200, "OK")]
-        public ActionResult GetByAccountIds(List<int> accountIds)
+        public ActionResult GetTransactionsByAccountIds(List<int> accountIds)
         {
-            var transactionModels = _transactionService.GetByAccountIds(accountIds);
+            var transactionModels = _transactionService.GetTransactionsByAccountIds(accountIds);
             var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModels);
 
             return Ok(transactions);

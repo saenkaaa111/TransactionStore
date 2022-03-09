@@ -38,7 +38,7 @@ namespace TransactionStore.DataLayer.Repository
                 ).ToList();
         }
 
-        public List<TransactionDto> GetByAccountIds(List<int> accountIds)
+        public List<TransactionDto> GetTransactionsByAccountIds(List<int> accountIds)
         {
             var tvpTable = new DataTable();
             tvpTable.Columns.Add(new DataColumn("AccountId", typeof(int)));
