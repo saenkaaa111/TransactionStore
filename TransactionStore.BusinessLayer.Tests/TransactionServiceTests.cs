@@ -106,7 +106,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
             //then
             Assert.AreEqual(actual, expected);
-
+            _transactionRepositoryMock.Verify(s => s.GetTransactionsByAccountIds(ids), Times.Once);
         }
     }
 }

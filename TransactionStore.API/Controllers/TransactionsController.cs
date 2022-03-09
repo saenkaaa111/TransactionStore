@@ -67,10 +67,11 @@ namespace TransactionStore.API.Controller
             return Ok(transactions);
         }
 
-        [HttpPost("by-accountIds")]
+        /// api/Transactions/by-accountIds?accountIds=1&accountIds=2
+        [HttpGet("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
         [SwaggerResponse(200, "OK")]
-        public ActionResult GetTransactionsByAccountIds(List<int> accountIds)
+        public ActionResult GetTransactionsByAccountIds([FromQuery] List<int> accountIds)
         {
             var transactionModels = _transactionService.GetTransactionsByAccountIds(accountIds);
             var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModels);

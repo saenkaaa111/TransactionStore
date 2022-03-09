@@ -23,7 +23,6 @@ namespace TransactionStore.BusinessLayer.Services
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
             transaction.Type = TransactionType.Deposit;
-            transaction.Date = DateTime.Now;
 
             return _transactionRepository.AddTransaction(transaction);
         }
@@ -32,7 +31,6 @@ namespace TransactionStore.BusinessLayer.Services
         {
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
             transaction.Amount *= -1;
-            transaction.Date = DateTime.Now;
             transaction.Type = TransactionType.Transfer;
             var idTransactionFrom = _transactionRepository.AddTransaction(transaction);
             //TODO transfer to another currency
@@ -54,7 +52,6 @@ namespace TransactionStore.BusinessLayer.Services
             {
                 withdraw.Amount = transactionModel.Amount *= -1;
                 withdraw.Type = TransactionType.Withdraw;
-                withdraw.Date = DateTime.Now;
 
                 return _transactionRepository.AddTransaction(withdraw);
             }

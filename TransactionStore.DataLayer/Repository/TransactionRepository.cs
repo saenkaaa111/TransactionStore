@@ -20,7 +20,6 @@ namespace TransactionStore.DataLayer.Repository
                     new
                     {
                         transaction.Amount,
-                        transaction.Date,
                         transaction.AccountId,
                         transaction.Type,
                         transaction.Currency

@@ -31,7 +31,7 @@ namespace TransactionStore.API.Middleware
             }
             catch (InsufficientFundsException ex)
             {
-                await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message);
+                await HandleExceptionAsync(context, HttpStatusCode.Conflict, ex.Message);
             }
             catch (Exception ex)
             {
