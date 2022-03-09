@@ -8,5 +8,7 @@ namespace TransactionStore.BusinessLayer.Services.Interfaces
         List<int> AddTransfer(TransactionModel transactionModel, int accountIdTo, int currencyTo);
         int Withdraw(TransactionModel transactionModel);
         List<TransactionModel> GetByAccountId(int id);
+
+        List<TransactionModel> GetTransactionsByAccountIds(List<int> accountIds);
     }
 }

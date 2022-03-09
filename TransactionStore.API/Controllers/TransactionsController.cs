@@ -55,17 +55,27 @@ namespace TransactionStore.API.Controller
             return StatusCode(201, transactionId);
         }
         
-        
         // api/transaction/
         [HttpGet("{accountId}")]
         [SwaggerOperation(Summary = "Get transactions by accountId")]
-        [SwaggerResponse(201, "Transaction added")]
+        [SwaggerResponse(200, "OK")]
         public ActionResult GetByAccountId(int accountId)
         {
             var transactionModel = _transactionService.GetByAccountId(accountId);
             var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModel);
-            return Ok(transactions);
 
+            return Ok(transactions);
+        }
+
+        [HttpPost("by-accountIds")]
+        [SwaggerOperation(Summary = "Get transactions by accountIds")]
+        [SwaggerResponse(200, "OK")]
+        public ActionResult GetTransactionsByAccountIds(List<int> accountIds)
+        {
+            var transactionModels = _transactionService.GetTransactionsByAccountIds(accountIds);
+            var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModels);
+
+            return Ok(transactions);
         }
     }
 }
