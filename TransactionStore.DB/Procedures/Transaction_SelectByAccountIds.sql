@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[Transaction_SelectByAccountIds]
-	@Ids int
+	@tvp [dbo].[AccountTVP] readonly
 AS 
 BEGIN
 SELECT 	
@@ -9,7 +9,6 @@ SELECT
 		Type, 
 		AccountId,
 		Currency
-
-	FROM [dbo].[Transaction] 
-	WHERE AccountId IN (SELECT ID FROM FnSplitter(@Ids))
+		FROM [dbo].[Transaction] t
+    INNER JOIN @tvp i ON t.AccountId = i.AccountIds
 END

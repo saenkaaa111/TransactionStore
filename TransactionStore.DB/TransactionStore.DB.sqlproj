@@ -45,6 +45,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatTSqlWarningsAsErrors>False</TreatTSqlWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
@@ -63,12 +64,19 @@
     <Build Include="Tables\Transaction.sql" />
     <Build Include="Procedures\Transaction_SelectByAccountId.sql" />
     <Build Include="Procedures\Transaction_SelectByAccountIds.sql" />
-    <Build Include="Procedures\Function_FnSplitter.sql" />
+    <Build Include="Tables\AccountTVP.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Procedures\Transaction_Insert.sql" />
     <None Include="Procedures\Transaction_SelectAll.sql" />
     <None Include="Procedures\Transaction_SelectById.sql" />
     <None Include="TransactionStore.DB.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
+      <HintPath>C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
   </ItemGroup>
 </Project>

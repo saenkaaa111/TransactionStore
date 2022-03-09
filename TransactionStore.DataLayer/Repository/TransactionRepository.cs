@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using System.Data;
+using System.Data.SqlClient;
 using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.DataLayer.Repository
@@ -39,11 +40,15 @@ namespace TransactionStore.DataLayer.Repository
 
         public List<TransactionDto> GetByAccountIds(List<int> accountIds)
         {
+            var tvpTable = new DataTable();
+            tvpTable.Columns.Add(new DataColumn("AccountId", typeof(int)));
+            accountIds.ForEach(id => tvpTable.Rows.Add(id));
+
             return _connection.Query<TransactionDto>(
-                    _transactionGetByAccountIdsProcedure,
-                    new { @Ids = accountIds },
+                    _transactionGetByAccountIdsProcedure, 
+                    new { tvp = tvpTable.AsTableValuedParameter("[dbo].[AccountTVP]") },
                     commandType: CommandType.StoredProcedure
-                ).ToList();
+               ).ToList();
         }
     }
 }
