@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.SqlClient;
 
 namespace TransactionStore.DataLayer.Repository
 {
@@ -10,5 +11,7 @@ namespace TransactionStore.DataLayer.Repository
         {
             _connection = dbConnection;
         }
+
+        public IDbConnection Connection => new SqlConnection(_connection.ConnectionString);
     }
 }

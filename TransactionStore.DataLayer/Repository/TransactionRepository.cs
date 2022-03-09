@@ -15,36 +15,42 @@ namespace TransactionStore.DataLayer.Repository
 
         public int AddTransaction(TransactionDto transaction)
         {
-            return _connection.QueryFirstOrDefault<int>(
-                    _transactionAddProcedure,
-                    new
-                    {
-                        transaction.Amount,
-                        transaction.AccountId,
-                        transaction.Type,
-                        transaction.Currency
-                    },
-                    commandType: CommandType.StoredProcedure
-                );
+            using IDbConnection connection = Connection;
+
+            return connection.QueryFirstOrDefault<int>(
+                _transactionAddProcedure,
+                new
+                {
+                    transaction.Amount,
+                    transaction.AccountId,
+                    transaction.Type,
+                    transaction.Currency
+                },
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public List<TransactionDto> GetByAccountId(int id)
         {
-            return _connection.Query<TransactionDto>(
-                    _transactionGetByAccountIdProcedure,
-                    new { AccountId = id },
-                    commandType: CommandType.StoredProcedure
-                ).ToList();
+            using IDbConnection connection = Connection;
+
+            return connection.Query<TransactionDto>(
+                _transactionGetByAccountIdProcedure,
+                new { AccountId = id },
+                commandType: CommandType.StoredProcedure
+            ).ToList();
         }
 
         public List<TransactionDto> GetTransactionsByAccountIds(List<int> accountIds)
         {
+            using IDbConnection connection = Connection;
+
             var tvpTable = new DataTable();
             tvpTable.Columns.Add(new DataColumn("AccountId", typeof(int)));
             accountIds.ForEach(id => tvpTable.Rows.Add(id));
 
-            return _connection.Query<TransactionDto>(
-                    _transactionGetByAccountIdsProcedure, 
+            return connection.Query<TransactionDto>(
+                    _transactionGetByAccountIdsProcedure,
                     new { tvp = tvpTable.AsTableValuedParameter("[dbo].[AccountTVP]") },
                     commandType: CommandType.StoredProcedure
                ).ToList();
