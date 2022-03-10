@@ -1,5 +1,4 @@
-﻿using CurrencyEnum;
-using TransactionStore.DataLayer.Entities;
+﻿using Marvelous.Contracts;
 
 namespace TransactionStore.BusinessLayer.Models
 {

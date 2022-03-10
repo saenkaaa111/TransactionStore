@@ -1,4 +1,5 @@
-﻿using CurrencyEnum;
+﻿using Marvelous.Contracts;
+
 namespace TransactionStore.API.Models
 {
     public class TransactionRequestModel
