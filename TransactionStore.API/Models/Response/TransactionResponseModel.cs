@@ -1,4 +1,4 @@
-﻿using CurrencyEnum;
+﻿using Marvelous.Contracts;
 using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.API.Models

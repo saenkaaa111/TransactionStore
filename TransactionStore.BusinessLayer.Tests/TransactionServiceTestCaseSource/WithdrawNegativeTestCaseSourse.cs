@@ -1,10 +1,6 @@
-﻿using CurrencyEnum;
-using System;
+﻿using Marvelous.Contracts;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
 
@@ -43,7 +39,7 @@ namespace TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource
 
             };
 
-            yield return new object[] { withdraw, accountTransactions};
+            yield return new object[] { withdraw, accountTransactions };
         }
     }
 }

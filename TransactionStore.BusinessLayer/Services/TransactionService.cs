@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CurrencyEnum;
+using Marvelous.Contracts;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services.Interfaces;
 using TransactionStore.DataLayer.Entities;
