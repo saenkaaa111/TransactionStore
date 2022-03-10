@@ -8,6 +8,8 @@ namespace TransactionStore.DataLayer.Repository
     public class TransactionRepository : BaseRepository, ITransactionRepository
     {
         private const string _transactionAddProcedure = "dbo.Transaction_Insert";
+        private const string _transactionAddTransferFromProcedure = "dbo.Transaction_InsertTransferFrom";
+        private const string _transactionAddTransferToProcedure = "dbo.Transaction_InsertTransferTo";
         private const string _transactionGetByAccountIdProcedure = "dbo.Transaction_SelectByAccountId";
         private const string _transactionGetByAccountIdsProcedure = "dbo.Transaction_SelectByAccountIds";
 
@@ -21,6 +23,39 @@ namespace TransactionStore.DataLayer.Repository
                 _transactionAddProcedure,
                 new
                 {
+                    transaction.Amount,
+                    transaction.AccountId,
+                    transaction.Type,
+                    transaction.Currency
+                },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+        public DateTime AddTransferFrom(TransactionDto transaction)
+        {
+            using IDbConnection connection = Connection;
+
+            return connection.QueryFirstOrDefault<DateTime>(
+                _transactionAddTransferFromProcedure,
+                new
+                {
+                    transaction.Amount,
+                    transaction.AccountId,
+                    transaction.Type,
+                    transaction.Currency
+                },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+        public int AddTransferTo(TransactionDto transaction)
+        {
+            using IDbConnection connection = Connection;
+
+            return connection.QueryFirstOrDefault<int>(
+                _transactionAddTransferToProcedure,
+                new
+                {
+                    transaction.Date,
                     transaction.Amount,
                     transaction.AccountId,
                     transaction.Type,

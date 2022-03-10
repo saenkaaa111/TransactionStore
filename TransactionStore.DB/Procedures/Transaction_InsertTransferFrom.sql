@@ -1,4 +1,4 @@
-﻿CREATE proc dbo.Transaction_Insert
+﻿CREATE PROCEDURE [dbo].[Transaction_InsertTransferFrom]
 			@Amount int, 
 			@AccountId int,
 			@Type int,
@@ -7,5 +7,5 @@ AS
 BEGIN
 	insert into dbo.[Transaction] (Date, Amount, AccountId, Type, Currency) 
 	values (GETDATE(), @Amount, @AccountId, @Type, @Currency);
-	select scope_identity()
+	select GETDATE()
 END
