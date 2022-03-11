@@ -5,7 +5,7 @@ namespace TransactionStore.BusinessLayer.Services.Interfaces
     public interface ITransactionService
     {
         int AddDeposit(TransactionModel transactionModel);
-        List<int> AddTransfer(TransactionModel transactionModel, int accountIdTo, int currencyTo);
+        List<int> AddTransfer(TransferModel transactionModel);
         int Withdraw(TransactionModel transactionModel);
         List<TransactionModel> GetByAccountId(int id);
 

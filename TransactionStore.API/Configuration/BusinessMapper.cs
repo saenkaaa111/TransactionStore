@@ -4,12 +4,13 @@ using TransactionStore.BusinessLayer.Models;
 
 namespace TransactionStore.API.Configuration
 {
-    public class BuisnessMapper : Profile
+    public class BusinessMapper : Profile
     {
-        public BuisnessMapper()
+        public BusinessMapper()
         {
             CreateMap<TransactionRequestModel, TransactionModel>();
             CreateMap<TransactionModel, TransactionResponseModel>();
+            CreateMap<TransferRequestModel, TransferModel>();
         }
     }
 }
