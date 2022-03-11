@@ -9,6 +9,6 @@ SELECT
 		t.Type,
 		a.Id,
 		a.Name
-	from dbo.[Transaction] t inner join dbo.[Account] a on t.AccountId = a.Id 
-	where t.Id = @Id						
+	FROM dbo.[Transaction]
+	WHERE t.Id = @Id						
 END

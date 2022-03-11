@@ -10,6 +10,7 @@ namespace TransactionStore.DataLayer.Repository
         private const string _transactionAddProcedure = "dbo.Transaction_Insert";
         private const string _transactionGetByAccountIdProcedure = "dbo.Transaction_SelectByAccountId";
         private const string _transactionGetByAccountIdsProcedure = "dbo.Transaction_SelectByAccountIds";
+        private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
 
         public TransactionRepository(IDbConnection dbConnection) : base(dbConnection) { }
 
@@ -54,6 +55,16 @@ namespace TransactionStore.DataLayer.Repository
                     new { tvp = tvpTable.AsTableValuedParameter("[dbo].[AccountTVP]") },
                     commandType: CommandType.StoredProcedure
                ).ToList();
+        }
+
+        public TransactionDto GetTransactionById(int id)
+        {
+            using IDbConnection connection = Connection;
+
+            return connection.ExecuteScalar<TransactionDto>(
+                _transactionGetByIdProcedure, new { Id = id },
+                commandType: CommandType.StoredProcedure
+            );
         }
     }
 }

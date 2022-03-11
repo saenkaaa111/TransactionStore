@@ -74,5 +74,12 @@ namespace TransactionStore.BusinessLayer.Services
 
             return _mapper.Map<List<TransactionModel>>(transactions);
         }
+
+        public TransactionModel GetTransactionById(int id)
+        {
+            var transaction = _transactionRepository.GetTransactionById(id);
+
+            return _mapper.Map<TransactionModel>(transaction);
+        }
     }
 }

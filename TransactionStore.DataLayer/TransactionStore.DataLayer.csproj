@@ -17,10 +17,4 @@
     <Folder Include="Repository\Interfaces\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="CurrencyEnum">
-      <HintPath>..\TransactionStore.BusinessLayer\bin\Debug\net6.0\CurrencyEnum.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

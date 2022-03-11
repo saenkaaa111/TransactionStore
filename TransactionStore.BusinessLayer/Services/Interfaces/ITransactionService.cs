@@ -10,5 +10,6 @@ namespace TransactionStore.BusinessLayer.Services.Interfaces
         List<TransactionModel> GetByAccountId(int id);
 
         List<TransactionModel> GetTransactionsByAccountIds(List<int> accountIds);
+        public TransactionModel GetTransactionById(int id);
     }
 }

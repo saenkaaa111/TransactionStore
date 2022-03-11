@@ -56,7 +56,7 @@ namespace TransactionStore.API.Controller
         }
         
         // api/transaction/
-        [HttpGet("{accountId}")]
+        [HttpGet("transaction/{accountId}")]
         [SwaggerOperation(Summary = "Get transactions by accountId")]
         [SwaggerResponse(200, "OK")]
         public ActionResult GetByAccountId(int accountId)
@@ -77,6 +77,17 @@ namespace TransactionStore.API.Controller
             var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModels);
 
             return Ok(transactions);
+        }
+
+        [HttpGet("{id}")]
+        [SwaggerOperation(Summary = "Get transaction by id")]
+        [SwaggerResponse(200, "OK")]
+        public ActionResult GetTransactionById(int id)
+        {
+            var transactionModel = _transactionService.GetTransactionById(id);
+            var transaction = _mapper.Map<TransactionResponseModel>(transactionModel);
+
+            return Ok(transaction);
         }
     }
 }
