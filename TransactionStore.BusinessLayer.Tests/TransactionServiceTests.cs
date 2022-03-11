@@ -1,6 +1,8 @@
 using AutoMapper;
+using Marvelous.Contracts;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using TransactionStore.BuisnessLayer.Configuration;
 using TransactionStore.BusinessLayer.Models;
@@ -48,15 +50,17 @@ namespace TransactionStore.BusinessLayer.Tests
         public void AddTransferTest(int expected )
         {
             // given
-            _transactionRepositoryMock.Setup(d => d.AddTransaction(It.IsAny<TransactionDto>())).Returns(expected);
-            var listExpected = new[] { expected, expected };
-            var deposit = new TransactionModel() { Type = TransactionType.Deposit, Amount = 600, AccountId = 6 };
+            _transactionRepositoryMock.Setup(d => d.AddTransferFrom(It.IsAny<TransactionDto>())).Returns(new DateTime());
+            _transactionRepositoryMock.Setup(d => d.AddTransferTo(It.IsAny<TransactionDto>())).Returns(expected);
+            var listExpected = new[] { 4, expected };
+            var transfer = new TransferModel() { Amount = 600, AccountIdFrom = 6, AccountIdTo = 7};
 
             // when
-            var actual = _service.AddTransfer(deposit, expected, expected);
+            var actual = _service.AddTransfer(transfer);
 
             // then
-            _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Exactly(2));
+            _transactionRepositoryMock.Verify(s => s.AddTransferFrom(It.IsAny<TransactionDto>()), Times.Once);
+            _transactionRepositoryMock.Verify(s => s.AddTransferTo(It.IsAny<TransactionDto>()), Times.Once);
             Assert.AreEqual(listExpected, actual);
         }
 
