@@ -35,7 +35,7 @@ namespace TransactionStore.API.Controller
         // api/transaction/
         [HttpPost("transfer")]
         [SwaggerOperation(Summary = "Add transfer")]
-        [SwaggerResponse(201, "List transactions by accountId ")]
+        [SwaggerResponse(201, "Transfer successful")]
         public ActionResult AddTransfer([FromBody] TransferRequestModel transaction)
         {
             var transactionModel = _mapper.Map<TransferModel>(transaction);
@@ -70,7 +70,7 @@ namespace TransactionStore.API.Controller
         // api/Transactions/by-accountIds?accountIds=1&accountIds=2
         [HttpGet("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
-        [SwaggerResponse(200, "OK", typeof(TransactionResponseModel))]
+        [SwaggerResponse(200, "OK")]
         public ActionResult GetTransactionsByAccountIds([FromQuery] List<int> accountIds)
         {
             var transactionModels = _transactionService.GetTransactionsByAccountIds(accountIds);
