@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using System.Data;
-using System.Data.SqlClient;
 using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.DataLayer.Repository

@@ -67,7 +67,7 @@ namespace TransactionStore.API.Controller
             return Ok(transactions);
         }
 
-        /// api/Transactions/by-accountIds?accountIds=1&accountIds=2
+        // api/Transactions/by-accountIds?accountIds=1&accountIds=2
         [HttpGet("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
         [SwaggerResponse(200, "OK")]

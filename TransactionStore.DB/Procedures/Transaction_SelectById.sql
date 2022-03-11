@@ -3,12 +3,12 @@
 AS
 BEGIN
 SELECT
-		t.Id,
-		t.Amount,
-		t.Date,
-		t.Type,
-		a.Id,
-		a.Name
+		Id,
+		Amount,
+		Date,
+		Type, 
+		AccountId,
+		Currency
 	FROM dbo.[Transaction]
-	WHERE t.Id = @Id						
+	WHERE Id = @Id						
 END
