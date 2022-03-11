@@ -99,7 +99,7 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(GetTransactionsByAccountIdsTestCaseSourse))]
-        public void GetTransactionsByAccountIds(List<int> ids, List<TransactionDto> transactions,
+        public void GetTransactionsByAccountIdsTest(List<int> ids, List<TransactionDto> transactions,
             List<TransactionModel> expected)
         {
             //given
@@ -111,6 +111,19 @@ namespace TransactionStore.BusinessLayer.Tests
             //then
             Assert.AreEqual(actual, expected);
             _transactionRepositoryMock.Verify(s => s.GetTransactionsByAccountIds(ids), Times.Once);
+        }
+
+        [Test]
+        public void GetTransactionByIdTest()
+        {
+            //given
+            _transactionRepositoryMock.Setup(w => w.GetTransactionById(It.IsAny<int>())).Returns(It.IsAny<TransactionDto>());
+
+            //when
+            _service.GetTransactionById(It.IsAny<int>());
+
+            //then
+            _transactionRepositoryMock.Verify(s => s.GetTransactionById(It.IsAny<int>()), Times.Once);
         }
     }
 }
