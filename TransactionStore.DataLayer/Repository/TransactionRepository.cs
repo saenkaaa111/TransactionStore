@@ -60,10 +60,9 @@ namespace TransactionStore.DataLayer.Repository
         {
             using IDbConnection connection = Connection;
 
-            return connection.ExecuteScalar<TransactionDto>(
+            return connection.QuerySingle<TransactionDto>(
                 _transactionGetByIdProcedure, new { Id = id },
-                commandType: CommandType.StoredProcedure
-            );
+                commandType: CommandType.StoredProcedure);
         }
     }
 }
