@@ -35,9 +35,9 @@ namespace TransactionStore.BusinessLayer.Services
                 Currency = transactionModel.CurrencyFrom,
                 Amount = transactionModel.Amount * -1,
                 Type = TransactionType.Transfer
-            };            
+            };
             DateTime dateTransactionFrom = _transactionRepository.AddTransferFrom(transactionFrom);
-            
+
             //TODO transfer to another currency
             var transactionTo = new TransactionDto()
             {
@@ -46,7 +46,7 @@ namespace TransactionStore.BusinessLayer.Services
                 Currency = transactionModel.CurrencyTo,
                 Type = TransactionType.Transfer,
                 Date = dateTransactionFrom
-            };            
+            };
             var idTransactionTo = _transactionRepository.AddTransferTo(transactionTo);
 
             return new List<int>() { 4, idTransactionTo }; //переделать id
