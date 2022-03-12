@@ -1,7 +1,7 @@
 ﻿using System.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
-using TransactionStore.API.Models.Response;
+using TransactionStore.API.Models;
 using TransactionStore.BusinessLayer;
 
 namespace TransactionStore.API.Middleware

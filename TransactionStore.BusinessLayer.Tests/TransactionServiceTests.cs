@@ -19,6 +19,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
         private Mock<ITransactionRepository> _transactionRepositoryMock;
         private ITransactionService _service;
+        private ICalculationService _calculationService;
         private IMapper _mapper;
 
         [SetUp]
@@ -26,7 +27,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<DataMapper>()));
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
-            _service = new TransactionService(_transactionRepositoryMock.Object, _mapper);
+            _service = new TransactionService(_transactionRepositoryMock.Object, _calculationService, _mapper);
         }
 
         [TestCase(4)]

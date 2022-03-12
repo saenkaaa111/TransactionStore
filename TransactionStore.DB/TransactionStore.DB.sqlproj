@@ -68,6 +68,7 @@
     <Build Include="Tables\AccountTVP.sql" />
     <Build Include="Procedures\Transaction_InsertTransferFrom.sql" />
     <Build Include="Procedures\Transaction_InsertTransferTo.sql" />
+    <Build Include="Procedures\Transaction_Transfer.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Procedures\Transaction_Insert.sql" />

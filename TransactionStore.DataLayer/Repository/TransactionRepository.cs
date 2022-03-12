@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using System.Data;
+using System.Linq;
 using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.DataLayer.Repository
@@ -12,6 +13,7 @@ namespace TransactionStore.DataLayer.Repository
         private const string _transactionGetByAccountIdProcedure = "dbo.Transaction_SelectByAccountId";
         private const string _transactionGetByAccountIdsProcedure = "dbo.Transaction_SelectByAccountIds";
         private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
+        private const string _transactionTransfer = "dbo.Transaction_Transfer";
 
         public TransactionRepository(IDbConnection dbConnection) : base(dbConnection) { }
 
@@ -31,38 +33,24 @@ namespace TransactionStore.DataLayer.Repository
                 commandType: CommandType.StoredProcedure
             );
         }
-        public DateTime AddTransferFrom(TransactionDto transaction)
+
+        public List<int> Transfer(TransferDto transaction)
         {
             using IDbConnection connection = Connection;
 
-            return connection.QueryFirstOrDefault<DateTime>(
-                _transactionAddTransferFromProcedure,
+            return connection.Query<int>(
+                _transactionTransfer,
                 new
                 {
                     transaction.Amount,
-                    transaction.AccountId,
-                    transaction.Type,
-                    transaction.Currency
+                    transaction.AmountTo,
+                    transaction.AccountIdFrom,
+                    transaction.AccountIdTo,
+                    transaction.CurrencyFrom,
+                    transaction.CurrencyTo
                 },
                 commandType: CommandType.StoredProcedure
-            );
-        }
-        public int AddTransferTo(TransactionDto transaction)
-        {
-            using IDbConnection connection = Connection;
-
-            return connection.QueryFirstOrDefault<int>(
-                _transactionAddTransferToProcedure,
-                new
-                {
-                    transaction.Date,
-                    transaction.Amount,
-                    transaction.AccountId,
-                    transaction.Type,
-                    transaction.Currency
-                },
-                commandType: CommandType.StoredProcedure
-            );
+            ).ToList();
         }
 
         public List<TransactionDto> GetByAccountId(int id)

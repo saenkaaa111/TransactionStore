@@ -9,6 +9,7 @@ namespace TransactionStore.BuisnessLayer.Configuration
         public DataMapper()
         {
             CreateMap<TransactionModel, TransactionDto>().ReverseMap();
+            CreateMap<TransferModel, TransferDto>().ReverseMap();
         }
     }
 }
