@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using TransactionStore.API.Models;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services.Interfaces;
+using TransactionStore.API.Models.Response;
+using Marvelous.Contracts;
 
 namespace TransactionStore.API.Controller
 {

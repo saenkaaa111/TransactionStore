@@ -1,7 +1,6 @@
 ﻿using Marvelous.Contracts;
-using TransactionStore.DataLayer.Entities;
 
-namespace TransactionStore.API.Models
+namespace TransactionStore.API.Models.Response
 {
     public class TransactionResponseModel
     {

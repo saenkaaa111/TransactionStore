@@ -1,5 +1,5 @@
 ﻿using Marvelous.Contracts;
-namespace TransactionStore.API.Models
+namespace TransactionStore.API.Models.Request
 {
     public class TransferRequestModel
     {
