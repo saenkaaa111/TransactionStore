@@ -10,11 +10,14 @@ namespace TransactionStore.BusinessLayer.Services
     public class TransactionService : ITransactionService
     {
         private readonly ITransactionRepository _transactionRepository;
+        private readonly ICalculationService _calculationService;
         private readonly IMapper _mapper;
 
-        public TransactionService(ITransactionRepository transactionRepository, IMapper mapper)
+        public TransactionService(ITransactionRepository transactionRepository, 
+            ICalculationService calculationService, IMapper mapper)
         {
             _transactionRepository = transactionRepository;
+            _calculationService = calculationService;
             _mapper = mapper;
         }
 

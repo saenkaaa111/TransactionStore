@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using TransactionStore.API.Models;
+using Marvelous.Contracts;
+using TransactionStore.API.Models.Response;
 using TransactionStore.BusinessLayer.Models;
 
 namespace TransactionStore.API.Configuration
