@@ -8,8 +8,6 @@ namespace TransactionStore.DataLayer.Repository
     public class TransactionRepository : BaseRepository, ITransactionRepository
     {
         private const string _transactionAddProcedure = "dbo.Transaction_Insert";
-        private const string _transactionAddTransferFromProcedure = "dbo.Transaction_InsertTransferFrom";
-        private const string _transactionAddTransferToProcedure = "dbo.Transaction_InsertTransferTo";
         private const string _transactionGetByAccountIdProcedure = "dbo.Transaction_SelectByAccountId";
         private const string _transactionGetByAccountIdsProcedure = "dbo.Transaction_SelectByAccountIds";
         private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
@@ -34,11 +32,11 @@ namespace TransactionStore.DataLayer.Repository
             );
         }
 
-        public List<int> Transfer(TransferDto transaction)
+        public List<int> AddTransfer(TransferDto transaction)
         {
             using IDbConnection connection = Connection;
 
-            return connection.Query<int>(
+            return connection.QuerySingle<List<int>>(
                 _transactionTransfer,
                 new
                 {
@@ -50,7 +48,7 @@ namespace TransactionStore.DataLayer.Repository
                     transaction.CurrencyTo
                 },
                 commandType: CommandType.StoredProcedure
-            ).ToList();
+            );
         }
 
         public List<TransactionDto> GetByAccountId(int id)

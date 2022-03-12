@@ -18,7 +18,7 @@ namespace TransactionStore.BusinessLayer.Tests
     {
 
         private Mock<ITransactionRepository> _transactionRepositoryMock;
-        private ITransactionService _service;
+        private ITransactionService _transactionService;
         private ICalculationService _calculationService;
         private IMapper _mapper;
 
@@ -27,7 +27,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<DataMapper>()));
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
-            _service = new TransactionService(_transactionRepositoryMock.Object, _calculationService, _mapper);
+            _transactionService = new TransactionService(_transactionRepositoryMock.Object, _calculationService, _mapper);
         }
 
         [TestCase(4)]
@@ -39,29 +39,28 @@ namespace TransactionStore.BusinessLayer.Tests
             var deposit = new TransactionModel() { Type = TransactionType.Deposit, Amount = 600, AccountId = 6 };
             
             // when
-            int actual = _service.AddDeposit(deposit);
+            int actual = _transactionService.AddDeposit(deposit);
 
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
             Assert.AreEqual(expected, actual);
         }
-        
+
         [TestCase(4)]
         [TestCase(896)]
-        public void AddTransferTest(int expected )
+        public void AddTransferTest(int expected)
         {
             // given
-            _transactionRepositoryMock.Setup(d => d.AddTransferFrom(It.IsAny<TransactionDto>())).Returns(new DateTime());
-            _transactionRepositoryMock.Setup(d => d.AddTransferTo(It.IsAny<TransactionDto>())).Returns(expected);
+            _transactionRepositoryMock.Setup(d => d.AddTransfer(It.IsAny<TransferDto>())).Returns(new List<int>());
             var listExpected = new[] { 4, expected };
-            var transfer = new TransferModel() { Amount = 600, AccountIdFrom = 6, AccountIdTo = 7};
+            var transfer = new TransferModel() { Amount = 600, AccountIdFrom = 6, AccountIdTo = 7, 
+                CurrencyFrom = Currency.RUB, CurrencyTo = Currency.EUR };
 
             // when
-            var actual = _service.AddTransfer(transfer);
+            var actual = _transactionService.AddTransfer(transfer);
 
             // then
-            _transactionRepositoryMock.Verify(s => s.AddTransferFrom(It.IsAny<TransactionDto>()), Times.Once);
-            _transactionRepositoryMock.Verify(s => s.AddTransferTo(It.IsAny<TransactionDto>()), Times.Once);
+            _transactionRepositoryMock.Verify(s => s.AddTransfer(It.IsAny<TransferDto>()), Times.Once);
             Assert.AreEqual(listExpected, actual);
         }
 
@@ -74,7 +73,7 @@ namespace TransactionStore.BusinessLayer.Tests
                 .Returns(accountTransactions);
 
             // when
-            int actual = _service.Withdraw(transactionModel);
+            int actual = _transactionService.Withdraw(transactionModel);
 
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
@@ -93,7 +92,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
             // when
             InsufficientFundsException? exception = Assert.Throws<InsufficientFundsException>(() =>
-            _service.Withdraw(transactionModel));
+            _transactionService.Withdraw(transactionModel));
 
             // then
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
@@ -107,7 +106,7 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountIds(ids)).Returns(transactions);
 
             //when
-            var actual = _service.GetTransactionsByAccountIds(ids);
+            var actual = _transactionService.GetTransactionsByAccountIds(ids);
 
             //then
             Assert.AreEqual(actual, expected);
@@ -121,7 +120,7 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Setup(w => w.GetTransactionById(It.IsAny<int>())).Returns(It.IsAny<TransactionDto>());
 
             //when
-            _service.GetTransactionById(It.IsAny<int>());
+            _transactionService.GetTransactionById(It.IsAny<int>());
 
             //then
             _transactionRepositoryMock.Verify(s => s.GetTransactionById(It.IsAny<int>()), Times.Once);

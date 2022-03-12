@@ -10,6 +10,7 @@ namespace TransactionStore.API
         {
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ICalculationService, CalculationService>();
+            services.AddScoped<ICurrencyRates, CurrencyRates>();
         }
 
         public static void RegisterTransactionStoreRepositories(this IServiceCollection services)

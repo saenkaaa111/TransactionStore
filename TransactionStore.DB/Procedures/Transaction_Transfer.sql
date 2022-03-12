@@ -1,8 +1,8 @@
-﻿CREATE PROCEDURE dbo.Transaction_Transfer
+﻿CREATE proc dbo.Transaction_Transfer
 	@AccountId				int,
 	@AccountIdTo			int,
-	@Amount					decimal (14,3),
-	@AmountTo				decimal (14,3),
+	@Amount					decimal (18, 4),
+	@AmountTo				decimal (18, 4),
 	@Currency				int,
 	@CurrencyTo				int,
 	@Date					datetime2
@@ -20,11 +20,11 @@ BEGIN
 
 		INSERT INTO [dbo].[Transaction] (AccountId, Amount, Currency, [Type], [Date])
 		VALUES (@AccountId, -@Amount, @Currency, @Transfer, @CurrentDate)
-		DECLARE @TransactionIdFrom bigint = @@IDENTITY
+		DECLARE @TransactionIdFrom int = @@IDENTITY
 	
 		INSERT INTO [dbo].[Transaction] (AccountId, Amount, Currency, [Type], [Date])
 		VALUES (@AccountIdTo, @AmountTo, @CurrencyTo, @Transfer, @CurrentDate)
-		DECLARE @TransactionIdTo bigint = @@IDENTITY
+		DECLARE @TransactionIdTo int = @@IDENTITY
 
 		SELECT @TransactionIdFrom, @TransactionIdTo
 END

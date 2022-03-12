@@ -38,7 +38,7 @@ namespace TransactionStore.BusinessLayer.Services
             var transferDto = _mapper.Map<TransferDto>(transactionModel);
             transferDto.AmountTo = convertResult;
 
-            return _transactionRepository.Transfer(transferDto);
+            return _transactionRepository.AddTransfer(transferDto);
         }
 
         public int Withdraw(TransactionModel transactionModel)

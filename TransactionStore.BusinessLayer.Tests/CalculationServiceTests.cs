@@ -27,7 +27,7 @@ namespace TransactionStore.BusinessLayer.Tests
             _service = new CalculationService(currencyRates.Object);
         }
 
-        [TestCase(Currency.RUB, Currency.EUR, 0.776)]
+        [TestCase(Currency.RUB, Currency.EUR, 0.7759)]
         [TestCase(Currency.GBP, Currency.CNY, 900)]
         public void ConvertCurrencyTest(Currency currencyFrom, Currency currencyTo, decimal expected)
         {
