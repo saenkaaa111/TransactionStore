@@ -36,8 +36,7 @@ namespace TransactionStore.BusinessLayer.Services
                 transactionModel.CurrencyTo, transactionModel.Amount);
 
             var transferDto = _mapper.Map<TransferDto>(transactionModel);
-            transferDto.AmountTo = convertResult;
-
+            transferDto.ConvertedAmount = convertResult;
             return _transactionRepository.AddTransfer(transferDto);
         }
 

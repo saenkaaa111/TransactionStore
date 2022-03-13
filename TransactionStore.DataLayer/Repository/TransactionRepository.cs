@@ -36,19 +36,19 @@ namespace TransactionStore.DataLayer.Repository
         {
             using IDbConnection connection = Connection;
 
-            return connection.QuerySingle<List<int>>(
+            return connection.QuerySingle(
                 _transactionTransfer,
                 new
                 {
                     transaction.Amount,
-                    transaction.AmountTo,
+                    transaction.ConvertedAmount,
                     transaction.AccountIdFrom,
                     transaction.AccountIdTo,
                     transaction.CurrencyFrom,
                     transaction.CurrencyTo
                 },
                 commandType: CommandType.StoredProcedure
-            );
+            ).ToList();
         }
 
         public List<TransactionDto> GetByAccountId(int id)

@@ -2,7 +2,6 @@ using AutoMapper;
 using Marvelous.Contracts;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using TransactionStore.BuisnessLayer.Configuration;
 using TransactionStore.BusinessLayer.Models;
@@ -19,7 +18,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
         private Mock<ITransactionRepository> _transactionRepositoryMock;
         private ITransactionService _transactionService;
-        private ICalculationService _calculationService;
+        private Mock<ICalculationService> _calculationService;
         private IMapper _mapper;
 
         [SetUp]
@@ -27,7 +26,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<DataMapper>()));
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
-            _transactionService = new TransactionService(_transactionRepositoryMock.Object, _calculationService, _mapper);
+            _transactionService = new TransactionService(_transactionRepositoryMock.Object, _calculationService.Object, _mapper);
         }
 
         [TestCase(4)]
@@ -37,7 +36,7 @@ namespace TransactionStore.BusinessLayer.Tests
             // given
             _transactionRepositoryMock.Setup(d => d.AddTransaction(It.IsAny<TransactionDto>())).Returns(expected);
             var deposit = new TransactionModel() { Type = TransactionType.Deposit, Amount = 600, AccountId = 6 };
-            
+
             // when
             int actual = _transactionService.AddDeposit(deposit);
 
@@ -46,15 +45,21 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(4)]
-        [TestCase(896)]
-        public void AddTransferTest(int expected)
+        [Test]
+        public void AddTransferTest()
         {
             // given
-            _transactionRepositoryMock.Setup(d => d.AddTransfer(It.IsAny<TransferDto>())).Returns(new List<int>());
-            var listExpected = new[] { 4, expected };
-            var transfer = new TransferModel() { Amount = 600, AccountIdFrom = 6, AccountIdTo = 7, 
-                CurrencyFrom = Currency.RUB, CurrencyTo = Currency.EUR };
+            var listExpected = (1, 2);
+            _transactionRepositoryMock.Setup(d => d.AddTransfer(It.IsAny<TransferDto>())).Returns(listExpected);
+
+            var transfer = new TransferModel()
+            {
+                Amount = 100,
+                AccountIdFrom = 1,
+                AccountIdTo = 2,
+                CurrencyFrom = Currency.RUB,
+                CurrencyTo = Currency.EUR
+            };
 
             // when
             var actual = _transactionService.AddTransfer(transfer);
