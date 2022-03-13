@@ -16,7 +16,7 @@ namespace TransactionStore.BusinessLayer.Services
             rates.TryGetValue(currencyFrom, out var currencyFromValue);
             rates.TryGetValue(currencyTo, out var currencyToValue);
 
-            return decimal.Round((currencyToValue / currencyFromValue * amount), 4);
+            return decimal.Round(currencyToValue / currencyFromValue * amount, 4);
         }
 
         public decimal GetAccountBallance()
