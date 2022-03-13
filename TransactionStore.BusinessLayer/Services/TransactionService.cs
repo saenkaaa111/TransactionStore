@@ -15,6 +15,10 @@ namespace TransactionStore.BusinessLayer.Services
         private readonly IMapper _mapper;
         private static Logger _logger;
 
+        public TransactionService(ITransactionRepository transactionRepository) 
+        {
+            _transactionRepository = transactionRepository;
+        }
         public TransactionService(ITransactionRepository transactionRepository, 
             ICalculationService calculationService, IMapper mapper)
         {
@@ -72,7 +76,6 @@ namespace TransactionStore.BusinessLayer.Services
             _logger.Debug($"Запрос на получение транзакциий по AccountId = {id}") ;
 
             var transactions = _transactionRepository.GetByAccountId(id);
-
             return _mapper.Map<List<TransactionModel>>(transactions);
         }
 
@@ -90,8 +93,15 @@ namespace TransactionStore.BusinessLayer.Services
             _logger.Debug($"Запрос на получение транзакциий по id = {id}");
 
             var transaction = _transactionRepository.GetTransactionById(id);
-
+            
             return _mapper.Map<TransactionModel>(transaction);
+        }
+        public decimal GetBalanceByAccountId(int accountId)
+        {
+            _logger.Debug($"Запрос на получение баланса по accountId = {accountId}");
+
+            return _calculationService.GetAccountBalance(accountId);
+
         }
     }
 }
