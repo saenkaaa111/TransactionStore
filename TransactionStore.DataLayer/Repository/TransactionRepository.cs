@@ -35,9 +35,8 @@ namespace TransactionStore.DataLayer.Repository
         public List<int> AddTransfer(TransferDto transaction)
         {
             using IDbConnection connection = Connection;
-
-            return connection.QuerySingle(
-                _transactionTransfer,
+            var ccc = (IDictionary<string, object>)connection.QueryFirstOrDefault<dynamic>(
+            _transactionTransfer,
                 new
                 {
                     transaction.Amount,
@@ -48,7 +47,10 @@ namespace TransactionStore.DataLayer.Repository
                     transaction.CurrencyTo
                 },
                 commandType: CommandType.StoredProcedure
-            ).ToList();
+                );
+
+            return new List<int>() { (int)ccc.Values.First(), (int)ccc.Values.Last() };
+
         }
 
         public List<TransactionDto> GetByAccountId(int id)
