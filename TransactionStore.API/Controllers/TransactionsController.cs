@@ -5,6 +5,7 @@ using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services.Interfaces;
 using Marvelous.Contracts;
 using TransactionStore.API.Models;
+using NLog;
 
 namespace TransactionStore.API.Controller
 {
@@ -14,11 +15,13 @@ namespace TransactionStore.API.Controller
     {
         private readonly ITransactionService _transactionService;
         private readonly IMapper _mapper;
+        private readonly Logger _logger;
 
         public TransactionsController(ITransactionService transactionService, IMapper mapper)
         {
             _transactionService = transactionService;
             _mapper = mapper;
+            _logger = LogManager.GetCurrentClassLogger();
         }
 
         // api/transaction/
@@ -27,8 +30,12 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(201, "Deposit added")]
         public ActionResult AddDeposit([FromBody] TransactionRequestModel transaction)
         {
+            _logger.Debug("Запрос на добавление Deposit в контроллере");
+
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             var transactionId = _transactionService.AddDeposit(transactionModel);
+
+            _logger.Debug($"Транзакция типа Deposit с id = {transactionId} успешно добавлена");
 
             return StatusCode(201, transactionId);
         }
@@ -39,10 +46,14 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(201, "Transfer successful")]
         public ActionResult AddTransfer([FromBody] TransferRequestModel transaction)
         {
-            var transactionModel = _mapper.Map<TransferModel>(transaction);
-            var transactionId = _transactionService.AddTransfer(transactionModel);
+            _logger.Debug("Запрос на добавление Transfer в контроллере");
 
-            return StatusCode(201, transactionId);
+            var transactionModel = _mapper.Map<TransferModel>(transaction);
+            var transactionIds = _transactionService.AddTransfer(transactionModel);
+            
+            _logger.Debug($"Транзакция типа Transfer с id = {transactionIds.First()}, {transactionIds.Last()} успешно добавлены");
+
+            return StatusCode(201, transactionIds);
         }
 
         [HttpPost("withdraw")]
@@ -50,8 +61,12 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(201, "Withdraw successful")]
         public ActionResult Withdraw([FromBody] TransactionRequestModel transaction)
         {
+            _logger.Debug("Запрос на добавление Withdraw в контроллере");
+
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             var transactionId = _transactionService.Withdraw(transactionModel);
+
+            _logger.Debug($"Транзакция типа Withdraw с id = {transactionId} успешно добавлена");
 
             return StatusCode(201, transactionId);
         }
@@ -62,8 +77,12 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(200, "OK")]
         public ActionResult GetByAccountId(int accountId)
         {
+            _logger.Debug($"Запрос на получение всех транзакций по AccountId = {accountId} в контроллере");
+
             var transactionModel = _transactionService.GetByAccountId(accountId);
             var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModel);
+
+            _logger.Debug($"Транзакция по AccountId = {accountId} успешно получены");
 
             return Ok(transactions);
         }
@@ -74,8 +93,12 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(200, "OK")]
         public ActionResult GetTransactionsByAccountIds([FromQuery] List<int> accountIds)
         {
+            _logger.Debug($"Запрос на получение всех транзакций по AccountIds  в контроллере");
+
             var transactionModels = _transactionService.GetTransactionsByAccountIds(accountIds);
             var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModels);
+
+            _logger.Debug($"Транзакция по AccountIds = {accountIds} успешно получены");
 
             return Ok(transactions);
         }
@@ -85,8 +108,12 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(200, "OK")]
         public ActionResult GetTransactionById(int id)
         {
+            _logger.Debug($"Запрос на получение транзакции по Id = {id} в контроллере");
+
             var transactionModel = _transactionService.GetTransactionById(id);
             var transaction = _mapper.Map<TransactionResponseModel>(transactionModel);
+            
+            _logger.Debug($"Транзакция по Id = {id} успешно получена");
 
             return Ok(transaction);
         }
