@@ -1,8 +1,8 @@
 ﻿using Marvelous.Contracts;
 
-namespace TransactionStore.BusinessLayer.Models
+namespace TransactionStore.DataLayer.Entities
 {
-    public class TransferModel
+    public class TransferDto
     {
         public decimal Amount { get; set; }
         public decimal ConvertedAmount { get; set; }

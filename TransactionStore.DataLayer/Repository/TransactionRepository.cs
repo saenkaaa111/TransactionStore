@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using System.Data;
+using System.Linq;
 using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.DataLayer.Repository
@@ -7,11 +8,10 @@ namespace TransactionStore.DataLayer.Repository
     public class TransactionRepository : BaseRepository, ITransactionRepository
     {
         private const string _transactionAddProcedure = "dbo.Transaction_Insert";
-        private const string _transactionAddTransferFromProcedure = "dbo.Transaction_InsertTransferFrom";
-        private const string _transactionAddTransferToProcedure = "dbo.Transaction_InsertTransferTo";
         private const string _transactionGetByAccountIdProcedure = "dbo.Transaction_SelectByAccountId";
         private const string _transactionGetByAccountIdsProcedure = "dbo.Transaction_SelectByAccountIds";
         private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
+        private const string _transactionTransfer = "dbo.Transaction_Transfer";
 
         public TransactionRepository(IDbConnection dbConnection) : base(dbConnection) { }
 
@@ -31,38 +31,26 @@ namespace TransactionStore.DataLayer.Repository
                 commandType: CommandType.StoredProcedure
             );
         }
-        public DateTime AddTransferFrom(TransactionDto transaction)
+
+        public List<int> AddTransfer(TransferDto transaction)
         {
             using IDbConnection connection = Connection;
-
-            return connection.QueryFirstOrDefault<DateTime>(
-                _transactionAddTransferFromProcedure,
+            var ccc = (IDictionary<string, object>)connection.QueryFirstOrDefault<dynamic>(
+            _transactionTransfer,
                 new
                 {
                     transaction.Amount,
-                    transaction.AccountId,
-                    transaction.Type,
-                    transaction.Currency
+                    transaction.ConvertedAmount,
+                    transaction.AccountIdFrom,
+                    transaction.AccountIdTo,
+                    transaction.CurrencyFrom,
+                    transaction.CurrencyTo
                 },
                 commandType: CommandType.StoredProcedure
-            );
-        }
-        public int AddTransferTo(TransactionDto transaction)
-        {
-            using IDbConnection connection = Connection;
+                );
 
-            return connection.QueryFirstOrDefault<int>(
-                _transactionAddTransferToProcedure,
-                new
-                {
-                    transaction.Date,
-                    transaction.Amount,
-                    transaction.AccountId,
-                    transaction.Type,
-                    transaction.Currency
-                },
-                commandType: CommandType.StoredProcedure
-            );
+            return new List<int>() { (int)ccc.Values.First(), (int)ccc.Values.Last() };
+
         }
 
         public List<TransactionDto> GetByAccountId(int id)

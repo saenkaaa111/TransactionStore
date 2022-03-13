@@ -21,7 +21,7 @@ SELECT
 		r.AccountId,
 		r.Currency
 		
-	from dbo.[Transaction] t left JOIN [Transaction] r on r.Date = t.Date
+	from dbo.[Transaction] t inner JOIN [Transaction] r on r.Date = t.Date
 	where (t.AccountId = @AccountId and t.Type = 3) and
 	(r.AccountId != @AccountId and r.Type = 3);
 	
