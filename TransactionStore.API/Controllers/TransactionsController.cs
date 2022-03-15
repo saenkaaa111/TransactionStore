@@ -117,5 +117,20 @@ namespace TransactionStore.API.Controller
 
             return Ok(transaction);
         }
+        
+        
+        [HttpGet("balanse-by-{accountId}")]
+        [SwaggerOperation(Summary = "Get balanse by accountId")]
+        [SwaggerResponse(200, "OK")]
+        public ActionResult GetBalanceByAccountId(int accountId)
+        {
+            _logger.Debug($"Запрос на получение баланса по accountId = {accountId} в контроллере");
+
+            var balance = _transactionService.GetBalanceByAccountId(accountId);
+            
+            _logger.Debug($"Баланс успешно получен");
+
+            return Ok(balance);
+        }
     }
 }
