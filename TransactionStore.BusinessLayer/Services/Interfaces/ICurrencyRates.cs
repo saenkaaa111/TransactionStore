@@ -1,9 +1,8 @@
-﻿using Marvelous.Contracts;
-
-namespace TransactionStore.BusinessLayer.Services
+﻿
+namespace TransactionStore.BusinessLayer.Services.Interfaces
 {
     public interface ICurrencyRates
     {
-        public Dictionary<Currency, decimal> Rates { get; }
+        Dictionary<string, decimal> GetRates();
     }
 }

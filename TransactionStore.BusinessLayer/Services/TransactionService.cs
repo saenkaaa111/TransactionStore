@@ -50,7 +50,7 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger.LogInformation("Запрос на добавление Withdraw");
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
-            var accountTransactions = GetByAccountId(transactionModel.AccountId);
+            var accountTransactions = GetTransactionsByAccountId(transactionModel.AccountId);
             var accountBalance = accountTransactions.Select(t => t.Amount).Sum();
 
             if (withdraw.Amount < accountBalance)
