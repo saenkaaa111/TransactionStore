@@ -1,5 +1,6 @@
 using AutoMapper;
 using Marvelous.Contracts;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -20,13 +21,15 @@ namespace TransactionStore.BusinessLayer.Tests
         private ITransactionService _transactionService;
         private Mock<ICalculationService> _calculationService;
         private IMapper _mapper;
+        private ILogger<TransactionService> _logger;
 
         [SetUp]
         public void Setup()
         {
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<DataMapper>()));
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
-            _transactionService = new TransactionService(_transactionRepositoryMock.Object, _calculationService.Object, _mapper);
+            _transactionService = new TransactionService(_transactionRepositoryMock.Object, 
+                _calculationService.Object, _mapper, _logger);
         }
 
         [TestCase(4)]

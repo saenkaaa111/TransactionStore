@@ -1,14 +1,18 @@
 ﻿using Marvelous.Contracts;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using TransactionStore.BusinessLayer.Services;
+using TransactionStore.DataLayer.Repository;
 
 namespace TransactionStore.BusinessLayer.Tests
 {
     public class CalculationServiceTests
     {
-        private CalculationService _service;
+        private CalculationService _calculationService;
+        private ITransactionRepository _transactionRepository;
+        private ILogger<CalculationService> _logger;
 
         private Dictionary<Currency, decimal> _rates = new()
         { 
@@ -24,14 +28,14 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             var currencyRates = new Mock<ICurrencyRates>();
             currencyRates.Setup(x => x.Rates).Returns(_rates);
-            _service = new CalculationService(currencyRates.Object);
+            _calculationService = new CalculationService(currencyRates.Object, _transactionRepository, _logger);
         }
 
         [TestCase(Currency.RUB, Currency.EUR, 0.7759)]
         [TestCase(Currency.GBP, Currency.CNY, 900)]
         public void ConvertCurrencyTest(Currency currencyFrom, Currency currencyTo, decimal expected)
         {
-            var actual = _service.ConvertCurrency(currencyFrom, currencyTo, 100.0m);
+            var actual = _calculationService.ConvertCurrency(currencyFrom, currencyTo, 100.0m);
 
             Assert.AreEqual(expected, actual);
         }
