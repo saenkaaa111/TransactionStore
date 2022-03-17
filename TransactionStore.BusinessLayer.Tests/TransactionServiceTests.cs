@@ -21,15 +21,17 @@ namespace TransactionStore.BusinessLayer.Tests
         private ITransactionService _transactionService;
         private Mock<ICalculationService> _calculationService;
         private IMapper _mapper;
-        private ILogger<TransactionService> _logger;
+        private Mock<ILogger<TransactionService>> _logger;
 
         [SetUp]
         public void Setup()
         {
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<DataMapper>()));
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
+            _logger = new Mock<ILogger<TransactionService>>();
+            _calculationService = new Mock<ICalculationService>();
             _transactionService = new TransactionService(_transactionRepositoryMock.Object, 
-                _calculationService.Object, _mapper, _logger);
+                _calculationService.Object, _mapper, _logger.Object);
         }
 
         [TestCase(4)]

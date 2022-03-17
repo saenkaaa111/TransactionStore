@@ -12,7 +12,7 @@ namespace TransactionStore.BusinessLayer.Tests
     {
         private CalculationService _calculationService;
         private ITransactionRepository _transactionRepository;
-        private ILogger<CalculationService> _logger;
+        private Mock<ILogger<CalculationService>> _logger;
 
         private Dictionary<Currency, decimal> _rates = new()
         { 
@@ -28,7 +28,8 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             var currencyRates = new Mock<ICurrencyRates>();
             currencyRates.Setup(x => x.Rates).Returns(_rates);
-            _calculationService = new CalculationService(currencyRates.Object, _transactionRepository, _logger);
+            _logger = new Mock<ILogger<CalculationService>>();
+            _calculationService = new CalculationService(currencyRates.Object, _transactionRepository, _logger.Object);
         }
 
         [TestCase(Currency.RUB, Currency.EUR, 0.7759)]
