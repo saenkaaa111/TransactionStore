@@ -71,7 +71,7 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger.LogInformation($"Запрос на получение транзакциий по AccountId = {id}");
 
-            var transactions = _transactionRepository.GetByAccountId(id);
+            var transactions = _transactionRepository.GetTransactionsByAccountId(id);
             return _mapper.Map<List<TransactionModel>>(transactions);
         }
 
