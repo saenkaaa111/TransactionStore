@@ -9,12 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionEnvironmentVariableName = "CONNECTION_STRING";
-string _logDirectoryVariableName = "LOG_DIRECTORY";
+var logDirectoryVariableName = "LOG_DIRECTORY";
 
 var connectionString = builder.Configuration.GetValue<string>(connectionEnvironmentVariableName);
 builder.Services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
 
-string logDirectory = builder.Configuration.GetValue<string>(_logDirectoryVariableName);
+string logDirectory = builder.Configuration.GetValue<string>(logDirectoryVariableName);
 var config = new ConfigurationBuilder()
            .SetBasePath(logDirectory)
            .AddXmlFile("NLog.config", optional: true, reloadOnChange: true)

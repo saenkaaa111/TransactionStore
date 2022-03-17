@@ -52,8 +52,8 @@ namespace TransactionStore.BusinessLayer.Tests
         public void AddTransferTest()
         {
             // given
-            var listExpected = (1, 2);
-            _transactionRepositoryMock.Setup(d => d.AddTransfer(It.IsAny<TransferDto>())).Returns(listExpected);
+           var expected = new List<int>() { 1, 2 };
+            _transactionRepositoryMock.Setup(d => d.AddTransfer(It.IsAny<TransferDto>())).Returns(expected);
 
             var transfer = new TransferModel()
             {
@@ -69,7 +69,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransfer(It.IsAny<TransferDto>()), Times.Once);
-            Assert.AreEqual(listExpected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
