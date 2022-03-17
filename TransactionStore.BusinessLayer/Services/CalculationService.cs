@@ -1,6 +1,7 @@
 ﻿using Marvelous.Contracts;
 using NLog;
 using TransactionStore.BusinessLayer.Services.Interfaces;
+using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
 
 namespace TransactionStore.BusinessLayer.Services
@@ -32,16 +33,25 @@ namespace TransactionStore.BusinessLayer.Services
             return convertAmount;
         }
 
-        public decimal GetAccountBalance(int accauntId)
+        public decimal GetAccountBalance(List<int> accauntId)
         {
             _logger.Debug("Запрос на получение всех транзакция у текущего аккаунта");
-            var transaction = _transactionRepository.GetByAccountId(accauntId);
+            var listTransactions = new List<TransactionDto> ();
+            var listTransactionsFromOneAccount = new List<TransactionDto> ();
+            foreach (var item in accauntId)
+            {
+                listTransactionsFromOneAccount = _transactionRepository.GetByAccountId(item);
+                foreach (var transaction in listTransactionsFromOneAccount)
+                {
+                    listTransactions.Add(transaction);
+                }
+            }
             _logger.Debug("Транзакции получены");
 
-            if (transaction == null)
-                throw new NullReferenceException("Аккаунта не найдено");
+            if (listTransactions.Count == 0)
+                throw new NullReferenceException("Транзакций не найдено");
             decimal balance = 0;
-            foreach (var item in transaction)
+            foreach (var item in listTransactions)
             {
                 balance += ConvertCurrency(item.Currency, Currency.USD, item.Amount);
             }

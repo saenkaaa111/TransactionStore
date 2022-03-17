@@ -2,6 +2,7 @@
 using NLog;
 using System.Data;
 using TransactionStore.DataLayer.Entities;
+using Marvelous.Contracts;
 
 namespace TransactionStore.DataLayer.Repository
 {
@@ -12,6 +13,7 @@ namespace TransactionStore.DataLayer.Repository
         private const string _transactionGetByAccountIdsProcedure = "dbo.Transaction_SelectByAccountIds";
         private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
         private const string _transactionTransfer = "dbo.Transaction_Transfer";
+        private const string _transactionGetAccountBalance = "dbo.Transaction_GetAccountBalance";
         private static Logger _logger;
 
         public TransactionRepository(IDbConnection dbConnection) : base(dbConnection)
@@ -51,12 +53,14 @@ namespace TransactionStore.DataLayer.Repository
             _transactionTransfer,
                 new
                 {
-                    transaction.Amount,
+                    amount = transaction.Amount * (-1),
                     transaction.ConvertedAmount,
                     transaction.AccountIdFrom,
                     transaction.AccountIdTo,
                     transaction.CurrencyFrom,
-                    transaction.CurrencyTo
+                    transaction.CurrencyTo,
+                    type = TransactionType.Transfer
+
                 },
                 commandType: CommandType.StoredProcedure
                 );
@@ -77,7 +81,6 @@ namespace TransactionStore.DataLayer.Repository
                 new { AccountId = id },
                 commandType: CommandType.StoredProcedure
             ).ToList();
-
             _logger.Debug($"Транзакция по AccountId = {id} получены.");
 
             return listTransactions;
@@ -116,6 +119,20 @@ namespace TransactionStore.DataLayer.Repository
             _logger.Debug($"Транзакция по Id = {id} получены.");
 
             return listTransactions;
+
+        }
+
+        public decimal GetAccountBalance(int id)
+        {
+            _logger.Debug("Подключение к базе данных.");
+            using IDbConnection connection = Connection;
+            _logger.Debug("Подключение произведено.");
+
+            return connection.QuerySingle<decimal>(
+                _transactionGetAccountBalance,                 
+                 new { Id = id },
+                commandType: CommandType.StoredProcedure
+                );
 
         }
     }

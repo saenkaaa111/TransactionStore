@@ -5,6 +5,6 @@ namespace TransactionStore.BusinessLayer.Services
     public interface ICalculationService
     {
         decimal ConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal amount);
-        decimal GetAccountBalance(int accauntId);
+        decimal GetAccountBalance(List<int> accauntId);
     }
 }

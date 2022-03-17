@@ -120,13 +120,27 @@ namespace TransactionStore.API.Controller
         
         
         [HttpGet("balanse-by-{accountId}")]
-        [SwaggerOperation(Summary = "Get balanse by accountId")]
+        [SwaggerOperation(Summary = "Get balance by accountId")]
         [SwaggerResponse(200, "OK")]
         public ActionResult GetBalanceByAccountId(int accountId)
         {
             _logger.Debug($"Запрос на получение баланса по accountId = {accountId} в контроллере");
 
             var balance = _transactionService.GetBalanceByAccountId(accountId);
+            
+            _logger.Debug($"Баланс успешно получен");
+
+            return Ok(balance);
+        }
+        
+        
+        [HttpGet("balanse-by-accountIds")]
+        [SwaggerOperation(Summary = "Get balance by accountIds")]
+        [SwaggerResponse(200, "OK")]
+        public ActionResult GetBalanceByAccountId([FromQuery] List<int> accountIds)
+        {
+            
+            var balance = _transactionService.GetBalanceByAccountIds(accountIds);
             
             _logger.Debug($"Баланс успешно получен");
 
