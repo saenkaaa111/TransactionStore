@@ -67,7 +67,7 @@ namespace TransactionStore.BusinessLayer.Services
             }
         }
 
-        public List<TransactionModel> GetByAccountId(int id)
+        public List<TransactionModel> GetTransactionsByAccountId(int id)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по AccountId = {id}");
 

@@ -35,7 +35,7 @@ namespace TransactionStore.BusinessLayer.Services
         public decimal GetAccountBalance(int accauntId)
         {
             _logger.LogInformation("Запрос на получение всех транзакция у текущего аккаунта");
-            var transaction = _transactionRepository.GetByAccountId(accauntId);
+            var transaction = _transactionRepository.GetTransactionsByAccountId(accauntId);
             _logger.LogInformation("Транзакции получены");
 
             if (transaction == null)

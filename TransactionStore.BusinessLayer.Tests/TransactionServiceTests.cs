@@ -79,7 +79,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             // given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>())).Returns(expected);
-            _transactionRepositoryMock.Setup(w => w.GetByAccountId(transactionModel.AccountId))
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(transactionModel.AccountId))
                 .Returns(accountTransactions);
 
             // when
@@ -96,7 +96,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             // given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
-            _transactionRepositoryMock.Setup(w => w.GetByAccountId(transactionModel.AccountId))
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(transactionModel.AccountId))
                 .Returns(accountTransactions);
             var expectedMessage = "Недостаточно средств на счете";
 

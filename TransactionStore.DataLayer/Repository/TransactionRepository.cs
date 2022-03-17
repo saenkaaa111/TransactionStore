@@ -65,7 +65,7 @@ namespace TransactionStore.DataLayer.Repository
 
         }
 
-        public List<TransactionDto> GetByAccountId(int id)
+        public List<TransactionDto> GetTransactionsByAccountId(int id)
         {
             _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
