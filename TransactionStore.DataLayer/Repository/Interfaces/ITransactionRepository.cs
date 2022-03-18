@@ -9,5 +9,6 @@ namespace TransactionStore.DataLayer.Repository
         List<TransactionDto> GetTransactionsByAccountId(int id);
         List<TransactionDto> GetTransactionsByAccountIds(List<int> accountIds);
         public TransactionDto GetTransactionById(int id);
+        decimal GetAccountBalance(int id);
     }
 }

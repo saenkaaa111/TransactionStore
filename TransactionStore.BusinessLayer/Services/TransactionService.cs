@@ -91,12 +91,21 @@ namespace TransactionStore.BusinessLayer.Services
 
             return _mapper.Map<TransactionModel>(transaction);
         }
+        
 
         public decimal GetBalanceByAccountId(int accountId)
         {
             _logger.LogInformation($"Запрос на получение баланса по accountId = {accountId}");
 
-            return _calculationService.GetAccountBalance(accountId);
+            var balance = _transactionRepository.GetAccountBalance(accountId);
+            return balance;
+
+        }
+        public decimal GetBalanceByAccountIds(List<int> accountId)
+        {
+            var balance = _calculationService.GetAccountBalance(accountId);
+            return balance;
+
         }
     }
 }
