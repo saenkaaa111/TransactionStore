@@ -2,7 +2,6 @@
 using Marvelous.Contracts;
 using Microsoft.Extensions.Logging;
 using TransactionStore.BusinessLayer.Models;
-using TransactionStore.BusinessLayer.Services.Interfaces;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
 

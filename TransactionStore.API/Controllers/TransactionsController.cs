@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using TransactionStore.BusinessLayer.Models;
-using TransactionStore.BusinessLayer.Services.Interfaces;
+using TransactionStore.BusinessLayer.Services;
 using Marvelous.Contracts;
 using TransactionStore.API.Models;
 

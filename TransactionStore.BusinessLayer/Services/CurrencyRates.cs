@@ -1,5 +1,5 @@
 ﻿using Marvelous.Contracts;
-using TransactionStore.BusinessLayer.Services.Interfaces;
+using TransactionStore.BusinessLayer.Services;
 
 namespace TransactionStore.BusinessLayer.Services
 {

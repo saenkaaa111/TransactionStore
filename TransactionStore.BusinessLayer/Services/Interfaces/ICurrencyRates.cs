@@ -1,5 +1,5 @@
 ﻿
-namespace TransactionStore.BusinessLayer.Services.Interfaces
+namespace TransactionStore.BusinessLayer.Services
 {
     public interface ICurrencyRates
     {

@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using TransactionStore.BusinessLayer.Services;
+using TransactionStore.BusinessLayer.Services.Interfaces;
 using TransactionStore.DataLayer.Repository;
 
 namespace TransactionStore.BusinessLayer.Tests
@@ -27,7 +28,6 @@ namespace TransactionStore.BusinessLayer.Tests
         public void Setup()
         {
             var currencyRates = new Mock<ICurrencyRates>();
-            currencyRates.Setup(x => x.Rates).Returns(_rates);
             _logger = new Mock<ILogger<CalculationService>>();
             _calculationService = new CalculationService(currencyRates.Object, _transactionRepository, _logger.Object);
         }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using TransactionStore.BusinessLayer.Services.Interfaces;
+using TransactionStore.BusinessLayer.Services;
 using TransactionStore.DataLayer.Repository;
 
 namespace TransactionStore.BusinessLayer.Services

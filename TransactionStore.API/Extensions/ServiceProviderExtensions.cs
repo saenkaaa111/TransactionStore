@@ -1,6 +1,5 @@
 ﻿using NLog.Extensions.Logging;
 using TransactionStore.BusinessLayer.Services;
-using TransactionStore.BusinessLayer.Services.Interfaces;
 using TransactionStore.DataLayer.Repository;
 
 namespace TransactionStore.API
