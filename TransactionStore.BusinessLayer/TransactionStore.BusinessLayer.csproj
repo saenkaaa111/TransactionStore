@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="Marvelous.Contracts" Version="1.1.1" />
-    <PackageReference Include="NLog.Config" Version="4.7.14" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
 

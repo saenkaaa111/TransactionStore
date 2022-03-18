@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using NLog;
+using Microsoft.Extensions.Logging;
 using System.Data;
 using TransactionStore.DataLayer.Entities;
 
@@ -12,18 +12,17 @@ namespace TransactionStore.DataLayer.Repository
         private const string _transactionGetByAccountIdsProcedure = "dbo.Transaction_SelectByAccountIds";
         private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
         private const string _transactionTransfer = "dbo.Transaction_Transfer";
-        private static Logger _logger;
-
-        public TransactionRepository(IDbConnection dbConnection) : base(dbConnection)
+        private readonly ILogger<TransactionRepository> _logger;
+        public TransactionRepository(IDbConnection dbConnection, ILogger<TransactionRepository> logger) : base(dbConnection)
         {
-            _logger = LogManager.GetCurrentClassLogger();
+            _logger = logger;
         }
 
         public int AddTransaction(TransactionDto transaction)
         {
-            _logger.Debug("Подключение к базе данных.");
+            _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
-            _logger.Debug("Подключение произведено.");
+            _logger.LogInformation("Подключение произведено.");
 
             var id = connection.QueryFirstOrDefault<int>(
                 _transactionAddProcedure,
@@ -37,15 +36,15 @@ namespace TransactionStore.DataLayer.Repository
                 commandType: CommandType.StoredProcedure
             );
 
-            _logger.Debug($"Транзакция типа {transaction.Type} с id = {id} добавлена в БД.");
+            _logger.LogInformation($"Транзакция типа {transaction.Type} с id = {id} добавлена в БД.");
             return id;
         }
 
         public List<int> AddTransfer(TransferDto transaction)
         {
-            _logger.Debug("Подключение к базе данных.");
+            _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
-            _logger.Debug("Подключение произведено.");
+            _logger.LogInformation("Подключение произведено.");
 
             var listId = (IDictionary<string, object>)connection.QueryFirstOrDefault<dynamic>(
             _transactionTransfer,
@@ -60,17 +59,17 @@ namespace TransactionStore.DataLayer.Repository
                 },
                 commandType: CommandType.StoredProcedure
                 );
-            _logger.Debug($"Транзакция типа Transfer с id = {(int)listId.Values.First()}, {(int)listId.Values.Last()} добавлены в БД.");
+            _logger.LogInformation($"Транзакция типа Transfer с id = {(int)listId.Values.First()}, {(int)listId.Values.Last()} добавлены в БД.");
 
             return new List<int>() { (int)listId.Values.First(), (int)listId.Values.Last() };
 
         }
 
-        public List<TransactionDto> GetByAccountId(int id)
+        public List<TransactionDto> GetTransactionsByAccountId(int id)
         {
-            _logger.Debug("Подключение к базе данных.");
+            _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
-            _logger.Debug("Подключение произведено.");
+            _logger.LogInformation("Подключение произведено.");
 
             var listTransactions = connection.Query<TransactionDto>(
                 _transactionGetByAccountIdProcedure,
@@ -78,16 +77,16 @@ namespace TransactionStore.DataLayer.Repository
                 commandType: CommandType.StoredProcedure
             ).ToList();
 
-            _logger.Debug($"Транзакция по AccountId = {id} получены.");
+            _logger.LogInformation($"Транзакция по AccountId = {id} получены.");
 
             return listTransactions;
         }
 
         public List<TransactionDto> GetTransactionsByAccountIds(List<int> accountIds)
         {
-            _logger.Debug("Подключение к базе данных.");
+            _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
-            _logger.Debug("Подключение произведено.");
+            _logger.LogInformation("Подключение произведено.");
 
             var tvpTable = new DataTable();
             tvpTable.Columns.Add(new DataColumn("AccountId", typeof(int)));
@@ -99,21 +98,21 @@ namespace TransactionStore.DataLayer.Repository
                     commandType: CommandType.StoredProcedure
                ).ToList();
 
-            _logger.Debug($"Транзакция по AccountIds = {accountIds} получены.");
+            _logger.LogInformation($"Транзакция по AccountIds = {accountIds} получены.");
             return listTransactions;
         }
 
         public TransactionDto GetTransactionById(int id)
         {
-            _logger.Debug("Подключение к базе данных.");
+            _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
-            _logger.Debug("Подключение произведено.");
+            _logger.LogInformation("Подключение произведено.");
 
             var listTransactions = connection.QuerySingle<TransactionDto>(
                 _transactionGetByIdProcedure, new { Id = id },
                 commandType: CommandType.StoredProcedure);
 
-            _logger.Debug($"Транзакция по Id = {id} получены.");
+            _logger.LogInformation($"Транзакция по Id = {id} получены.");
 
             return listTransactions;
 

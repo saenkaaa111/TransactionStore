@@ -30,12 +30,6 @@ namespace TransactionStore.API.Middleware
 
                 await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "Сервер недоступен");
             }
-            catch (NullReferenceException)
-            {
-                _logger.Debug("Exception: Не найдено");
-
-                await HandleExceptionAsync(context, HttpStatusCode.NotFound, "Не найдено");
-            }
             catch (InsufficientFundsException ex)
             {
                 _logger.Debug($"Exception: {ex.Message}");

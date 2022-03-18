@@ -1,5 +1,6 @@
 using AutoMapper;
 using Marvelous.Contracts;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -20,13 +21,17 @@ namespace TransactionStore.BusinessLayer.Tests
         private ITransactionService _transactionService;
         private Mock<ICalculationService> _calculationService;
         private IMapper _mapper;
+        private Mock<ILogger<TransactionService>> _logger;
 
         [SetUp]
         public void Setup()
         {
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<DataMapper>()));
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
-            _transactionService = new TransactionService(_transactionRepositoryMock.Object, _calculationService.Object, _mapper);
+            _logger = new Mock<ILogger<TransactionService>>();
+            _calculationService = new Mock<ICalculationService>();
+            _transactionService = new TransactionService(_transactionRepositoryMock.Object, 
+                _calculationService.Object, _mapper, _logger.Object);
         }
 
         [TestCase(4)]
@@ -49,8 +54,8 @@ namespace TransactionStore.BusinessLayer.Tests
         public void AddTransferTest()
         {
             // given
-            var listExpected = (1, 2);
-            _transactionRepositoryMock.Setup(d => d.AddTransfer(It.IsAny<TransferDto>())).Returns(listExpected);
+           var expected = new List<int>() { 1, 2 };
+            _transactionRepositoryMock.Setup(d => d.AddTransfer(It.IsAny<TransferDto>())).Returns(expected);
 
             var transfer = new TransferModel()
             {
@@ -66,7 +71,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransfer(It.IsAny<TransferDto>()), Times.Once);
-            Assert.AreEqual(listExpected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
@@ -74,7 +79,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             // given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>())).Returns(expected);
-            _transactionRepositoryMock.Setup(w => w.GetByAccountId(transactionModel.AccountId))
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(transactionModel.AccountId))
                 .Returns(accountTransactions);
 
             // when
@@ -91,7 +96,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             // given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
-            _transactionRepositoryMock.Setup(w => w.GetByAccountId(transactionModel.AccountId))
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(transactionModel.AccountId))
                 .Returns(accountTransactions);
             var expectedMessage = "Недостаточно средств на счете";
 

@@ -4,7 +4,7 @@ namespace TransactionStore.BusinessLayer.Services
 {
     public interface ICalculationService
     {
-        decimal ConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal amount);
+        decimal ConvertCurrency(string currencyFrom, string currencyTo, decimal amount);
         decimal GetAccountBalance(int accauntId);
     }
 }

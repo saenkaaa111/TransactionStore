@@ -6,7 +6,7 @@ namespace TransactionStore.DataLayer.Repository
     {
         int AddTransaction(TransactionDto transaction);
         List<int> AddTransfer(TransferDto transfer);
-        List<TransactionDto> GetByAccountId(int id);
+        List<TransactionDto> GetTransactionsByAccountId(int id);
         List<TransactionDto> GetTransactionsByAccountIds(List<int> accountIds);
         public TransactionDto GetTransactionById(int id);
     }
