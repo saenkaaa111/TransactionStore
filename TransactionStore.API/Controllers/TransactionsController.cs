@@ -141,7 +141,7 @@ namespace TransactionStore.API.Controller
             
             var balance = _transactionService.GetBalanceByAccountIds(accountIds);
             
-            _logger.Debug($"Баланс успешно получен");
+            _logger.LogInformation($"Баланс успешно получен");
 
             return Ok(balance);
         }
