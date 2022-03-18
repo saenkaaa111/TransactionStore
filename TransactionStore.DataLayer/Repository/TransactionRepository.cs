@@ -124,9 +124,9 @@ namespace TransactionStore.DataLayer.Repository
 
         public decimal GetAccountBalance(int id)
         {
-            _logger.Debug("Подключение к базе данных.");
+            _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
-            _logger.Debug("Подключение произведено.");
+            _logger.LogInformation("Подключение произведено.");
 
             return connection.QuerySingle<decimal>(
                 _transactionGetAccountBalance,                 

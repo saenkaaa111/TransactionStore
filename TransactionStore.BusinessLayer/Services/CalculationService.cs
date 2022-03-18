@@ -1,5 +1,4 @@
 ﻿using Marvelous.Contracts;
-using NLog;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.BusinessLayer.Services;
 ﻿using Microsoft.Extensions.Logging;
@@ -49,7 +48,7 @@ namespace TransactionStore.BusinessLayer.Services
             var listTransactionsFromOneAccount = new List<TransactionDto> ();
             foreach (var item in accauntId)
             {
-                listTransactionsFromOneAccount = _transactionRepository.GetByAccountId(item);
+                listTransactionsFromOneAccount = _transactionRepository.GetTransactionsByAccountId(item);
                 foreach (var transaction in listTransactionsFromOneAccount)
                 {
                     listTransactions.Add(transaction);
