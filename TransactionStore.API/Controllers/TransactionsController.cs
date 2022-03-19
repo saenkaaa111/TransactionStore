@@ -37,7 +37,7 @@ namespace TransactionStore.API.Controller
 
             _logger.LogInformation($"Транзакция типа Deposit с id = {transactionId} успешно добавлена");
 
-            return StatusCode(201, transactionId);
+            return Ok(transactionId);
         }
 
         // api/transaction/
@@ -53,7 +53,7 @@ namespace TransactionStore.API.Controller
             
             _logger.LogInformation($"Транзакция типа Transfer с id = {transferIds.First()}, {transferIds.Last()} успешно добавлены");
 
-            return StatusCode(StatusCodes.Status200OK, transferIds);
+            return Ok(transferIds);
         }
 
         [HttpPost("withdraw")]
@@ -68,7 +68,7 @@ namespace TransactionStore.API.Controller
 
             _logger.LogInformation($"Транзакция типа Withdraw с id = {transactionId} успешно добавлена");
 
-            return StatusCode(201, transactionId);
+            return Ok(transactionId);
         }
         
         // api/transaction/
@@ -144,6 +144,21 @@ namespace TransactionStore.API.Controller
             _logger.LogInformation($"Баланс успешно получен");
 
             return Ok(balance);
+        }
+
+        [HttpPost("service-payment")]
+        [SwaggerOperation(Summary = "Service payment")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(int))]
+        public ActionResult<int> ServicePayment([FromBody] TransactionRequestModel transaction)
+        {
+            _logger.LogInformation("Запрос на добавление Service payment в контроллере");
+
+            var transactionModel = _mapper.Map<TransactionModel>(transaction);
+            var transactionId = _transactionService.Withdraw(transactionModel);
+
+            _logger.LogInformation($"Транзакция типа Service payment с id = {transactionId} успешно добавлена");
+
+            return Ok(transactionId);
         }
     }
 }
