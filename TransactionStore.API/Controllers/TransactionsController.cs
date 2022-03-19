@@ -149,12 +149,12 @@ namespace TransactionStore.API.Controller
         [HttpPost("service-payment")]
         [SwaggerOperation(Summary = "Service payment")]
         [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(int))]
-        public ActionResult<int> ServicePayment([FromBody] TransactionRequestModel transaction)
+        public async Task<ActionResult<int>> ServicePayment([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Запрос на добавление Service payment в контроллере");
 
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
-            var transactionId = _transactionService.Withdraw(transactionModel);
+            var transactionId = await _transactionService.Withdraw(transactionModel);
 
             _logger.LogInformation($"Транзакция типа Service payment с id = {transactionId} успешно добавлена");
 
