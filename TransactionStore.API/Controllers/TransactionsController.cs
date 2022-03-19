@@ -27,7 +27,7 @@ namespace TransactionStore.API.Controller
         // api/transaction/
         [HttpPost("deposit")]
         [SwaggerOperation(Summary = "Add deposit")]
-        [SwaggerResponse(StatusCodes.Status201Created, "Deposit added", typeof(int))]
+        [SwaggerResponse(StatusCodes.Status201Created, "Deposit added", typeof(long))]
         public async Task<ActionResult<long>> AddDeposit([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Запрос на добавление Deposit в контроллере");
@@ -43,7 +43,7 @@ namespace TransactionStore.API.Controller
         // api/transaction/
         [HttpPost("transfer")]
         [SwaggerOperation(Summary = "Add transfer")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Transfer successful", typeof(List<int>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Transfer successful", typeof(List<long>))]
         public ActionResult<List<int>> AddTransfer([FromBody] TransferRequestModel transfer)
         {
             _logger.LogInformation("Запрос на добавление Transfer в контроллере");
@@ -51,14 +51,14 @@ namespace TransactionStore.API.Controller
             var transferModel = _mapper.Map<TransferModel>(transfer);
             var transferIds = _transactionService.AddTransfer(transferModel);
             
-            _logger.LogInformation($"Транзакция типа Transfer с id = {transferIds.First()}, {transferIds.Last()} успешно добавлены");
+            _logger.LogInformation($"Транзакция типа Transfer с id = {transferIds.Result} успешно добавлены");
 
             return StatusCode(StatusCodes.Status200OK, transferIds);
         }
 
         [HttpPost("withdraw")]
         [SwaggerOperation(Summary = "Withdraw")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Withdraw successful", typeof(int))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Withdraw successful", typeof(long))]
         public async Task<ActionResult<long>> Withdraw([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Запрос на добавление Withdraw в контроллере");
@@ -75,7 +75,7 @@ namespace TransactionStore.API.Controller
         [HttpGet("transaction/{accountId}")]
         [SwaggerOperation(Summary = "Get transactions by accountId")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<TransactionResponseModel>))]
-        public ActionResult<List<TransactionResponseModel>> GetTransactionsByAccountId(int accountId)
+        public ActionResult<List<TransactionResponseModel>> GetTransactionsByAccountId(long accountId)
         {
             _logger.LogInformation($"Запрос на получение всех транзакций по AccountId = {accountId} в контроллере");
 
@@ -106,7 +106,7 @@ namespace TransactionStore.API.Controller
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Get transaction by id")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(TransactionResponseModel))]
-        public async Task<ActionResult<TransactionResponseModel>> GetTransactionById(int id)
+        public async Task<ActionResult<TransactionResponseModel>> GetTransactionById(long id)
         {
             _logger.LogInformation($"Запрос на получение транзакции по Id = {id} в контроллере");
 
@@ -121,7 +121,7 @@ namespace TransactionStore.API.Controller
         [HttpGet("balanse-by-{accountId}")]
         [SwaggerOperation(Summary = "Get balanse by accountId")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
-        public ActionResult<decimal> GetBalanceByAccountId(int accountId)
+        public ActionResult<decimal> GetBalanceByAccountId(long accountId)
         {
             _logger.LogInformation($"Запрос на получение баланса по accountId = {accountId} в контроллере");
 
@@ -136,7 +136,7 @@ namespace TransactionStore.API.Controller
         [HttpGet("balanse-by-accountIds")]
         [SwaggerOperation(Summary = "Get balance by accountIds")]
         [SwaggerResponse(200, "OK")]
-        public ActionResult GetBalanceByAccountId([FromQuery] List<int> accountIds)
+        public ActionResult GetBalanceByAccountId([FromQuery] List<long> accountIds)
         {
             
             var balance = _transactionService.GetBalanceByAccountIds(accountIds);

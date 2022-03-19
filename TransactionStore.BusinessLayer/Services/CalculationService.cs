@@ -21,10 +21,10 @@ namespace TransactionStore.BusinessLayer.Services
             _currencyRates = currencyRates;
         }
 
-        public decimal ConvertCurrency(string currencyFrom, string currencyTo, decimal amount)
+        public async Task<decimal> ConvertCurrency(string currencyFrom, string currencyTo, decimal amount)
         {
             _logger.LogInformation($"Запрос на конвертацию валюты с {currencyFrom} в {currencyTo} ");
-            var rates = _currencyRates.GetRates();
+            var rates =_currencyRates.GetRates();
 
             rates.TryGetValue($"{BaseCurrency}{currencyFrom}", out var currencyFromValue);
             rates.TryGetValue($"{BaseCurrency}{currencyTo}", out var currencyToValue);
@@ -41,14 +41,14 @@ namespace TransactionStore.BusinessLayer.Services
             return convertAmount;
         }
 
-        public decimal GetAccountBalance(List<int> accauntId)
+        public async Task<decimal> GetAccountBalance(List<long> accauntId)
         {
             _logger.LogInformation("Запрос на получение всех транзакция у текущего аккаунта");
             var listTransactions = new List<TransactionDto> ();
             var listTransactionsFromOneAccount = new List<TransactionDto> ();
             foreach (var item in accauntId)
             {
-                listTransactionsFromOneAccount = _transactionRepository.GetTransactionsByAccountId(item);
+                listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountId(item);
                 foreach (var transaction in listTransactionsFromOneAccount)
                 {
                     listTransactions.Add(transaction);
@@ -61,7 +61,7 @@ namespace TransactionStore.BusinessLayer.Services
             decimal balance = 0;
             foreach (var item in listTransactions)
             {
-                balance += ConvertCurrency(item.Currency.ToString(), BaseCurrency, item.Amount);
+                balance += await ConvertCurrency(item.Currency.ToString(), BaseCurrency, item.Amount);
                 // поставил ToString пока
             }
 

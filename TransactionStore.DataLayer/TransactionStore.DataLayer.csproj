@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repository\Interfaces\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="C:\Users\Aleksandra\.nuget\packages\nlog.config\4.7.14\contentFiles\any\any\NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

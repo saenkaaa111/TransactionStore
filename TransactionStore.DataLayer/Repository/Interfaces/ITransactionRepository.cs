@@ -5,10 +5,10 @@ namespace TransactionStore.DataLayer.Repository
     public interface ITransactionRepository
     {
         Task<long> AddTransaction(TransactionDto transaction);
-        List<int> AddTransfer(TransferDto transfer);
-        List<TransactionDto> GetTransactionsByAccountId(int id);
-        Task<List<TransactionDto>> GetTransactionsByAccountIds(List<long> accountIds);
+        Task<List<long>> AddTransfer(TransferDto transaction);
+        Task<decimal> GetAccountBalance(long id);
         Task<TransactionDto> GetTransactionById(long id);
-        decimal GetAccountBalance(int id);
+        Task<List<TransactionDto>> GetTransactionsByAccountId(long id);
+        Task<List<TransactionDto>> GetTransactionsByAccountIds(List<long> accountIds);
     }
 }

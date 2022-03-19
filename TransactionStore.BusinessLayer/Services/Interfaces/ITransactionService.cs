@@ -5,12 +5,12 @@ namespace TransactionStore.BusinessLayer.Services
     public interface ITransactionService
     {
         Task<long> AddDeposit(TransactionModel transactionModel);
-        List<int> AddTransfer(TransferModel transactionModel);
-        Task<long> Withdraw(TransactionModel transactionModel);
-        List<TransactionModel> GetTransactionsByAccountId(int id);
-        Task<List<TransactionModel>> GetTransactionsByAccountIds(List<long> accountIds);
+        Task<List<long>> AddTransfer(TransferModel transactionModel);
+        Task<decimal> GetBalanceByAccountId(long accountId);
+        Task<decimal> GetBalanceByAccountIds(List<long> accountId);
         Task<TransactionModel> GetTransactionById(long id);
-        decimal GetBalanceByAccountId(int accountId);
-        decimal GetBalanceByAccountIds(List<int> accountId);
+        Task<List<TransactionModel>> GetTransactionsByAccountId(long id);
+        Task<List<TransactionModel>> GetTransactionsByAccountIds(List<long> accountIds);
+        Task<long> Withdraw(TransactionModel transactionModel);
     }
 }
