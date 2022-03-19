@@ -149,7 +149,7 @@ namespace TransactionStore.API.Controller
         [HttpPost("service-payment")]
         [SwaggerOperation(Summary = "Service payment")]
         [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(int))]
-        public async Task<ActionResult<int>> ServicePayment([FromBody] TransactionRequestModel transaction)
+        public async Task<ActionResult<long>> ServicePayment([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Запрос на добавление Service payment в контроллере");
 
