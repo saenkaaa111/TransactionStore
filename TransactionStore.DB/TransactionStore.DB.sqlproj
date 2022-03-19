@@ -66,14 +66,11 @@
     <Build Include="Procedures\Transaction_SelectByAccountId.sql" />
     <Build Include="Procedures\Transaction_SelectByAccountIds.sql" />
     <Build Include="Tables\AccountTVP.sql" />
-    <Build Include="Procedures\Transaction_InsertTransferFrom.sql" />
-    <Build Include="Procedures\Transaction_InsertTransferTo.sql" />
     <Build Include="Procedures\Transaction_Transfer.sql" />
     <Build Include="Procedures\Transaction_GetAccountBalance.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Procedures\Transaction_Insert.sql" />
-    <None Include="Procedures\Transaction_SelectAll.sql" />
     <None Include="Procedures\Transaction_SelectById.sql" />
     <None Include="TransactionStore.DB.publish.xml" />
   </ItemGroup>
