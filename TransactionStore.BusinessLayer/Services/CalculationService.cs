@@ -21,6 +21,7 @@ namespace TransactionStore.BusinessLayer.Services
             _currencyRates = currencyRates;
         }
 
+        
         public async Task<decimal> ConvertCurrency(string currencyFrom, string currencyTo, decimal amount)
         {
             _logger.LogInformation($"Запрос на конвертацию валюты с {currencyFrom} в {currencyTo} ");
@@ -34,6 +35,8 @@ namespace TransactionStore.BusinessLayer.Services
 
             if (currencyTo == BaseCurrency)
                 currencyToValue = 1m;
+            if (currencyFromValue == 0 || currencyToValue == 0)
+                throw new InsufficientFundsException("Значение валюты не было получено");
 
             var convertAmount = decimal.Round(currencyToValue / currencyFromValue * amount, 4);
 

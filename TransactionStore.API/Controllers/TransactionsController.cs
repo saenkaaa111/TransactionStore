@@ -51,7 +51,7 @@ namespace TransactionStore.API.Controller
             var transferModel = _mapper.Map<TransferModel>(transfer);
             var transferIds = _transactionService.AddTransfer(transferModel);
             
-            _logger.LogInformation($"Транзакция типа Transfer с id = {transferIds.Result} успешно добавлены");
+            _logger.LogInformation($"Транзакция типа Transfer успешно добавлены");
 
             return StatusCode(StatusCodes.Status200OK, transferIds);
         }
