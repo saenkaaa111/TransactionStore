@@ -23,14 +23,14 @@ namespace TransactionStore.BusinessLayer.Services
             _logger = logger;
         }
 
-        public int AddDeposit(TransactionModel transactionModel)
+        public async Task<long> AddDeposit(TransactionModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Deposit");
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
             transaction.Type = TransactionType.Deposit;
 
-            return _transactionRepository.AddTransaction(transaction);
+            return await _transactionRepository.AddTransaction(transaction);
         }
 
         public List<int> AddTransfer(TransferModel transactionModel)
@@ -45,19 +45,18 @@ namespace TransactionStore.BusinessLayer.Services
             return _transactionRepository.AddTransfer(transferDto);
         }
 
-        public int Withdraw(TransactionModel transactionModel)
+        public async Task<long> Withdraw(TransactionModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Withdraw");
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
-            var accountTransactions = GetTransactionsByAccountId(transactionModel.AccountId);
-            var accountBalance = accountTransactions.Select(t => t.Amount).Sum();
+            var balance = GetBalanceByAccountId(transactionModel.AccountId);
 
-            if (withdraw.Amount < accountBalance)
+            if (withdraw.Amount < balance)
             {
                 withdraw.Amount = transactionModel.Amount *= -1;
                 withdraw.Type = TransactionType.Withdraw;
 
-                return _transactionRepository.AddTransaction(withdraw);
+                return await _transactionRepository.AddTransaction(withdraw);
             }
             else
             {
@@ -74,24 +73,23 @@ namespace TransactionStore.BusinessLayer.Services
             return _mapper.Map<List<TransactionModel>>(transactions);
         }
 
-        public List<TransactionModel> GetTransactionsByAccountIds(List<int> accountIds)
+        public async Task<List<TransactionModel>> GetTransactionsByAccountIds(List<long> accountIds)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по AccountIds ");
 
-            var transactions = _transactionRepository.GetTransactionsByAccountIds(accountIds);
+            var transactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
 
             return _mapper.Map<List<TransactionModel>>(transactions);
         }
 
-        public TransactionModel GetTransactionById(int id)
+        public async Task<TransactionModel> GetTransactionById(long id)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по id = {id}");
 
-            var transaction = _transactionRepository.GetTransactionById(id);
+            var transaction = await _transactionRepository.GetTransactionById(id);
 
             return _mapper.Map<TransactionModel>(transaction);
         }
-        
 
         public decimal GetBalanceByAccountId(int accountId)
         {
@@ -101,6 +99,7 @@ namespace TransactionStore.BusinessLayer.Services
             return balance;
 
         }
+
         public decimal GetBalanceByAccountIds(List<int> accountId)
         {
             var balance = _calculationService.GetAccountBalance(accountId);
