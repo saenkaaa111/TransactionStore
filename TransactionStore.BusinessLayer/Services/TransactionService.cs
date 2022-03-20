@@ -69,9 +69,21 @@ namespace TransactionStore.BusinessLayer.Services
         public List<TransactionModel> GetTransactionsByAccountId(int id)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по AccountId = {id}");
-
             var transactions = _transactionRepository.GetTransactionsByAccountId(id);
-            return _mapper.Map<List<TransactionModel>>(transactions);
+            var result = _mapper.Map<List<TransactionModel>>(transactions);
+
+            return JoinTransferTransactions(result);
+        }
+
+        private List<TransactionModel> JoinTransferTransactions(List<TransactionModel> transactions)
+        {
+            var transactionsWithoutTransfer = transactions.Where(x => x.Type != TransactionType.Transfer);
+
+            return transactions.Where(x => x.Type == TransactionType.Transfer)
+                 .GroupBy(x => x.Date)
+                 .Select(x => x.First())
+                 .Union(transactionsWithoutTransfer)
+                 .ToList();
         }
 
         public List<TransactionModel> GetTransactionsByAccountIds(List<int> accountIds)
@@ -105,7 +117,8 @@ namespace TransactionStore.BusinessLayer.Services
         {
             var balance = _calculationService.GetAccountBalance(accountId);
             return balance;
-
         }
+
+
     }
 }
