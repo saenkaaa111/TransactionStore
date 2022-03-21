@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.SqlClient;
 using TransactionStore.API;
 using TransactionStore.API.Configuration;
+using TransactionStore.API.Middleware;
 using TransactionStore.BuisnessLayer.Configuration;
 
 
@@ -36,6 +37,7 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseMiddleware<TransactionStoreMiddleware>();
 
 app.MapControllers();
 

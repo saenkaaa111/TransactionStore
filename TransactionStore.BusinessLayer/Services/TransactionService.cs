@@ -27,6 +27,7 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<long> AddDeposit(TransactionModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Deposit");
+            CheckCurrency(transactionModel.Currency);
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
             transaction.Type = TransactionType.Deposit;
@@ -37,18 +38,20 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<List<long>> AddTransfer(TransferModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Transfer");
-
+            CheckCurrency(transactionModel.CurrencyFrom);
+            CheckCurrency(transactionModel.CurrencyTo);
             var convertResult = _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
                 transactionModel.CurrencyTo, transactionModel.Amount);
 
             var transferDto = _mapper.Map<TransferDto>(transactionModel);
             transferDto.ConvertedAmount = convertResult;
-            return await _transactionRepository.AddTransfer(transferDto);
+            return await _transactionRepository.AddTransfer(transferDto);             
         }
 
         public async Task<long> Withdraw(TransactionModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Withdraw");
+            CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
             var accountBalance = await GetBalanceByAccountId(transactionModel.AccountId);
             
@@ -137,6 +140,16 @@ namespace TransactionStore.BusinessLayer.Services
             return balance;
         }
 
-
+        public bool CheckCurrency(Currency currency)
+        {
+            _logger.LogInformation($"Запрос на проверку валюты");
+            if (currency == Currency.RUB || currency == Currency.USD ||
+                currency == Currency.EUR || currency == Currency.JPY ||
+                currency == Currency.CNY || currency == Currency.RSD ||
+                currency == Currency.TRY)
+                 return true;            
+            else
+                throw new InsufficientFundsException("Значение валюты не было получено");
+        }
     }
 }

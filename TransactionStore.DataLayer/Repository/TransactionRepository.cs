@@ -54,19 +54,19 @@ namespace TransactionStore.DataLayer.Repository
             _transactionTransfer,
                 new
                 {
-                    amount = transaction.Amount * (-1),
-                    transaction.ConvertedAmount,
-                    transaction.AccountIdFrom,
-                    transaction.AccountIdTo,
-                    transaction.CurrencyFrom,
-                    transaction.CurrencyTo,
+                    Amount = transaction.Amount * (-1),
+                    ConvertedAmount = transaction.ConvertedAmount,
+                    AccountIdFrom = transaction.AccountIdFrom,
+                    AccountIdTo = transaction.AccountIdTo,
+                    CurrencyFrom = transaction.CurrencyFrom,
+                    CurrencyTo = transaction.CurrencyTo,
                     type = TransactionType.Transfer
 
                 },
                 commandType: CommandType.StoredProcedure
                 ) as IDictionary<string, object>;
             _logger.LogInformation($"Транзакция типа Transfer с id = {(long)listId.Values.First()}, {(long)listId.Values.Last()} добавлены в БД.");
-
+            
             return new List<long>() { (long)listId.Values.First(), (long)listId.Values.Last() };
 
         }
