@@ -14,6 +14,7 @@ namespace TransactionStore.DataLayer.Repository
         private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
         private const string _transactionTransfer = "dbo.Transaction_Transfer";
         private const string _transactionGetAccountBalance = "dbo.Transaction_GetAccountBalance";
+        private const string _transactionGetByAccountIdMinimalProcedure = "dbo.Transaction_SelectByAccountIdMinimal";
         private readonly ILogger<TransactionRepository> _logger;
 
         public TransactionRepository(IDbConnection dbConnection, ILogger<TransactionRepository> logger) : base(dbConnection)
@@ -78,6 +79,23 @@ namespace TransactionStore.DataLayer.Repository
 
             var listTransactions = (await connection.QueryAsync<TransactionDto>(
                 _transactionGetByAccountIdProcedure,
+                new { AccountId = id },
+                commandType: CommandType.StoredProcedure
+            )).ToList();
+
+            _logger.LogInformation($"Транзакция по AccountId = {id} получены.");
+
+            return listTransactions;
+        }
+        
+        public async Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(long id)
+        {
+            _logger.LogInformation("Подключение к базе данных.");
+            using IDbConnection connection = Connection;
+            _logger.LogInformation("Подключение произведено.");
+
+            var listTransactions = (await connection.QueryAsync<TransactionDto>(
+                _transactionGetByAccountIdMinimalProcedure,
                 new { AccountId = id },
                 commandType: CommandType.StoredProcedure
             )).ToList();

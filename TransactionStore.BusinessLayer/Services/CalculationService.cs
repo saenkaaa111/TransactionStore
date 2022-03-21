@@ -22,10 +22,10 @@ namespace TransactionStore.BusinessLayer.Services
         }
 
         
-        public async Task<decimal> ConvertCurrency(string currencyFrom, string currencyTo, decimal amount)
+        public decimal ConvertCurrency(string currencyFrom, string currencyTo, decimal amount)
         {
             _logger.LogInformation($"Запрос на конвертацию валюты с {currencyFrom} в {currencyTo} ");
-            var rates =_currencyRates.GetRates();
+            var rates = _currencyRates.GetRates();
 
             rates.TryGetValue($"{BaseCurrency}{currencyFrom}", out var currencyFromValue);
             rates.TryGetValue($"{BaseCurrency}{currencyTo}", out var currencyToValue);
@@ -51,7 +51,7 @@ namespace TransactionStore.BusinessLayer.Services
             var listTransactionsFromOneAccount = new List<TransactionDto> ();
             foreach (var item in accauntId)
             {
-                listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountId(item);
+                listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountIdMinimal(item);
                 foreach (var transaction in listTransactionsFromOneAccount)
                 {
                     listTransactions.Add(transaction);
@@ -64,7 +64,7 @@ namespace TransactionStore.BusinessLayer.Services
             decimal balance = 0;
             foreach (var item in listTransactions)
             {
-                balance += await ConvertCurrency(item.Currency.ToString(), BaseCurrency, item.Amount);
+                balance += ConvertCurrency(item.Currency.ToString(), BaseCurrency, item.Amount);
                 // поставил ToString пока
             }
 

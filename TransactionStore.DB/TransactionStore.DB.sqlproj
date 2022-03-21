@@ -68,6 +68,7 @@
     <Build Include="Tables\AccountTVP.sql" />
     <Build Include="Procedures\Transaction_Transfer.sql" />
     <Build Include="Procedures\Transaction_GetAccountBalance.sql" />
+    <Build Include="Procedures\Transaction_SelectByAccountIdMinimal.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Procedures\Transaction_Insert.sql" />

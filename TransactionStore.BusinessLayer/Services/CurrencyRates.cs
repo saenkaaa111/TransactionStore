@@ -14,13 +14,7 @@ namespace TransactionStore.BusinessLayer.Services
                 { "USDJPY", 118m },
                 { "USDCNY", 6m },
                 { "USDTRY", 14m },
-                { "USDRSD", 106m },
-                { "RUBUSD", 0.009m },
-                { "EURUSD", 1.11m },
-                { "JPYUSD", 0.008m },
-                { "CNYUSD", 0.16m },
-                { "TRYUSD", 0.068m },
-                { "RSDUSD", 2.65m },
+                { "USDRSD", 106m }                
 
             };
         }

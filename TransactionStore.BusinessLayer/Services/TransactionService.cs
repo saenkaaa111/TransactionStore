@@ -38,7 +38,7 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger.LogInformation("Запрос на добавление Transfer");
 
-            var convertResult = await _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
+            var convertResult = _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
                 transactionModel.CurrencyTo, transactionModel.Amount);
 
             var transferDto = _mapper.Map<TransferDto>(transactionModel);

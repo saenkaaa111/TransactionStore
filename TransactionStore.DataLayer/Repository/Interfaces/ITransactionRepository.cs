@@ -9,6 +9,7 @@ namespace TransactionStore.DataLayer.Repository
         Task<decimal> GetAccountBalance(long id);
         Task<TransactionDto> GetTransactionById(long id);
         Task<List<TransactionDto>> GetTransactionsByAccountId(long id);
+        Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(long id);
         Task<List<TransactionDto>> GetTransactionsByAccountIds(List<long> accountIds);
     }
 }

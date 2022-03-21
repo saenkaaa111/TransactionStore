@@ -11,8 +11,7 @@ namespace TransactionStore.API.Configuration
         {
             CreateMap<TransactionRequestModel, TransactionModel>();
             CreateMap<TransactionModel, TransactionResponseModel>();
-            CreateMap<TransferRequestModel, TransferModel>();
-            CreateMap<TransferRequestModelLocal, TransferModel>();
+            CreateMap<TransferRequestModel, TransferModel>();            
         }
     }
 }
