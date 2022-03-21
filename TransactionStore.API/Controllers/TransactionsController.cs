@@ -45,11 +45,12 @@ namespace TransactionStore.API.Controller
         [HttpPost("transfer")]
         [SwaggerOperation(Summary = "Add transfer")]
         [SwaggerResponse(StatusCodes.Status200OK, "Transfer successful", typeof(List<int>))]
-        public ActionResult<List<int>> AddTransfer([FromBody] TransferRequestModel transfer)
+        public ActionResult<List<int>> AddTransfer([FromBody] TransferRequestModelLocal transfer)
         {
             _logger.LogInformation("Запрос на добавление Transfer в контроллере");
 
             var transferModel = _mapper.Map<TransferModel>(transfer);
+            
             var transferIds = _transactionService.AddTransfer(transferModel);
 
             _logger.LogInformation($"Транзакция типа Transfer с id = {transferIds.First()}, {transferIds.Last()} успешно добавлены");
