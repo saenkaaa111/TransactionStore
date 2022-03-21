@@ -11,7 +11,7 @@ namespace TransactionStore.BusinessLayer.Services
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICurrencyRates _currencyRates;
         private readonly ILogger<CalculationService> _logger;
-        public const string BaseCurrency = "USD";
+        public const Currency BaseCurrency = Currency.USD;
 
         public CalculationService(ITransactionRepository transactionRepository, ICurrencyRates currencyRates,
             ILogger<CalculationService> logger)
@@ -22,7 +22,7 @@ namespace TransactionStore.BusinessLayer.Services
         }
 
         
-        public decimal ConvertCurrency(string currencyFrom, string currencyTo, decimal amount)
+        public decimal ConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal amount)
         {
             _logger.LogInformation($"Запрос на конвертацию валюты с {currencyFrom} в {currencyTo} ");
             var rates = _currencyRates.GetRates();
@@ -64,7 +64,7 @@ namespace TransactionStore.BusinessLayer.Services
             decimal balance = 0;
             foreach (var item in listTransactions)
             {
-                balance += ConvertCurrency(item.Currency.ToString(), BaseCurrency, item.Amount);
+                balance += ConvertCurrency(item.Currency, BaseCurrency, item.Amount);
                 // поставил ToString пока
             }
 

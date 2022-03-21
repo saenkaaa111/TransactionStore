@@ -1,5 +1,5 @@
 ﻿CREATE proc dbo.Transaction_SelectById
-			@Id int
+			@Id bigint
 AS
 BEGIN
 SELECT
