@@ -135,7 +135,8 @@ namespace TransactionStore.BusinessLayer.Services
             
             var balance = await _calculationService.GetAccountBalance(accountId);
             return balance;
-
         }
+
+
     }
 }

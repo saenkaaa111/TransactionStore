@@ -3,12 +3,11 @@ using Marvelous.Contracts;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using TransactionStore.BuisnessLayer.Configuration;
-using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
-using TransactionStore.BusinessLayer.Services.Interfaces;
-using TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
 
@@ -18,7 +17,7 @@ namespace TransactionStore.BusinessLayer.Tests
     {
 
         private Mock<ITransactionRepository> _transactionRepositoryMock;
-        private ITransactionService _transactionService;
+        private TransactionService _transactionService;
         private Mock<ICalculationService> _calculationService;
         private IMapper _mapper;
         private Mock<ILogger<TransactionService>> _logger;
@@ -30,7 +29,7 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
             _logger = new Mock<ILogger<TransactionService>>();
             _calculationService = new Mock<ICalculationService>();
-            _transactionService = new TransactionService(_transactionRepositoryMock.Object, 
+            _transactionService = new TransactionService(_transactionRepositoryMock.Object,
                 _calculationService.Object, _mapper, _logger.Object);
         }
 
@@ -54,7 +53,7 @@ namespace TransactionStore.BusinessLayer.Tests
         public void AddTransferTest()
         {
             // given
-           var expected = new List<int>() { 1, 2 };
+            var expected = new List<int>() { 1, 2 };
             _transactionRepositoryMock.Setup(d => d.AddTransfer(It.IsAny<TransferDto>())).Returns(expected);
 
             var transfer = new TransferModel()
@@ -134,6 +133,83 @@ namespace TransactionStore.BusinessLayer.Tests
 
             //then
             _transactionRepositoryMock.Verify(s => s.GetTransactionById(It.IsAny<int>()), Times.Once);
+        }
+
+        [Test]
+        public void JoinTransferTransactionsTest()
+        {
+            var dateTime = DateTime.Now;
+            var dateTime1 = DateTime.Now;
+            var dateTime2 = DateTime.Now;
+
+            //given
+            var transactions = new List<TransactionDto>
+            {
+                new TransactionDto
+                {
+                    AccountId = 1,
+                    Currency = Currency.RUB,
+                    Date = dateTime,
+                    Type = TransactionType.Transfer,
+                },
+                new TransactionDto
+                {
+                    AccountId = 2,
+                    Currency = Currency.EUR,
+                    Date = dateTime,
+                    Type = TransactionType.Transfer,
+                },
+                new TransactionDto
+                {
+                    AccountId = 3,
+                    Currency = Currency.RUB,
+                    Date = dateTime1,
+                    Type = TransactionType.Transfer,
+                },
+                new TransactionDto
+                {
+                    AccountId = 4,
+                    Currency = Currency.EUR,
+                    Date = dateTime1,
+                    Type = TransactionType.Transfer,
+                },
+                new TransactionDto
+                {
+                    AccountId = 5,
+                    Currency = Currency.RUB,
+                    Date = dateTime2,
+                    Type = TransactionType.Transfer,
+                },
+                new TransactionDto
+                {
+                    AccountId = 6,
+                    Currency = Currency.EUR,
+                    Date = dateTime2,
+                    Type = TransactionType.Transfer,
+                },
+                new TransactionDto
+                {
+                    Type = TransactionType.Deposit,
+                },
+                new TransactionDto
+                {
+                    Type = TransactionType.Withdraw,
+                },
+                new TransactionDto
+                {
+                    Type = TransactionType.Service,
+                },
+            };
+
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(It.IsAny<int>())).Returns(transactions);
+
+            //when
+            var result = _transactionService.GetTransactionsByAccountId(It.IsAny<int>());
+            var expected = transactions.Count(x => x.Type == TransactionType.Transfer) / 2;
+            var actual = result.Count(x => x.Type == TransactionType.Transfer);
+
+            //then
+            Assert.AreEqual(expected, actual);
         }
     }
 }
