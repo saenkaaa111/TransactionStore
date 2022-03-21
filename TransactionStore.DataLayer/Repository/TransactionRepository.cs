@@ -15,18 +15,19 @@ namespace TransactionStore.DataLayer.Repository
         private const string _transactionTransfer = "dbo.Transaction_Transfer";
         private const string _transactionGetAccountBalance = "dbo.Transaction_GetAccountBalance";
         private readonly ILogger<TransactionRepository> _logger;
+
         public TransactionRepository(IDbConnection dbConnection, ILogger<TransactionRepository> logger) : base(dbConnection)
         {
             _logger = logger;
         }
 
-        public int AddTransaction(TransactionDto transaction)
+        public async Task<long> AddTransaction(TransactionDto transaction)
         {
             _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
             _logger.LogInformation("Подключение произведено.");
 
-            var id = connection.QueryFirstOrDefault<int>(
+            var id = await connection.QueryFirstOrDefaultAsync<long>(
                 _transactionAddProcedure,
                 new
                 {
@@ -42,13 +43,13 @@ namespace TransactionStore.DataLayer.Repository
             return id;
         }
 
-        public List<int> AddTransfer(TransferDto transaction)
+        public async Task<List<long>> AddTransfer(TransferDto transaction)
         {
             _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
             _logger.LogInformation("Подключение произведено.");
 
-            var listId = (IDictionary<string, object>)connection.QueryFirstOrDefault<dynamic>(
+            var listId = await connection.QueryFirstOrDefaultAsync<dynamic>(
             _transactionTransfer,
                 new
                 {
@@ -62,74 +63,75 @@ namespace TransactionStore.DataLayer.Repository
 
                 },
                 commandType: CommandType.StoredProcedure
-                );
-            _logger.LogInformation($"Транзакция типа Transfer с id = {(int)listId.Values.First()}, {(int)listId.Values.Last()} добавлены в БД.");
+                ) as IDictionary<string, object>;
+            _logger.LogInformation($"Транзакция типа Transfer с id = {(long)listId.Values.First()}, {(long)listId.Values.Last()} добавлены в БД.");
 
-            return new List<int>() { (int)listId.Values.First(), (int)listId.Values.Last() };
+            return new List<long>() { (long)listId.Values.First(), (long)listId.Values.Last() };
 
         }
 
-        public List<TransactionDto> GetTransactionsByAccountId(int id)
+        public async Task<List<TransactionDto>> GetTransactionsByAccountId(long id)
         {
             _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
             _logger.LogInformation("Подключение произведено.");
 
-            var listTransactions = connection.Query<TransactionDto>(
+            var listTransactions = (await connection.QueryAsync<TransactionDto>(
                 _transactionGetByAccountIdProcedure,
                 new { AccountId = id },
                 commandType: CommandType.StoredProcedure
-            ).ToList();
+            )).ToList();
 
             _logger.LogInformation($"Транзакция по AccountId = {id} получены.");
 
             return listTransactions;
         }
 
-        public List<TransactionDto> GetTransactionsByAccountIds(List<int> accountIds)
+        public async Task<List<TransactionDto>> GetTransactionsByAccountIds(List<long> accountIds)
         {
             _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
             _logger.LogInformation("Подключение произведено.");
 
             var tvpTable = new DataTable();
-            tvpTable.Columns.Add(new DataColumn("AccountId", typeof(int)));
+            tvpTable.Columns.Add(new DataColumn("AccountId", typeof(long)));
             accountIds.ForEach(id => tvpTable.Rows.Add(id));
 
-            var listTransactions = connection.Query<TransactionDto>(
+            var listTransactions = (await connection.QueryAsync<TransactionDto>(
                     _transactionGetByAccountIdsProcedure,
                     new { tvp = tvpTable.AsTableValuedParameter("[dbo].[AccountTVP]") },
                     commandType: CommandType.StoredProcedure
-               ).ToList();
+               ))
+               .ToList();
 
             _logger.LogInformation($"Транзакция по AccountIds = {accountIds} получены.");
+
             return listTransactions;
         }
 
-        public TransactionDto GetTransactionById(int id)
+        public async Task<TransactionDto> GetTransactionById(long id)
         {
             _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
             _logger.LogInformation("Подключение произведено.");
 
-            var listTransactions = connection.QuerySingle<TransactionDto>(
+            var transactionDto = await connection.QuerySingleAsync<TransactionDto>(
                 _transactionGetByIdProcedure, new { Id = id },
                 commandType: CommandType.StoredProcedure);
 
-            _logger.LogInformation($"Транзакция по Id = {id} получены.");
+            _logger.LogInformation($"Транзакция по Id = {id} получена.");
 
-            return listTransactions;
-
+            return transactionDto;
         }
 
-        public decimal GetAccountBalance(int id)
+        public async Task<decimal> GetAccountBalance(long id)
         {
             _logger.LogInformation("Подключение к базе данных.");
             using IDbConnection connection = Connection;
             _logger.LogInformation("Подключение произведено.");
 
-            return connection.QuerySingle<decimal>(
-                _transactionGetAccountBalance,                 
+            return await connection.QuerySingleAsync<decimal>(
+                _transactionGetAccountBalance,
                  new { Id = id },
                 commandType: CommandType.StoredProcedure
                 );

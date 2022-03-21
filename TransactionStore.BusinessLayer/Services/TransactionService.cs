@@ -24,29 +24,29 @@ namespace TransactionStore.BusinessLayer.Services
             _logger = logger;
         }
 
-        public int AddDeposit(TransactionModel transactionModel)
+        public async Task<long> AddDeposit(TransactionModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Deposit");
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
             transaction.Type = TransactionType.Deposit;
 
-            return _transactionRepository.AddTransaction(transaction);
+            return await _transactionRepository.AddTransaction(transaction);
         }
 
-        public List<int> AddTransfer(TransferModel transactionModel)
+        public async Task<List<long>> AddTransfer(TransferModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Transfer");
 
-            var convertResult = _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
+            var convertResult = await _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
                 transactionModel.CurrencyTo, transactionModel.Amount);
 
             var transferDto = _mapper.Map<TransferDto>(transactionModel);
             transferDto.ConvertedAmount = convertResult;
-            return _transactionRepository.AddTransfer(transferDto);
+            return await _transactionRepository.AddTransfer(transferDto);
         }
 
-        public int Withdraw(TransactionModel transactionModel)
+        public async Task<long> Withdraw(TransactionModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Withdraw");
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
@@ -57,7 +57,7 @@ namespace TransactionStore.BusinessLayer.Services
                 withdraw.Amount = transactionModel.Amount *= -1;
                 withdraw.Type = TransactionType.Withdraw;
 
-                return _transactionRepository.AddTransaction(withdraw);
+                return await _transactionRepository.AddTransaction(withdraw);
             }
             else
             {
@@ -102,36 +102,38 @@ namespace TransactionStore.BusinessLayer.Services
             return resultList;
         }
 
-        public List<TransactionModel> GetTransactionsByAccountIds(List<int> accountIds)
+        public async Task<List<TransactionModel>> GetTransactionsByAccountIds(List<long> accountIds)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по AccountIds ");
 
-            var transactions = _transactionRepository.GetTransactionsByAccountIds(accountIds);
+            var transactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
 
             return _mapper.Map<List<TransactionModel>>(transactions);
         }
 
-        public TransactionModel GetTransactionById(int id)
+        public async Task<TransactionModel> GetTransactionById(long id)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по id = {id}");
 
-            var transaction = _transactionRepository.GetTransactionById(id);
+            var transaction = await _transactionRepository.GetTransactionById(id);
 
             return _mapper.Map<TransactionModel>(transaction);
         }
 
-
-        public decimal GetBalanceByAccountId(int accountId)
+        public async Task<decimal> GetBalanceByAccountId(long accountId)
         {
             _logger.LogInformation($"Запрос на получение баланса по accountId = {accountId}");
 
-            var balance = _transactionRepository.GetAccountBalance(accountId);
+            var balance = await _transactionRepository.GetAccountBalance(accountId);
             return balance;
 
         }
-        public decimal GetBalanceByAccountIds(List<int> accountId)
+
+        public async Task<decimal> GetBalanceByAccountIds(List<long> accountId)
         {
-            var balance = _calculationService.GetAccountBalance(accountId);
+            _logger.LogInformation($"Запрос на получение баланса по accountIds");
+            
+            var balance = await _calculationService.GetAccountBalance(accountId);
             return balance;
 
         }
