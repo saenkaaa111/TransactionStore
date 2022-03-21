@@ -226,3 +226,19 @@
 2022-03-21 14:54:17.9346|Info|Подключение произведено. | 
 2022-03-21 14:54:18.0192|Info|Транзакция типа Withdraw с id = 17 добавлена в БД. | 
 2022-03-21 14:54:18.0192|Info|Транзакция типа Withdraw с id = 17 успешно добавлена | 
+2022-03-21 18:24:53.5361|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-21 18:24:53.5740|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-21 18:25:02.0226|Info|Запрос на получение всех транзакций по AccountId = 3 в контроллере | 
+2022-03-21 18:25:02.0248|Info|Запрос на получение транзакциий по AccountId = 3 | 
+2022-03-21 18:25:02.0431|Info|Подключение к базе данных. | 
+2022-03-21 18:25:02.0431|Info|Подключение произведено. | 
+2022-03-21 18:25:02.3773|Info|Транзакция по AccountId = 3 получены. | 
+2022-03-21 18:25:02.4022|Info|Транзакция по AccountId = 3 успешно получены | 
+2022-03-21 18:31:21.2725|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-21 18:31:21.3082|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-21 18:31:39.9133|Info|Запрос на добавление Deposit в контроллере | 
+2022-03-21 18:31:39.9265|Info|Запрос на добавление Deposit | 
+2022-03-21 18:31:39.9376|Info|Подключение к базе данных. | 
+2022-03-21 18:31:39.9376|Info|Подключение произведено. | 
+2022-03-21 18:31:40.1820|Info|Транзакция типа Deposit с id = 28 добавлена в БД. | 
+2022-03-21 18:31:40.1820|Info|Транзакция типа Deposit с id = 28 успешно добавлена | 

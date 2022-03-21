@@ -50,7 +50,7 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger.LogInformation("Запрос на добавление Withdraw");
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
-            var accountBalance = GetBalanceByAccountId(transactionModel.AccountId);
+            var accountBalance = await GetBalanceByAccountId(transactionModel.AccountId);
             
             if (withdraw.Amount < accountBalance)
             {
@@ -66,10 +66,10 @@ namespace TransactionStore.BusinessLayer.Services
             }
         }
 
-        public ArrayList GetTransactionsByAccountId(int id)
+        public async Task<ArrayList> GetTransactionsByAccountId(long id)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по AccountId = {id}");
-            var transactions = _transactionRepository.GetTransactionsByAccountId(id);
+            var transactions = await _transactionRepository.GetTransactionsByAccountId(id);
             var listTransaction = _mapper.Map<List<TransactionModel>>(transactions);
             var transactionsWithoutTransfer = listTransaction.Where(x => x.Type != TransactionType.Transfer);
             var resultList = new ArrayList();

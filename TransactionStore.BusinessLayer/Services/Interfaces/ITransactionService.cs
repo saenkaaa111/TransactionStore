@@ -12,6 +12,6 @@ namespace TransactionStore.BusinessLayer.Services
         Task<TransactionModel> GetTransactionById(long id);
         Task<List<TransactionModel>> GetTransactionsByAccountIds(List<long> accountIds);
         Task<long> Withdraw(TransactionModel transactionModel);
-        ArrayList GetTransactionsByAccountId(int id);
+        Task<ArrayList> GetTransactionsByAccountId(long id);
     }
 }
