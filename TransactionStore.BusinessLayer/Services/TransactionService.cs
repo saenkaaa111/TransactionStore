@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Marvelous.Contracts;
 using Microsoft.Extensions.Logging;
+using System.Collections;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
@@ -23,41 +24,40 @@ namespace TransactionStore.BusinessLayer.Services
             _logger = logger;
         }
 
-        public int AddDeposit(TransactionModel transactionModel)
+        public async Task<long> AddDeposit(TransactionModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Deposit");
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
             transaction.Type = TransactionType.Deposit;
 
-            return _transactionRepository.AddTransaction(transaction);
+            return await _transactionRepository.AddTransaction(transaction);
         }
 
-        public List<int> AddTransfer(TransferModel transactionModel)
+        public async Task<List<long>> AddTransfer(TransferModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Transfer");
 
-            var convertResult = _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
+            var convertResult = await _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
                 transactionModel.CurrencyTo, transactionModel.Amount);
 
             var transferDto = _mapper.Map<TransferDto>(transactionModel);
             transferDto.ConvertedAmount = convertResult;
-            return _transactionRepository.AddTransfer(transferDto);
+            return await _transactionRepository.AddTransfer(transferDto);
         }
 
-        public int Withdraw(TransactionModel transactionModel)
+        public async Task<long> Withdraw(TransactionModel transactionModel)
         {
             _logger.LogInformation("Запрос на добавление Withdraw");
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
-            var accountTransactions = GetTransactionsByAccountId(transactionModel.AccountId);
-            var accountBalance = accountTransactions.Select(t => t.Amount).Sum();
-
+            var accountBalance = GetBalanceByAccountId(transactionModel.AccountId);
+            
             if (withdraw.Amount < accountBalance)
             {
                 withdraw.Amount = transactionModel.Amount *= -1;
                 withdraw.Type = TransactionType.Withdraw;
 
-                return _transactionRepository.AddTransaction(withdraw);
+                return await _transactionRepository.AddTransaction(withdraw);
             }
             else
             {
@@ -66,56 +66,74 @@ namespace TransactionStore.BusinessLayer.Services
             }
         }
 
-        public List<TransactionModel> GetTransactionsByAccountId(int id)
+        public ArrayList GetTransactionsByAccountId(int id)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по AccountId = {id}");
             var transactions = _transactionRepository.GetTransactionsByAccountId(id);
-            var result = _mapper.Map<List<TransactionModel>>(transactions);
+            var listTransaction = _mapper.Map<List<TransactionModel>>(transactions);
+            var transactionsWithoutTransfer = listTransaction.Where(x => x.Type != TransactionType.Transfer);
+            var resultList = new ArrayList();
+            foreach (var item in transactionsWithoutTransfer)
+            {
+                resultList.Add(item);
+            }
 
-            return JoinTransferTransactions(result);
+            var transactionsOnlyTransfer = listTransaction.Where(x => x.Type == TransactionType.Transfer).ToList();
+
+            for (int i = 0; i < transactionsOnlyTransfer.Count(); i = i + 2)
+            {
+                TransferDto transfer = new TransferDto()
+                {
+                    IdFrom = transactionsOnlyTransfer[i].Id,
+                    IdTo = transactionsOnlyTransfer[i + 1].Id,
+                    AccountIdFrom = transactionsOnlyTransfer[i].AccountId,
+                    AccountIdTo = transactionsOnlyTransfer[i + 1].AccountId,
+                    Amount = transactionsOnlyTransfer[i].Amount,
+                    ConvertedAmount = transactionsOnlyTransfer[i + 1].Amount,
+                    CurrencyFrom = transactionsOnlyTransfer[i].Currency,
+                    CurrencyTo = transactionsOnlyTransfer[i + 1].Currency,
+                    Date = transactionsOnlyTransfer[i].Date,
+                    Type = transactionsOnlyTransfer[i].Type,
+
+                };
+                resultList.Add(transfer);
+            }
+
+            return resultList;
         }
 
-        private List<TransactionModel> JoinTransferTransactions(List<TransactionModel> transactions)
-        {
-            var transactionsWithoutTransfer = transactions.Where(x => x.Type != TransactionType.Transfer);
-
-            return transactions.Where(x => x.Type == TransactionType.Transfer)
-                 .GroupBy(x => x.Date)
-                 .Select(x => x.First())
-                 .Union(transactionsWithoutTransfer)
-                 .ToList();
-        }
-
-        public List<TransactionModel> GetTransactionsByAccountIds(List<int> accountIds)
+        public async Task<List<TransactionModel>> GetTransactionsByAccountIds(List<long> accountIds)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по AccountIds ");
 
-            var transactions = _transactionRepository.GetTransactionsByAccountIds(accountIds);
+            var transactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
 
             return _mapper.Map<List<TransactionModel>>(transactions);
         }
 
-        public TransactionModel GetTransactionById(int id)
+        public async Task<TransactionModel> GetTransactionById(long id)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по id = {id}");
 
-            var transaction = _transactionRepository.GetTransactionById(id);
+            var transaction = await _transactionRepository.GetTransactionById(id);
 
             return _mapper.Map<TransactionModel>(transaction);
         }
-        
 
-        public decimal GetBalanceByAccountId(int accountId)
+        public async Task<decimal> GetBalanceByAccountId(long accountId)
         {
             _logger.LogInformation($"Запрос на получение баланса по accountId = {accountId}");
 
-            var balance = _transactionRepository.GetAccountBalance(accountId);
+            var balance = await _transactionRepository.GetAccountBalance(accountId);
             return balance;
 
         }
-        public decimal GetBalanceByAccountIds(List<int> accountId)
+
+        public async Task<decimal> GetBalanceByAccountIds(List<long> accountId)
         {
-            var balance = _calculationService.GetAccountBalance(accountId);
+            _logger.LogInformation($"Запрос на получение баланса по accountIds");
+            
+            var balance = await _calculationService.GetAccountBalance(accountId);
             return balance;
         }
 
