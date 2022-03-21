@@ -1,8 +1,8 @@
 ﻿using Marvelous.Contracts;
 
-namespace TransactionStore.DataLayer.Entities
+namespace TransactionStore.API.Models.Response
 {
-    public class TransferDto
+    public class TransferResponseModel
     {
         public int IdFrom { get; set; }
         public int IdTo { get; set; }

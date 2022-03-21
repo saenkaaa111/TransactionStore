@@ -1,4 +1,5 @@
-﻿using TransactionStore.BusinessLayer.Models;
+﻿using System.Collections;
+using TransactionStore.BusinessLayer.Models;
 
 namespace TransactionStore.BusinessLayer.Services
 {
@@ -6,11 +7,11 @@ namespace TransactionStore.BusinessLayer.Services
     {
         int AddDeposit(TransactionModel transactionModel);
         List<int> AddTransfer(TransferModel transactionModel);
-        int Withdraw(TransactionModel transactionModel);
-        List<TransactionModel> GetTransactionsByAccountId(int id);
-        List<TransactionModel> GetTransactionsByAccountIds(List<int> accountIds);
-        public TransactionModel GetTransactionById(int id);
         decimal GetBalanceByAccountId(int accountId);
         decimal GetBalanceByAccountIds(List<int> accountId);
+        TransactionModel GetTransactionById(int id);
+        ArrayList GetTransactionsByAccountId(int id);
+        List<TransactionModel> GetTransactionsByAccountIds(List<int> accountIds);
+        int Withdraw(TransactionModel transactionModel);
     }
 }

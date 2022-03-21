@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
+using Marvelous.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Collections;
+using TransactionStore.API.Models;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
-using Marvelous.Contracts;
-using TransactionStore.API.Models;
 
 namespace TransactionStore.API.Controller
 {
@@ -50,7 +51,7 @@ namespace TransactionStore.API.Controller
 
             var transferModel = _mapper.Map<TransferModel>(transfer);
             var transferIds = _transactionService.AddTransfer(transferModel);
-            
+
             _logger.LogInformation($"Транзакция типа Transfer с id = {transferIds.First()}, {transferIds.Last()} успешно добавлены");
 
             return StatusCode(StatusCodes.Status200OK, transferIds);
@@ -70,17 +71,17 @@ namespace TransactionStore.API.Controller
 
             return StatusCode(201, transactionId);
         }
-        
+
         // api/transaction/
         [HttpGet("transaction/{accountId}")]
         [SwaggerOperation(Summary = "Get transactions by accountId")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<TransactionResponseModel>))]
-        public ActionResult<List<TransactionResponseModel>> GetTransactionsByAccountId(int accountId)
+        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(ArrayList))]
+        public ActionResult<ArrayList> GetTransactionsByAccountId(int accountId)
         {
             _logger.LogInformation($"Запрос на получение всех транзакций по AccountId = {accountId} в контроллере");
 
             var transactionModel = _transactionService.GetTransactionsByAccountId(accountId);
-            var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModel);
+            var transactions = _mapper.Map<ArrayList>(transactionModel);
 
             _logger.LogInformation($"Транзакция по AccountId = {accountId} успешно получены");
 
@@ -112,12 +113,12 @@ namespace TransactionStore.API.Controller
 
             var transactionModel = _transactionService.GetTransactionById(id);
             var transaction = _mapper.Map<TransactionResponseModel>(transactionModel);
-            
+
             _logger.LogInformation($"Транзакция по Id = {id} успешно получена");
 
             return Ok(transaction);
         }
-        
+
         [HttpGet("balanse-by-{accountId}")]
         [SwaggerOperation(Summary = "Get balanse by accountId")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
@@ -126,21 +127,21 @@ namespace TransactionStore.API.Controller
             _logger.LogInformation($"Запрос на получение баланса по accountId = {accountId} в контроллере");
 
             var balance = _transactionService.GetBalanceByAccountId(accountId);
-            
+
             _logger.LogInformation($"Баланс успешно получен");
 
             return Ok(balance);
         }
-        
-        
+
+
         [HttpGet("balanse-by-accountIds")]
         [SwaggerOperation(Summary = "Get balance by accountIds")]
         [SwaggerResponse(200, "OK")]
         public ActionResult GetBalanceByAccountId([FromQuery] List<int> accountIds)
         {
-            
+
             var balance = _transactionService.GetBalanceByAccountIds(accountIds);
-            
+
             _logger.LogInformation($"Баланс успешно получен");
 
             return Ok(balance);
