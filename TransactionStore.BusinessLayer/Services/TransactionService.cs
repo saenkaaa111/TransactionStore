@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Marvelous.Contracts;
 using Microsoft.Extensions.Logging;
+using System.Collections;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
@@ -49,9 +50,8 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger.LogInformation("Запрос на добавление Withdraw");
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
-            var accountTransactions = GetTransactionsByAccountId(transactionModel.AccountId);
-            var accountBalance = accountTransactions.Select(t => t.Amount).Sum();
-
+            var accountBalance = GetBalanceByAccountId(transactionModel.AccountId);
+            
             if (withdraw.Amount < accountBalance)
             {
                 withdraw.Amount = transactionModel.Amount *= -1;
@@ -66,12 +66,40 @@ namespace TransactionStore.BusinessLayer.Services
             }
         }
 
-        public List<TransactionModel> GetTransactionsByAccountId(int id)
+        public ArrayList GetTransactionsByAccountId(int id)
         {
             _logger.LogInformation($"Запрос на получение транзакциий по AccountId = {id}");
-
             var transactions = _transactionRepository.GetTransactionsByAccountId(id);
-            return _mapper.Map<List<TransactionModel>>(transactions);
+            var listTransaction = _mapper.Map<List<TransactionModel>>(transactions);
+            var transactionsWithoutTransfer = listTransaction.Where(x => x.Type != TransactionType.Transfer);
+            var resultList = new ArrayList();
+            foreach (var item in transactionsWithoutTransfer)
+            {
+                resultList.Add(item);
+            }
+
+            var transactionsOnlyTransfer = listTransaction.Where(x => x.Type == TransactionType.Transfer).ToList();
+
+            for (int i = 0; i < transactionsOnlyTransfer.Count(); i = i + 2)
+            {
+                TransferDto transfer = new TransferDto()
+                {
+                    IdFrom = transactionsOnlyTransfer[i].Id,
+                    IdTo = transactionsOnlyTransfer[i + 1].Id,
+                    AccountIdFrom = transactionsOnlyTransfer[i].AccountId,
+                    AccountIdTo = transactionsOnlyTransfer[i + 1].AccountId,
+                    Amount = transactionsOnlyTransfer[i].Amount,
+                    ConvertedAmount = transactionsOnlyTransfer[i + 1].Amount,
+                    CurrencyFrom = transactionsOnlyTransfer[i].Currency,
+                    CurrencyTo = transactionsOnlyTransfer[i + 1].Currency,
+                    Date = transactionsOnlyTransfer[i].Date,
+                    Type = transactionsOnlyTransfer[i].Type,
+
+                };
+                resultList.Add(transfer);
+            }
+
+            return resultList;
         }
 
         public List<TransactionModel> GetTransactionsByAccountIds(List<int> accountIds)
@@ -91,7 +119,7 @@ namespace TransactionStore.BusinessLayer.Services
 
             return _mapper.Map<TransactionModel>(transaction);
         }
-        
+
 
         public decimal GetBalanceByAccountId(int accountId)
         {
