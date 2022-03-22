@@ -4,8 +4,8 @@ namespace TransactionStore.DataLayer.Entities
 {
     public class TransferDto
     {
-        public int IdFrom { get; set; }
-        public int IdTo { get; set; }
+        public long IdFrom { get; set; }
+        public long IdTo { get; set; }
         public DateTime Date { get; set; }
         public TransactionType Type { get; set; }
         public decimal Amount { get; set; }

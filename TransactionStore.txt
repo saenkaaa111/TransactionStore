@@ -1,0 +1,9 @@
+2022-03-22 21:51:28.2895|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-22 21:51:28.3673|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-22 21:51:48.1034|Info|Запрос на добавление Deposit в контроллере | 
+2022-03-22 21:51:48.1266|Info|Запрос на добавление Deposit | 
+2022-03-22 21:51:48.1266|Info|Запрос на проверку валюты | 
+2022-03-22 21:51:48.1633|Info|Подключение к базе данных. | 
+2022-03-22 21:51:48.1662|Info|Подключение произведено. | 
+2022-03-22 21:51:49.5590|Info|Транзакция типа Deposit с id = 49224119 добавлена в БД. | 
+2022-03-22 21:51:49.5590|Info|Транзакция типа Deposit с id = 49224119 успешно добавлена | 

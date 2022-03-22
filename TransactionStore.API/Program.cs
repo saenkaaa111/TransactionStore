@@ -9,7 +9,7 @@ using TransactionStore.BuisnessLayer.Configuration;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionEnvironmentVariableName = "CONNECTION_STRING";
+var connectionEnvironmentVariableName = "TSTORE_CONNECTION_STRING";
 var logDirectoryVariableName = "LOG_DIRECTORY";
 
 var connectionString = builder.Configuration.GetValue<string>(connectionEnvironmentVariableName);
