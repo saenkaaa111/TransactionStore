@@ -1,31 +1,29 @@
 ﻿using Marvelous.Contracts;
+using Marvelous.Contracts.Models.ExchangeModels;
+using Microsoft.Extensions.Logging;
 using TransactionStore.DataLayer.Entities;
-using TransactionStore.BusinessLayer.Services;
-﻿using Microsoft.Extensions.Logging;
 using TransactionStore.DataLayer.Repository;
 
 namespace TransactionStore.BusinessLayer.Services
 {
     public class CalculationService : ICalculationService
     {
+        public CurrencyRatesExchangeModel RatesModel { get; set; }
         private readonly ITransactionRepository _transactionRepository;
-        private readonly ICurrencyRates _currencyRates;
         private readonly ILogger<CalculationService> _logger;
         public const Currency BaseCurrency = Currency.USD;
 
-        public CalculationService(ITransactionRepository transactionRepository, ICurrencyRates currencyRates,
+        public CalculationService(ITransactionRepository transactionRepository, ICurrencyRatesService currencyRates,
             ILogger<CalculationService> logger)
         {
             _logger = logger;
             _transactionRepository = transactionRepository;
-            _currencyRates = currencyRates;
         }
 
-        
         public decimal ConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal amount)
         {
             _logger.LogInformation($"Запрос на конвертацию валюты с {currencyFrom} в {currencyTo} ");
-            var rates = _currencyRates.GetRates();
+            var rates = RatesModel.Rates;
 
             rates.TryGetValue($"{BaseCurrency}{currencyFrom}", out var currencyFromValue);
             rates.TryGetValue($"{BaseCurrency}{currencyTo}", out var currencyToValue);
@@ -47,8 +45,8 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<decimal> GetAccountBalance(List<long> accauntId)
         {
             _logger.LogInformation("Запрос на получение всех транзакция у текущего аккаунта");
-            var listTransactions = new List<TransactionDto> ();
-            var listTransactionsFromOneAccount = new List<TransactionDto> ();
+            var listTransactions = new List<TransactionDto>();
+            var listTransactionsFromOneAccount = new List<TransactionDto>();
             foreach (var item in accauntId)
             {
                 listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountIdMinimal(item);

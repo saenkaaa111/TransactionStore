@@ -21,13 +21,14 @@ var config = new ConfigurationBuilder()
            .AddXmlFile("NLog.config", optional: true, reloadOnChange: true)
            .Build();
 
-builder.Services.RegisterLogger(config);
+builder.Services.AddLogger(config);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => { c.EnableAnnotations(); });
 builder.Services.AddAutoMapper(typeof(BusinessMapper).Assembly, typeof(DataMapper).Assembly);
-builder.Services.RegisterTransactionStoreServices();
-builder.Services.RegisterTransactionStoreRepositories();
+builder.Services.AddTransactionStoreServices();
+builder.Services.AddTransactionStoreRepositories();
+builder.Services.AddMassTransit();
 
 var app = builder.Build();
 
