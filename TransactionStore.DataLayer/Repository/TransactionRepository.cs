@@ -50,7 +50,7 @@ namespace TransactionStore.DataLayer.Repository
             using IDbConnection connection = Connection;
             _logger.LogInformation("Подключение произведено.");
 
-            var listId = await connection.QueryFirstOrDefaultAsync<dynamic>(
+            var result = await connection.QueryFirstOrDefaultAsync<(long, long)>(
             _transactionTransfer,
                 new
                 {
@@ -61,14 +61,13 @@ namespace TransactionStore.DataLayer.Repository
                     CurrencyFrom = transaction.CurrencyFrom,
                     CurrencyTo = transaction.CurrencyTo,
                     type = TransactionType.Transfer
-
                 },
                 commandType: CommandType.StoredProcedure
-                ) as IDictionary<string, object>;
-            _logger.LogInformation($"Транзакция типа Transfer с id = {(long)listId.Values.First()}, {(long)listId.Values.Last()} добавлены в БД.");
-            
-            return new List<long>() { (long)listId.Values.First(), (long)listId.Values.Last() };
+                );
 
+            _logger.LogInformation($"Транзакция типа Transfer с id = { result.Item1},{ result.Item2 } добавлены в БД.");
+
+            return new List<long> { result.Item1, result.Item2 };
         }
 
         public async Task<List<TransactionDto>> GetTransactionsByAccountId(long id)

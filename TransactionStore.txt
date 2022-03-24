@@ -7,3 +7,119 @@
 2022-03-22 21:51:48.1662|Info|Подключение произведено. | 
 2022-03-22 21:51:49.5590|Info|Транзакция типа Deposit с id = 49224119 добавлена в БД. | 
 2022-03-22 21:51:49.5590|Info|Транзакция типа Deposit с id = 49224119 успешно добавлена | 
+2022-03-24 14:51:05.1806|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 14:51:05.7014|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 14:51:46.0115|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 14:51:46.0563|Info|Запрос на добавление Transfer | 
+2022-03-24 14:51:46.0563|Info|Запрос на проверку валюты | 
+2022-03-24 14:51:46.0600|Info|Запрос на проверку валюты | 
+2022-03-24 14:51:46.0600|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 14:51:46.0900|Info|Валюта конвертирована | 
+2022-03-24 14:51:46.1282|Info|Подключение к базе данных. | 
+2022-03-24 14:51:46.1282|Info|Подключение произведено. | 
+2022-03-24 14:51:48.1401|Debug|Exception: Unable to cast object of type 'System.Int32' to type 'System.Int64'. | 
+2022-03-24 14:54:19.4556|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 14:54:19.5237|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 14:55:01.1420|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 14:55:07.7656|Info|Запрос на добавление Transfer | 
+2022-03-24 14:55:16.6142|Info|Запрос на проверку валюты | 
+2022-03-24 14:55:22.7903|Info|Запрос на проверку валюты | 
+2022-03-24 14:55:29.5741|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 14:55:51.5363|Info|Валюта конвертирована | 
+2022-03-24 14:56:02.7257|Info|Подключение к базе данных. | 
+2022-03-24 14:56:12.2265|Info|Подключение произведено. | 
+2022-03-24 15:01:08.2152|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:01:08.3450|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:01:51.0674|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 15:01:53.8589|Info|Запрос на добавление Transfer | 
+2022-03-24 15:01:54.0430|Info|Запрос на проверку валюты | 
+2022-03-24 15:01:54.1516|Info|Запрос на проверку валюты | 
+2022-03-24 15:01:54.1929|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 15:01:54.2194|Info|Валюта конвертирована | 
+2022-03-24 15:01:54.2755|Info|Подключение к базе данных. | 
+2022-03-24 15:01:54.2794|Info|Подключение произведено. | 
+2022-03-24 15:01:56.3288|Debug|Exception: Unable to cast object of type 'System.Int32' to type 'System.Int64'. | 
+2022-03-24 15:02:02.3238|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 15:02:06.7239|Info|Запрос на добавление Transfer | 
+2022-03-24 15:02:07.6111|Info|Запрос на проверку валюты | 
+2022-03-24 15:02:08.2694|Info|Запрос на проверку валюты | 
+2022-03-24 15:02:09.0557|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 15:02:09.0557|Info|Валюта конвертирована | 
+2022-03-24 15:02:11.1006|Info|Подключение к базе данных. | 
+2022-03-24 15:02:11.1234|Info|Подключение произведено. | 
+2022-03-24 15:02:11.7245|Debug|Exception: Unable to cast object of type 'System.Int32' to type 'System.Int64'. | 
+2022-03-24 15:02:43.9808|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 15:02:49.2317|Info|Запрос на добавление Transfer | 
+2022-03-24 15:02:54.5798|Info|Запрос на проверку валюты | 
+2022-03-24 15:02:58.6546|Info|Запрос на проверку валюты | 
+2022-03-24 15:03:04.4351|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 15:03:14.5133|Info|Валюта конвертирована | 
+2022-03-24 15:03:23.3448|Info|Подключение к базе данных. | 
+2022-03-24 15:03:24.8146|Info|Подключение произведено. | 
+2022-03-24 15:04:38.8649|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:04:38.9876|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:05:11.7633|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 15:05:11.8300|Info|Запрос на добавление Transfer | 
+2022-03-24 15:05:11.8300|Info|Запрос на проверку валюты | 
+2022-03-24 15:05:11.8428|Info|Запрос на проверку валюты | 
+2022-03-24 15:05:11.8428|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 15:05:11.8749|Info|Валюта конвертирована | 
+2022-03-24 15:05:11.9038|Info|Подключение к базе данных. | 
+2022-03-24 15:05:11.9038|Info|Подключение произведено. | 
+2022-03-24 15:05:14.2276|Debug|Exception: Unable to cast object of type 'System.Int32' to type 'System.Int64'. | 
+2022-03-24 15:08:56.8632|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:08:57.4059|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:09:30.1377|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 15:09:30.2009|Info|Запрос на добавление Transfer | 
+2022-03-24 15:09:30.2009|Info|Запрос на проверку валюты | 
+2022-03-24 15:09:30.2290|Info|Запрос на проверку валюты | 
+2022-03-24 15:09:30.2343|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 15:09:30.2614|Info|Валюта конвертирована | 
+2022-03-24 15:09:30.7721|Info|Подключение к базе данных. | 
+2022-03-24 15:09:30.7944|Info|Подключение произведено. | 
+2022-03-24 15:09:32.6133|Debug|Exception: The best overloaded method match for 'System.Collections.Generic.List<long>.Add(long)' has some invalid arguments | 
+2022-03-24 15:11:51.1065|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:11:51.2087|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:12:24.3278|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 15:12:24.4385|Info|Запрос на добавление Transfer | 
+2022-03-24 15:12:24.4385|Info|Запрос на проверку валюты | 
+2022-03-24 15:12:24.4385|Info|Запрос на проверку валюты | 
+2022-03-24 15:12:24.4509|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 15:12:24.4797|Info|Валюта конвертирована | 
+2022-03-24 15:12:24.5453|Info|Подключение к базе данных. | 
+2022-03-24 15:12:24.5453|Info|Подключение произведено. | 
+2022-03-24 15:12:27.9337|Debug|Exception: The best overloaded method match for 'System.Collections.Generic.List<long>.Add(long)' has some invalid arguments | 
+2022-03-24 15:14:24.7636|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:14:24.9037|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:15:09.1792|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 15:15:09.2438|Info|Запрос на добавление Transfer | 
+2022-03-24 15:15:09.2503|Info|Запрос на проверку валюты | 
+2022-03-24 15:15:09.2503|Info|Запрос на проверку валюты | 
+2022-03-24 15:15:09.2503|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 15:15:09.2814|Info|Валюта конвертирована | 
+2022-03-24 15:15:09.7515|Info|Подключение к базе данных. | 
+2022-03-24 15:15:09.7515|Info|Подключение произведено. | 
+2022-03-24 15:15:11.8300|Debug|Exception: The best overloaded method match for 'System.Collections.Generic.List<long>.Add(long)' has some invalid arguments | 
+2022-03-24 15:16:37.6717|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:16:37.8025|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:17:05.6171|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 15:17:05.6394|Info|Запрос на добавление Transfer | 
+2022-03-24 15:17:05.6394|Info|Запрос на проверку валюты | 
+2022-03-24 15:17:05.6394|Info|Запрос на проверку валюты | 
+2022-03-24 15:17:05.6394|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 15:17:05.6594|Info|Валюта конвертирована | 
+2022-03-24 15:17:05.6924|Info|Подключение к базе данных. | 
+2022-03-24 15:17:05.6924|Info|Подключение произведено. | 
+2022-03-24 15:17:06.7575|Debug|Exception: The best overloaded method match for 'System.Collections.Generic.List<long>.Add(long)' has some invalid arguments | 
+2022-03-24 15:37:12.5755|Info|Now listening on: https://localhost:7272 |address=https://localhost:7272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:37:12.6857|Info|Now listening on: http://localhost:5272 |address=http://localhost:5272, EventId_Id=14, EventId_Name=ListeningOnAddress, EventId=ListeningOnAddress 
+2022-03-24 15:38:09.9599|Info|Запрос на добавление Transfer в контроллере | 
+2022-03-24 15:38:09.9839|Info|Запрос на добавление Transfer | 
+2022-03-24 15:38:09.9839|Info|Запрос на проверку валюты | 
+2022-03-24 15:38:09.9839|Info|Запрос на проверку валюты | 
+2022-03-24 15:38:09.9839|Info|Запрос на конвертацию валюты с RSD в RUB  | 
+2022-03-24 15:38:10.0063|Info|Валюта конвертирована | 
+2022-03-24 15:38:10.0362|Info|Подключение к базе данных. | 
+2022-03-24 15:38:10.0480|Info|Подключение произведено. | 
+2022-03-24 15:38:10.6775|Info|Транзакция типа Transfer с id = 49224160,49224161 добавлены в БД. | 
+2022-03-24 15:38:10.6843|Info|Транзакция типа Transfer успешно добавлены | 

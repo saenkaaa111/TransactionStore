@@ -39,7 +39,7 @@ namespace TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource
 
             };
 
-            int id = 1;
+            long id = 1;
 
             yield return new object[] { withdraw, accountTransactions, id };
         }

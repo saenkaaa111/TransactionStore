@@ -23,23 +23,21 @@ namespace TransactionStore.BusinessLayer.Tests
             { Currency.GBP, 0.7m },
         };
 
-        //[SetUp]
-        //public void Setup()
-        //{
-        //    var currencyRates = new Mock<ICurrencyRates>();
-        //    _logger = new Mock<ILogger<CalculationService>>();
-        //    _calculationService = new CalculationService(currencyRates.Object, _transactionRepository, _logger.Object);
-        //}
+        [SetUp]
+        public void Setup()
+        {
+            var currencyRates = new Mock<ICurrencyRates>();
+            _logger = new Mock<ILogger<CalculationService>>();
+            _calculationService = new CalculationService(_transactionRepository, currencyRates.Object,  _logger.Object);
+        }
 
-        //[TestCase(Currency.RUB, Currency.EUR, 0.7759)]
-        //[TestCase(Currency.GBP, Currency.CNY, 900)]
-        //public void ConvertCurrencyTest(Currency currencyFrom, Currency currencyTo, decimal expected)
-        //{
-        //    var actual = _calculationService.ConvertCurrency(currencyFrom, currencyTo, 100.0m);
+        [TestCase(Currency.RUB, Currency.EUR, 0.7759)]
+        [TestCase(Currency.GBP, Currency.CNY, 900)]
+        public void ConvertCurrencyTest(Currency currencyFrom, Currency currencyTo, decimal expected)
+        {
+            var actual = _calculationService.ConvertCurrency(currencyFrom, currencyTo, 100.0m);
 
-        //    Assert.AreEqual(expected, actual);
-        //}
-
-
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
