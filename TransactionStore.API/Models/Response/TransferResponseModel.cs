@@ -1,6 +1,6 @@
 ﻿using Marvelous.Contracts;
 
-namespace TransactionStore.API.Models.Response
+namespace TransactionStore.API.Models
 {
     public class TransferResponseModel
     {

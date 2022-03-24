@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Marvelous.Contracts.ExchangeModels;
+using MassTransit;
 using NLog.Extensions.Logging;
 using TransactionStore.API.Consumers;
 using TransactionStore.BusinessLayer.Services;
@@ -36,14 +37,16 @@ namespace TransactionStore.API
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<CurrencyRatesConsumer>();
-
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host("rabbitmq://80.78.240.16", hst =>
                     {
                         hst.Username("nafanya");
                         hst.Password("qwe!23");
-
+                    });
+                    cfg.Publish<TransactionExchangeModel>(p =>
+                    {
+                        p.BindAlternateExchangeQueue("alternate-exchange", "alternate-queue");
                     });
                     cfg.ReceiveEndpoint("currencyRatesQueue", e =>
                     {
@@ -51,8 +54,6 @@ namespace TransactionStore.API
                     });
                 });
             });
-
-            //services.AddMassTransitHostedService();
         }
     }
 }

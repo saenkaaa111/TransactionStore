@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Marvelous.Contracts;
+using Marvelous.Contracts.RequestModels;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections;
@@ -123,11 +123,11 @@ namespace TransactionStore.API.Controller
         [HttpGet("balanse-by-{accountId}")]
         [SwaggerOperation(Summary = "Get balanse by accountId")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
-        public ActionResult<decimal> GetBalanceByAccountId(long accountId)
+        public async Task <ActionResult<decimal>> GetBalanceByAccountId(long accountId)
         {
             _logger.LogInformation($"Запрос на получение баланса по accountId = {accountId} в контроллере");
 
-            var balance = _transactionService.GetBalanceByAccountId(accountId);
+            var balance = await _transactionService.GetBalanceByAccountId(accountId);
 
             _logger.LogInformation($"Баланс успешно получен");
 

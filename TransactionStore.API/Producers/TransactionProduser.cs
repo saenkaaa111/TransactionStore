@@ -1,40 +1,40 @@
-﻿using MassTransit;
+﻿using Marvelous.Contracts;
+using Marvelous.Contracts.ExchangeModels;
+using MassTransit;
 using TransactionStore.BusinessLayer.Services;
-using Marvelous.Contracts.Models.ExchangeModels;
-using TransactionStore.API.Models;
-using Marvelous.Contracts;
-using TransactionStore.API.Consumers;
 
 namespace TransactionStore.API.Producers
 {
-    public class TransactionProduser
+    public class TransactionProduser 
     {
         private readonly ITransactionService _transactionService;
-        private readonly ILogger<CurrencyRatesConsumer> _logger;
+        private readonly ICalculationService _calculationService;
+        private readonly ILogger<TransactionProduser> _logger;
 
-        public TransactionProduser(ITransactionService transactionService,
-            ILogger<CurrencyRatesConsumer> logger)
+        public TransactionProduser(ITransactionService transactionService, ICalculationService calculationService,
+            ILogger<TransactionProduser> logger)
         {
             _transactionService = transactionService;
+            _calculationService = calculationService;
             _logger = logger;
         }
 
-
         public async Task NotifyTransactionAdded(IPublishEndpoint publishEndpoint, long id)
         {
-            //var transaction = _transactionService.GetTransactionById(id);
-            await publishEndpoint.Publish<TransactionResponseModel>(new 
+            var transaction = await _transactionService.GetTransactionById(id);
+
+            await publishEndpoint.Publish<TransactionExchangeModel>(new TransactionExchangeModel
             {
-                id = id,
-                Amount = 345,
-                Date = DateTime.UtcNow,
-                AccountId = 56,
-                Type = 2,
-                Currency =102
-
+                transaction.Id,
+                transaction.Amount,
+                transaction.Date,
+                transaction.AccountId,
+                transaction.Type,
+                transaction.Currency,
+                RubRate = _calculationService.ConvertCurrency(transaction.Currency, Currency.RUB, 1)
             });
-            _logger.LogInformation("Send Transaction");
 
+            _logger.LogInformation("Transaction published");
         }
     }
 }

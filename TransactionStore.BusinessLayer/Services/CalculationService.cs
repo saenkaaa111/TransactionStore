@@ -1,5 +1,5 @@
 ﻿using Marvelous.Contracts;
-using Marvelous.Contracts.Models.ExchangeModels;
+using Marvelous.Contracts.ExchangeModels;
 using Microsoft.Extensions.Logging;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;

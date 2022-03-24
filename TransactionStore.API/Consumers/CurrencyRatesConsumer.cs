@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 using TransactionStore.BusinessLayer.Services;
-using Marvelous.Contracts.Models.ExchangeModels;
+using Marvelous.Contracts.ExchangeModels;
 
 namespace TransactionStore.API.Consumers
 {

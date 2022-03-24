@@ -1,5 +1,4 @@
-﻿
-using Marvelous.Contracts.Models.ExchangeModels;
+﻿using Marvelous.Contracts.ExchangeModels;
 
 namespace TransactionStore.BusinessLayer.Services
 {
