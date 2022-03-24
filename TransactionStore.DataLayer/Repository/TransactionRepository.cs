@@ -1,8 +1,8 @@
 ﻿using Dapper;
+using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using System.Data;
 using TransactionStore.DataLayer.Entities;
-using Marvelous.Contracts;
 
 namespace TransactionStore.DataLayer.Repository
 {
@@ -66,7 +66,7 @@ namespace TransactionStore.DataLayer.Repository
                 commandType: CommandType.StoredProcedure
                 ) as IDictionary<string, object>;
             _logger.LogInformation($"Транзакция типа Transfer с id = {(long)listId.Values.First()}, {(long)listId.Values.Last()} добавлены в БД.");
-            
+
             return new List<long>() { (long)listId.Values.First(), (long)listId.Values.Last() };
 
         }
@@ -87,7 +87,7 @@ namespace TransactionStore.DataLayer.Repository
 
             return listTransactions;
         }
-        
+
         public async Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(long id)
         {
             _logger.LogInformation("Подключение к базе данных.");
