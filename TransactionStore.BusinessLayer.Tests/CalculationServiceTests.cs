@@ -1,7 +1,6 @@
-﻿using Marvelous.Contracts;
+﻿using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NUnit.Framework;
 using System.Collections.Generic;
 using TransactionStore.BusinessLayer.Services;
 using TransactionStore.DataLayer.Repository;
@@ -15,7 +14,7 @@ namespace TransactionStore.BusinessLayer.Tests
         private Mock<ILogger<CalculationService>> _logger;
 
         private Dictionary<Currency, decimal> _rates = new()
-        { 
+        {
             { Currency.USD, 1m },
             { Currency.RUB, 116m },
             { Currency.EUR, 0.9m },

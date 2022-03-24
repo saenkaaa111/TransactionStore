@@ -1,4 +1,4 @@
-﻿using Marvelous.Contracts;
+﻿using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.ExchangeModels;
 using Microsoft.Extensions.Logging;
 using TransactionStore.DataLayer.Entities;
@@ -8,7 +8,7 @@ namespace TransactionStore.BusinessLayer.Services
 {
     public class CalculationService : ICalculationService
     {
-        public CurrencyRatesExchangeModel RatesModel { get; set; }
+        public ICurrencyRatesExchangeModel RatesModel { get; set; }
         private readonly ITransactionRepository _transactionRepository;
         private readonly ILogger<CalculationService> _logger;
         public const Currency BaseCurrency = Currency.USD;

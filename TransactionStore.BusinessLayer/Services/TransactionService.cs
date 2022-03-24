@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Marvelous.Contracts;
+using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using System.Collections;
 using TransactionStore.BusinessLayer.Models;
@@ -45,7 +45,7 @@ namespace TransactionStore.BusinessLayer.Services
 
             var transferDto = _mapper.Map<TransferDto>(transactionModel);
             transferDto.ConvertedAmount = convertResult;
-            return await _transactionRepository.AddTransfer(transferDto);             
+            return await _transactionRepository.AddTransfer(transferDto);
         }
 
         public async Task<long> Withdraw(TransactionModel transactionModel)
@@ -54,7 +54,7 @@ namespace TransactionStore.BusinessLayer.Services
             CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
             var accountBalance = await GetBalanceByAccountId(transactionModel.AccountId);
-            
+
             if (withdraw.Amount < accountBalance)
             {
                 withdraw.Amount = transactionModel.Amount *= -1;
@@ -135,7 +135,7 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<decimal> GetBalanceByAccountIds(List<long> accountId)
         {
             _logger.LogInformation($"Запрос на получение баланса по accountIds");
-            
+
             var balance = await _calculationService.GetAccountBalance(accountId);
             return balance;
         }
@@ -147,7 +147,7 @@ namespace TransactionStore.BusinessLayer.Services
                 currency == Currency.EUR || currency == Currency.JPY ||
                 currency == Currency.CNY || currency == Currency.RSD ||
                 currency == Currency.TRY)
-                 return true;            
+                return true;
             else
                 throw new InsufficientFundsException("Значение валюты не было получено");
         }

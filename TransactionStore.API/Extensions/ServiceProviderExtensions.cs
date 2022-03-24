@@ -2,6 +2,7 @@
 using MassTransit;
 using NLog.Extensions.Logging;
 using TransactionStore.API.Consumers;
+using TransactionStore.API.Producers;
 using TransactionStore.BusinessLayer.Services;
 using TransactionStore.DataLayer.Repository;
 
@@ -12,6 +13,7 @@ namespace TransactionStore.API
         public static void AddTransactionStoreServices(this IServiceCollection services)
         {
             services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<ITransactionProducer, TransactionProducer>();
             services.AddScoped<ICalculationService, CalculationService>();
             services.AddScoped<ICurrencyRatesService, CurrencyRatesService>();
         }
@@ -44,10 +46,7 @@ namespace TransactionStore.API
                         hst.Username("nafanya");
                         hst.Password("qwe!23");
                     });
-                    cfg.Publish<TransactionExchangeModel>(p =>
-                    {
-                        p.BindAlternateExchangeQueue("alternate-exchange", "alternate-queue");
-                    });
+                    
                     cfg.ReceiveEndpoint("currencyRatesQueue", e =>
                     {
                         e.ConfigureConsumer<CurrencyRatesConsumer>(context);
