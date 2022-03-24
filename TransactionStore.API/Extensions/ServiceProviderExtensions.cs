@@ -39,6 +39,12 @@ namespace TransactionStore.API
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
+                    cfg.Host("rabbitmq://80.78.240.16", hst =>
+                    {
+                        hst.Username("nafanya");
+                        hst.Password("qwe!23");
+
+                    });
                     cfg.ReceiveEndpoint("currencyRatesQueue", e =>
                     {
                         e.ConfigureConsumer<CurrencyRatesConsumer>(context);
