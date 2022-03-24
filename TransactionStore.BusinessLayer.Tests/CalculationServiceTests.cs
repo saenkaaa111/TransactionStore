@@ -1,6 +1,7 @@
 ﻿using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NUnit.Framework;
 using System.Collections.Generic;
 using TransactionStore.BusinessLayer.Services;
 using TransactionStore.DataLayer.Repository;
@@ -25,7 +26,7 @@ namespace TransactionStore.BusinessLayer.Tests
         [SetUp]
         public void Setup()
         {
-            var currencyRates = new Mock<ICurrencyRates>();
+            var currencyRates = new Mock<ICurrencyRatesService>();
             _logger = new Mock<ILogger<CalculationService>>();
             _calculationService = new CalculationService(_transactionRepository, currencyRates.Object,  _logger.Object);
         }

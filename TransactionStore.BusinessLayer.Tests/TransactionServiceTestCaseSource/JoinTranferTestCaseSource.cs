@@ -1,4 +1,5 @@
 ﻿using Marvelous.Contracts;
+using Marvelous.Contracts.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -68,7 +69,7 @@ namespace TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource
                 },
                 new TransactionDto
                 {
-                    Type = TransactionType.Service,
+                    Type = TransactionType.ServicePayment,
                 },
             };
 
