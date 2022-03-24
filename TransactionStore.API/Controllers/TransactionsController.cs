@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using Marvelous.Contracts;
+using Marvelous.Contracts.RequestModels;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections;
 using TransactionStore.API.Models;
+using TransactionStore.API.Producers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
 
@@ -16,13 +17,15 @@ namespace TransactionStore.API.Controller
         private readonly ITransactionService _transactionService;
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionsController> _logger;
+        private readonly ITransactionProducer _transactionProducer;
 
         public TransactionsController(ITransactionService transactionService, IMapper mapper,
-            ILogger<TransactionsController> logger)
+            ILogger<TransactionsController> logger, ITransactionProducer transactionProducer)
         {
             _transactionService = transactionService;
             _mapper = mapper;
             _logger = logger;
+            _transactionProducer = transactionProducer;
         }
 
         // api/transaction/
@@ -37,7 +40,7 @@ namespace TransactionStore.API.Controller
             var transactionId = await _transactionService.AddDeposit(transactionModel);
 
             _logger.LogInformation($"Транзакция типа Deposit с id = {transactionId} успешно добавлена");
-
+            await _transactionProducer.Main(transactionId);
             return Ok(transactionId);
         }
 
@@ -54,7 +57,8 @@ namespace TransactionStore.API.Controller
             var transferIds = await _transactionService.AddTransfer(transferModel);
             
             _logger.LogInformation($"Транзакция типа Transfer успешно добавлены");
-
+            await _transactionProducer.Main(transferIds[0]);
+            await _transactionProducer.Main(transferIds[1]);
             return Ok(transferIds);
         }
 
@@ -69,7 +73,7 @@ namespace TransactionStore.API.Controller
             var transactionId = await _transactionService.Withdraw(transactionModel);
 
             _logger.LogInformation($"Транзакция типа Withdraw с id = {transactionId} успешно добавлена");
-
+            await _transactionProducer.Main(transactionId);
             return Ok(transactionId);
         }
 
@@ -123,11 +127,11 @@ namespace TransactionStore.API.Controller
         [HttpGet("balanse-by-{accountId}")]
         [SwaggerOperation(Summary = "Get balanse by accountId")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
-        public ActionResult<decimal> GetBalanceByAccountId(long accountId)
+        public async Task <ActionResult<decimal>> GetBalanceByAccountId(long accountId)
         {
             _logger.LogInformation($"Запрос на получение баланса по accountId = {accountId} в контроллере");
 
-            var balance = _transactionService.GetBalanceByAccountId(accountId);
+            var balance = await _transactionService.GetBalanceByAccountId(accountId);
 
             _logger.LogInformation($"Баланс успешно получен");
 

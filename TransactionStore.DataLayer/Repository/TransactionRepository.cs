@@ -1,8 +1,8 @@
 ﻿using Dapper;
+using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using System.Data;
 using TransactionStore.DataLayer.Entities;
-using Marvelous.Contracts;
 
 namespace TransactionStore.DataLayer.Repository
 {
@@ -86,7 +86,7 @@ namespace TransactionStore.DataLayer.Repository
 
             return listTransactions;
         }
-        
+
         public async Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(long id)
         {
             _logger.LogInformation("Подключение к базе данных.");

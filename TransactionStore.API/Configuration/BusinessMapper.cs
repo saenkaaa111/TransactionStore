@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Marvelous.Contracts;
+using Marvelous.Contracts.RequestModels;
 using TransactionStore.API.Models;
 using TransactionStore.BusinessLayer.Models;
 
