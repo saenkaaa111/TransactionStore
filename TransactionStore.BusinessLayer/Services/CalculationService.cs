@@ -48,7 +48,7 @@ namespace TransactionStore.BusinessLayer.Services
             if (currencyFromValue == 0 || currencyToValue == 0)
                 throw new InsufficientFundsException("Значение валюты не было получено");
 
-            var convertAmount = decimal.Round(currencyToValue / currencyFromValue * amount, 4);
+            var convertAmount = decimal.Round(currencyToValue / currencyFromValue * amount, 2);
 
             _logger.LogInformation("Валюта конвертирована");
             return convertAmount;
