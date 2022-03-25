@@ -24,9 +24,9 @@ namespace TransactionStore.DataLayer.Repository
 
         public async Task<long> AddTransaction(TransactionDto transaction)
         {
-            _logger.LogInformation("Подключение к базе данных.");
+            _logger.LogInformation("Connecting to the database");
             using IDbConnection connection = Connection;
-            _logger.LogInformation("Подключение произведено.");
+            _logger.LogInformation("Connection made");
 
             var id = await connection.QueryFirstOrDefaultAsync<long>(
                 _transactionAddProcedure,
@@ -40,15 +40,16 @@ namespace TransactionStore.DataLayer.Repository
                 commandType: CommandType.StoredProcedure
             );
 
-            _logger.LogInformation($"Транзакция типа {transaction.Type} с id = {id} добавлена в БД.");
+            _logger.LogInformation($"{transaction.Type} with id = {id} added in database");
+
             return id;
         }
 
         public async Task<List<long>> AddTransfer(TransferDto transaction)
         {
-            _logger.LogInformation("Подключение к базе данных.");
+            _logger.LogInformation("Connecting to the database");
             using IDbConnection connection = Connection;
-            _logger.LogInformation("Подключение произведено.");
+            _logger.LogInformation("Connection made");
 
             var result = await connection.QueryFirstOrDefaultAsync<(long, long)>(
             _transactionTransfer,
@@ -65,16 +66,16 @@ namespace TransactionStore.DataLayer.Repository
                 commandType: CommandType.StoredProcedure
                 );
 
-            _logger.LogInformation($"Транзакция типа Transfer с id = { result.Item1},{ result.Item2 } добавлены в БД.");
+            _logger.LogInformation($"Transfers with ids = { result.Item1},{ result.Item2 } added in database");
 
             return new List<long> { result.Item1, result.Item2 };
         }
 
         public async Task<List<TransactionDto>> GetTransactionsByAccountId(long id)
         {
-            _logger.LogInformation("Подключение к базе данных.");
+            _logger.LogInformation("Connecting to the database");
             using IDbConnection connection = Connection;
-            _logger.LogInformation("Подключение произведено.");
+            _logger.LogInformation("Connection made");
 
             var listTransactions = (await connection.QueryAsync<TransactionDto>(
                 _transactionGetByAccountIdProcedure,
@@ -82,16 +83,16 @@ namespace TransactionStore.DataLayer.Repository
                 commandType: CommandType.StoredProcedure
             )).ToList();
 
-            _logger.LogInformation($"Транзакция по AccountId = {id} получены.");
+            _logger.LogInformation($"Transactions by AccountId = {id} recieved");
 
             return listTransactions;
         }
 
         public async Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(long id)
         {
-            _logger.LogInformation("Подключение к базе данных.");
+            _logger.LogInformation("Connecting to the database");
             using IDbConnection connection = Connection;
-            _logger.LogInformation("Подключение произведено.");
+            _logger.LogInformation("Connection made");
 
             var listTransactions = (await connection.QueryAsync<TransactionDto>(
                 _transactionGetByAccountIdMinimalProcedure,
@@ -99,16 +100,16 @@ namespace TransactionStore.DataLayer.Repository
                 commandType: CommandType.StoredProcedure
             )).ToList();
 
-            _logger.LogInformation($"Транзакция по AccountId = {id} получены.");
+            _logger.LogInformation($"Transactions by  AccountId = {id} recieved");
 
             return listTransactions;
         }
 
         public async Task<List<TransactionDto>> GetTransactionsByAccountIds(List<long> accountIds)
         {
-            _logger.LogInformation("Подключение к базе данных.");
+            _logger.LogInformation("Connecting to the database");
             using IDbConnection connection = Connection;
-            _logger.LogInformation("Подключение произведено.");
+            _logger.LogInformation("Connection made");
 
             var tvpTable = new DataTable();
             tvpTable.Columns.Add(new DataColumn("AccountId", typeof(long)));
@@ -121,38 +122,41 @@ namespace TransactionStore.DataLayer.Repository
                ))
                .ToList();
 
-            _logger.LogInformation($"Транзакция по AccountIds = {accountIds} получены.");
+            _logger.LogInformation($"Transactions by AccountIds recieved");
 
             return listTransactions;
         }
 
         public async Task<TransactionDto> GetTransactionById(long id)
         {
-            _logger.LogInformation("Подключение к базе данных.");
+            _logger.LogInformation("Connecting to the database");
             using IDbConnection connection = Connection;
-            _logger.LogInformation("Подключение произведено.");
+            _logger.LogInformation("Connection made");
 
             var transactionDto = await connection.QuerySingleAsync<TransactionDto>(
                 _transactionGetByIdProcedure, new { Id = id },
                 commandType: CommandType.StoredProcedure);
 
-            _logger.LogInformation($"Транзакция по Id = {id} получена.");
+            _logger.LogInformation($"Transaction by Id = {id} recieved");
 
             return transactionDto;
         }
 
         public async Task<decimal> GetAccountBalance(long id)
         {
-            _logger.LogInformation("Подключение к базе данных.");
+            _logger.LogInformation("Connecting to the database");
             using IDbConnection connection = Connection;
-            _logger.LogInformation("Подключение произведено.");
+            _logger.LogInformation("Connection made");
 
-            return await connection.QuerySingleAsync<decimal>(
+            var balance = await connection.QuerySingleAsync<decimal>(
                 _transactionGetAccountBalance,
                  new { Id = id },
                 commandType: CommandType.StoredProcedure
                 );
 
+            _logger.LogInformation($"Balance by AccountId recieved");
+
+            return balance;
         }
     }
 }

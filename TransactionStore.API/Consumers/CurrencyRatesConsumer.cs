@@ -23,7 +23,5 @@ namespace TransactionStore.API.Consumers
 
             return Task.CompletedTask;
         }
-
-
     }
 }

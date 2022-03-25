@@ -1,5 +1,4 @@
-﻿using Marvelous.Contracts.ExchangeModels;
-using MassTransit;
+﻿using MassTransit;
 using NLog.Extensions.Logging;
 using TransactionStore.API.Consumers;
 using TransactionStore.API.Producers;
@@ -15,7 +14,7 @@ namespace TransactionStore.API
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ITransactionProducer, TransactionProducer>();
             services.AddScoped<ICalculationService, CalculationService>();
-            services.AddScoped<ICurrencyRatesService, CurrencyRatesService>();
+            services.AddSingleton<ICurrencyRatesService, CurrencyRatesService>();
         }
 
         public static void AddTransactionStoreRepositories(this IServiceCollection services)
@@ -46,8 +45,8 @@ namespace TransactionStore.API
                         hst.Username("nafanya");
                         hst.Password("qwe!23");
                     });
-                    
-                    cfg.ReceiveEndpoint("currencyRatesQueue", e =>
+
+                    cfg.ReceiveEndpoint("currencyRatesQueue_DDDDDDD", e =>
                     {
                         e.ConfigureConsumer<CurrencyRatesConsumer>(context);
                     });
