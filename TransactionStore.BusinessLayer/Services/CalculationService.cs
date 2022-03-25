@@ -1,6 +1,7 @@
 ﻿using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.ExchangeModels;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
 
@@ -8,7 +9,7 @@ namespace TransactionStore.BusinessLayer.Services
 {
     public class CalculationService : ICalculationService
     {
-        public ICurrencyRatesExchangeModel RatesModel { get; set; }
+        private ICurrencyRatesService _ratesService;
         private readonly ITransactionRepository _transactionRepository;
         private readonly ILogger<CalculationService> _logger;
         public const Currency BaseCurrency = Currency.USD;
@@ -18,13 +19,24 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger = logger;
             _transactionRepository = transactionRepository;
+            _ratesService = currencyRates;
         }
 
         public decimal ConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal amount)
         {
             _logger.LogInformation($"Запрос на конвертацию валюты с {currencyFrom} в {currencyTo} ");
-            var rates = RatesModel.Rates;
-
+            var rates = _ratesService.Pairs;
+            
+            if (rates == null)
+            {
+                string jsonread = File.ReadAllText("dictionary.json");
+                rates = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(jsonread);                
+            }
+            else
+            {
+                string json = JsonConvert.SerializeObject(rates, Formatting.Indented);
+                File.WriteAllText("dictionary.json", json);
+            }
             rates.TryGetValue($"{BaseCurrency}{currencyFrom}", out var currencyFromValue);
             rates.TryGetValue($"{BaseCurrency}{currencyTo}", out var currencyToValue);
 
