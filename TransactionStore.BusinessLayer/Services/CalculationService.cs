@@ -46,7 +46,7 @@ namespace TransactionStore.BusinessLayer.Services
                 currencyToValue = 1m;
 
             if (currencyFromValue == 0 || currencyToValue == 0)
-                throw new Exception("The request for the currency value was not received");
+                throw new CurrencyNotReceivedException("The request for the currency value was not received");
 
             var convertAmount = decimal.Round(currencyToValue / currencyFromValue * amount, 2);
 
@@ -64,15 +64,18 @@ namespace TransactionStore.BusinessLayer.Services
             {
                 var listTransactionsFromOneAccount = new List<TransactionDto>();
                 listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountIdMinimal(item);
+
                 foreach (var transaction in listTransactionsFromOneAccount)
                 {
                     listTransactions.Add(transaction);
                 }
             }
+
             _logger.LogInformation("Transactions received");
 
             if (listTransactions.Count == 0)
                 throw new NullReferenceException("No transactions found");
+
             decimal balance = 0;
 
             foreach (var item in listTransactions)

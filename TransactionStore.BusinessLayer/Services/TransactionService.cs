@@ -76,6 +76,7 @@ namespace TransactionStore.BusinessLayer.Services
             var listTransaction = _mapper.Map<List<TransactionModel>>(transactions);
             var transactionsWithoutTransfer = listTransaction.Where(x => x.Type != TransactionType.Transfer);
             var resultList = new ArrayList();
+
             foreach (var item in transactionsWithoutTransfer)
             {
                 resultList.Add(item);
@@ -167,7 +168,7 @@ namespace TransactionStore.BusinessLayer.Services
                 currency == Currency.TRY)
                 return true;
             else
-                throw new Exception("The request for the currency value was not received");
+                throw new CurrencyNotReceivedException("The request for the currency value was not received");
         }
     }
 }
