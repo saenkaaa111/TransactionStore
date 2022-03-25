@@ -1,6 +1,7 @@
 ﻿using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using TransactionStore.BusinessLayer.Exceptions;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
 

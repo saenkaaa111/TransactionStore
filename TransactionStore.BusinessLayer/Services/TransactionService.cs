@@ -2,6 +2,7 @@
 using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using System.Collections;
+using TransactionStore.BusinessLayer.Exceptions;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
