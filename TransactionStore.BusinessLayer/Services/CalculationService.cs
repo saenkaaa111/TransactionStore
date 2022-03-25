@@ -1,5 +1,4 @@
 ﻿using Marvelous.Contracts.Enums;
-using Marvelous.Contracts.ExchangeModels;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TransactionStore.DataLayer.Entities;
@@ -26,11 +25,11 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger.LogInformation($"Запрос на конвертацию валюты с {currencyFrom} в {currencyTo} ");
             var rates = _ratesService.Pairs;
-            
+
             if (rates == null)
             {
                 string jsonread = File.ReadAllText("dictionary.json");
-                rates = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(jsonread);                
+                rates = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(jsonread);
             }
             else
             {

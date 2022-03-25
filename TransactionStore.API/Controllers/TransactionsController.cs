@@ -53,9 +53,9 @@ namespace TransactionStore.API.Controller
             _logger.LogInformation("Запрос на добавление Transfer в контроллере");
 
             var transferModel = _mapper.Map<TransferModel>(transfer);
-            
+
             var transferIds = await _transactionService.AddTransfer(transferModel);
-            
+
             _logger.LogInformation($"Транзакция типа Transfer успешно добавлены");
             await _transactionProducer.Main(transferIds[0]);
             await _transactionProducer.Main(transferIds[1]);
@@ -127,7 +127,7 @@ namespace TransactionStore.API.Controller
         [HttpGet("balanse-by-{accountId}")]
         [SwaggerOperation(Summary = "Get balanse by accountId")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
-        public async Task <ActionResult<decimal>> GetBalanceByAccountId(long accountId)
+        public async Task<ActionResult<decimal>> GetBalanceByAccountId(long accountId)
         {
             _logger.LogInformation($"Запрос на получение баланса по accountId = {accountId} в контроллере");
 

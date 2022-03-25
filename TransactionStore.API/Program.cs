@@ -4,7 +4,6 @@ using System.Data.SqlClient;
 using TransactionStore.API;
 using TransactionStore.API.Configuration;
 using TransactionStore.API.Middleware;
-using TransactionStore.API.Producers;
 using TransactionStore.BuisnessLayer.Configuration;
 
 
