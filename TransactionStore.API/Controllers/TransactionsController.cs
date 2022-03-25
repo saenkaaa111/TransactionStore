@@ -34,13 +34,14 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(StatusCodes.Status201Created, "Deposit added", typeof(long))]
         public async Task<ActionResult<long>> AddDeposit([FromBody] TransactionRequestModel transaction)
         {
-            _logger.LogInformation("Запрос на добавление Deposit в контроллере");
+            _logger.LogInformation("Request to add Deposit in the controller");
 
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             var transactionId = await _transactionService.AddDeposit(transactionModel);
 
-            _logger.LogInformation($"Транзакция типа Deposit с id = {transactionId} успешно добавлена");
+            _logger.LogInformation($"Deposit with id = {transactionId} added");
             await _transactionProducer.Main(transactionId);
+
             return Ok(transactionId);
         }
 
@@ -50,15 +51,15 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(StatusCodes.Status200OK, "Transfer successful", typeof(List<long>))]
         public async Task<ActionResult<List<long>>> AddTransfer([FromBody] TransferRequestModel transfer)
         {
-            _logger.LogInformation("Запрос на добавление Transfer в контроллере");
+            _logger.LogInformation("Request to add Transfer in the controller");
 
             var transferModel = _mapper.Map<TransferModel>(transfer);
-            
             var transferIds = await _transactionService.AddTransfer(transferModel);
             
-            _logger.LogInformation($"Транзакция типа Transfer успешно добавлены");
+            _logger.LogInformation($"Transfer added");
             await _transactionProducer.Main(transferIds[0]);
             await _transactionProducer.Main(transferIds[1]);
+
             return Ok(transferIds);
         }
 
@@ -67,13 +68,14 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(StatusCodes.Status200OK, "Withdraw successful", typeof(long))]
         public async Task<ActionResult<long>> Withdraw([FromBody] TransactionRequestModel transaction)
         {
-            _logger.LogInformation("Запрос на добавление Withdraw в контроллере");
+            _logger.LogInformation("Request to add Withdraw in the controller");
 
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             var transactionId = await _transactionService.Withdraw(transactionModel);
 
-            _logger.LogInformation($"Транзакция типа Withdraw с id = {transactionId} успешно добавлена");
+            _logger.LogInformation($"Withdraw with id = {transactionId} added");
             await _transactionProducer.Main(transactionId);
+
             return Ok(transactionId);
         }
 
@@ -83,12 +85,12 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(ArrayList))]
         public async Task<ActionResult<ArrayList>> GetTransactionsByAccountId(long accountId)
         {
-            _logger.LogInformation($"Запрос на получение всех транзакций по AccountId = {accountId} в контроллере");
+            _logger.LogInformation($"Request to receive all transactions by AccountId = {accountId} in the controller");
 
             var transactionModel = await _transactionService.GetTransactionsByAccountId(accountId);
             var transactions = _mapper.Map<ArrayList>(transactionModel);
 
-            _logger.LogInformation($"Транзакция по AccountId = {accountId} успешно получены");
+            _logger.LogInformation($"Transactions by AccountId = {accountId} received");
 
             return Ok(transactions);
         }
@@ -99,12 +101,12 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<TransactionResponseModel>))]
         public async Task<ActionResult<List<TransactionResponseModel>>> GetTransactionsByAccountIds([FromQuery] List<long> accountIds)
         {
-            _logger.LogInformation($"Запрос на получение всех транзакций по AccountIds  в контроллере");
+            _logger.LogInformation($"Request to receive all transactions by AccountIds in the controller");
 
             var transactionModels = await _transactionService.GetTransactionsByAccountIds(accountIds);
             var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModels);
 
-            _logger.LogInformation($"Транзакция по AccountIds = {accountIds} успешно получены");
+            _logger.LogInformation($"Transactions by AccountIds received");
 
             return Ok(transactions);
         }
@@ -114,12 +116,12 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(TransactionResponseModel))]
         public async Task<ActionResult<TransactionResponseModel>> GetTransactionById(long id)
         {
-            _logger.LogInformation($"Запрос на получение транзакции по Id = {id} в контроллере");
+            _logger.LogInformation($"Request to receive transaction by Id = {id} in the controller");
 
             var transactionModel = await _transactionService.GetTransactionById(id);
             var transaction = _mapper.Map<TransactionResponseModel>(transactionModel);
 
-            _logger.LogInformation($"Транзакция по Id = {id} успешно получена");
+            _logger.LogInformation($"Transactions by AccountId = {id} received");
 
             return Ok(transaction);
         }
@@ -129,11 +131,11 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
         public async Task <ActionResult<decimal>> GetBalanceByAccountId(long accountId)
         {
-            _logger.LogInformation($"Запрос на получение баланса по accountId = {accountId} в контроллере");
+            _logger.LogInformation($"Request to receive a balance by AccountId = {accountId} in the controller");
 
             var balance = await _transactionService.GetBalanceByAccountId(accountId);
 
-            _logger.LogInformation($"Баланс успешно получен");
+            _logger.LogInformation($"Balance received");
 
             return Ok(balance);
         }
@@ -142,12 +144,13 @@ namespace TransactionStore.API.Controller
         [HttpGet("balanse-by-accountIds")]
         [SwaggerOperation(Summary = "Get balance by accountIds")]
         [SwaggerResponse(200, "OK")]
-        public async Task<ActionResult> GetBalanceByAccountId([FromQuery] List<long> accountIds)
+        public async Task<ActionResult> GetBalanceByAccountIds([FromQuery] List<long> accountIds)
         {
+            _logger.LogInformation($"Request to receive a balance by AccountIds in the controller");
 
             var balance = await _transactionService.GetBalanceByAccountIds(accountIds);
 
-            _logger.LogInformation($"Баланс успешно получен");
+            _logger.LogInformation($"Balance received");
 
             return Ok(balance);
         }
@@ -157,12 +160,12 @@ namespace TransactionStore.API.Controller
         [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(int))]
         public async Task<ActionResult<long>> ServicePayment([FromBody] TransactionRequestModel transaction)
         {
-            _logger.LogInformation("Запрос на добавление Service payment в контроллере");
+            _logger.LogInformation("Request to add Service payment in the conroller");
 
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             var transactionId = await _transactionService.Withdraw(transactionModel);
 
-            _logger.LogInformation($"Транзакция типа Service payment с id = {transactionId} успешно добавлена");
+            _logger.LogInformation($"Service payment with Id = {transactionId} added");
 
             return Ok(transactionId);
         }

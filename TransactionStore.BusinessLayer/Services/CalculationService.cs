@@ -22,7 +22,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public decimal ConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal amount)
         {
-            _logger.LogInformation($"Запрос на конвертацию валюты с {currencyFrom} в {currencyTo} ");
+            _logger.LogInformation($"Request ti convert currency from {currencyFrom} to {currencyTo}");
             var rates = RatesModel.Rates;
 
             rates.TryGetValue($"{BaseCurrency}{currencyFrom}", out var currencyFromValue);
@@ -34,17 +34,17 @@ namespace TransactionStore.BusinessLayer.Services
             if (currencyTo == BaseCurrency)
                 currencyToValue = 1m;
             if (currencyFromValue == 0 || currencyToValue == 0)
-                throw new InsufficientFundsException("Значение валюты не было получено");
+                throw new Exception("The request for the currency value was not received");
 
             var convertAmount = decimal.Round(currencyToValue / currencyFromValue * amount, 4);
 
-            _logger.LogInformation("Валюта конвертирована");
+            _logger.LogInformation("Curency converted");
             return convertAmount;
         }
 
         public async Task<decimal> GetAccountBalance(List<long> accauntId)
         {
-            _logger.LogInformation("Запрос на получение всех транзакция у текущего аккаунта");
+            _logger.LogInformation("Request to receive all transactions from the current account");
             var listTransactions = new List<TransactionDto>();
             var listTransactionsFromOneAccount = new List<TransactionDto>();
             foreach (var item in accauntId)
@@ -55,10 +55,10 @@ namespace TransactionStore.BusinessLayer.Services
                     listTransactions.Add(transaction);
                 }
             }
-            _logger.LogInformation("Транзакции получены");
+            _logger.LogInformation("Transactions received");
 
             if (listTransactions.Count == 0)
-                throw new NullReferenceException("Транзакций не найдено");
+                throw new NullReferenceException("No transactions found");
             decimal balance = 0;
             foreach (var item in listTransactions)
             {
@@ -66,7 +66,7 @@ namespace TransactionStore.BusinessLayer.Services
                 // поставил ToString пока
             }
 
-            _logger.LogInformation("Баланс посчитан");
+            _logger.LogInformation("Balance calculated");
             return balance;
         }
     }

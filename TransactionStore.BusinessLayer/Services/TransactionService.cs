@@ -26,7 +26,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public async Task<long> AddDeposit(TransactionModel transactionModel)
         {
-            _logger.LogInformation("Запрос на добавление Deposit");
+            _logger.LogInformation("Request to add Deposit");
             CheckCurrency(transactionModel.Currency);
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
@@ -37,7 +37,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public async Task<List<long>> AddTransfer(TransferModel transactionModel)
         {
-            _logger.LogInformation("Запрос на добавление Transfer");
+            _logger.LogInformation("Request to add Transfer");
             CheckCurrency(transactionModel.CurrencyFrom);
             CheckCurrency(transactionModel.CurrencyTo);
             var convertResult = _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
@@ -50,7 +50,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public async Task<long> Withdraw(TransactionModel transactionModel)
         {
-            _logger.LogInformation("Запрос на добавление Withdraw");
+            _logger.LogInformation("Request to add Withdraw");
             CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
             var accountBalance = await GetBalanceByAccountId(transactionModel.AccountId);
@@ -64,14 +64,14 @@ namespace TransactionStore.BusinessLayer.Services
             }
             else
             {
-                _logger.LogError("Exception: Недостаточно средств на счете");
-                throw new InsufficientFundsException("Недостаточно средств на счете");
+                _logger.LogError("Exception: Insufficient funds");
+                throw new InsufficientFundsException("Insufficient funds");
             }
         }
 
         public async Task<ArrayList> GetTransactionsByAccountId(long id)
         {
-            _logger.LogInformation($"Запрос на получение транзакциий по AccountId = {id}");
+            _logger.LogInformation($"Request to add transaction by AccountId = {id}");
             var transactions = await _transactionRepository.GetTransactionsByAccountId(id);
             var listTransaction = _mapper.Map<List<TransactionModel>>(transactions);
             var transactionsWithoutTransfer = listTransaction.Where(x => x.Type != TransactionType.Transfer);
@@ -107,7 +107,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public async Task<List<TransactionModel>> GetTransactionsByAccountIds(List<long> accountIds)
         {
-            _logger.LogInformation($"Запрос на получение транзакциий по AccountIds ");
+            _logger.LogInformation($"Request to add transaction by AccountIds ");
 
             var transactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
 
@@ -116,7 +116,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public async Task<TransactionModel> GetTransactionById(long id)
         {
-            _logger.LogInformation($"Запрос на получение транзакциий по id = {id}");
+            _logger.LogInformation($"ЗRequest to add transaction by id = {id}");
 
             var transaction = await _transactionRepository.GetTransactionById(id);
 
@@ -125,7 +125,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public async Task<decimal> GetBalanceByAccountId(long accountId)
         {
-            _logger.LogInformation($"Запрос на получение баланса по accountId = {accountId}");
+            _logger.LogInformation($"Request to add balance by AccountId = {accountId}");
 
             var balance = await _transactionRepository.GetAccountBalance(accountId);
             return balance;
@@ -134,7 +134,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public async Task<decimal> GetBalanceByAccountIds(List<long> accountId)
         {
-            _logger.LogInformation($"Запрос на получение баланса по accountIds");
+            _logger.LogInformation($"Request to add balance by AccountIds");
 
             var balance = await _calculationService.GetAccountBalance(accountId);
             return balance;
@@ -142,14 +142,14 @@ namespace TransactionStore.BusinessLayer.Services
 
         public bool CheckCurrency(Currency currency)
         {
-            _logger.LogInformation($"Запрос на проверку валюты");
+            _logger.LogInformation($"Request to check currency");
             if (currency == Currency.RUB || currency == Currency.USD ||
                 currency == Currency.EUR || currency == Currency.JPY ||
                 currency == Currency.CNY || currency == Currency.RSD ||
                 currency == Currency.TRY)
                 return true;
             else
-                throw new InsufficientFundsException("Значение валюты не было получено");
+                throw new Exception("The request for the currency value was not received");
         }
     }
 }
