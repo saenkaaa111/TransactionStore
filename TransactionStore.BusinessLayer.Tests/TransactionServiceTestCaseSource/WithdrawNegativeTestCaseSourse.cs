@@ -1,5 +1,4 @@
-﻿using Marvelous.Contracts;
-using Marvelous.Contracts.Enums;
+﻿using Marvelous.Contracts.Enums;
 using System.Collections;
 using System.Collections.Generic;
 using TransactionStore.BusinessLayer.Models;

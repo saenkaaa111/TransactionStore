@@ -1,6 +1,6 @@
 ﻿using Marvelous.Contracts.Enums;
-using Marvelous.Contracts.ExchangeModels;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
 
@@ -8,7 +8,7 @@ namespace TransactionStore.BusinessLayer.Services
 {
     public class CalculationService : ICalculationService
     {
-        public ICurrencyRatesExchangeModel RatesModel { get; set; }
+        private ICurrencyRatesService _currencyRatesService;
         private readonly ITransactionRepository _transactionRepository;
         private readonly ILogger<CalculationService> _logger;
         public const Currency BaseCurrency = Currency.USD;
@@ -18,13 +18,24 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger = logger;
             _transactionRepository = transactionRepository;
+            _currencyRatesService = currencyRates;
         }
 
         public decimal ConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal amount)
         {
-            _logger.LogInformation($"Запрос на конвертацию валюты с {currencyFrom} в {currencyTo} ");
-            var rates = RatesModel.Rates;
+            _logger.LogInformation($"Request to convert currency from {currencyFrom} to {currencyTo}");
+            var rates = _currencyRatesService.Pairs;
 
+            if (rates == null)
+            {
+                string jsonread = File.ReadAllText("dictionary.json");
+                rates = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(jsonread);
+            }
+            else
+            {
+                string json = JsonConvert.SerializeObject(rates, Formatting.Indented);
+                File.WriteAllText("dictionary.json", json);
+            }
             rates.TryGetValue($"{BaseCurrency}{currencyFrom}", out var currencyFromValue);
             rates.TryGetValue($"{BaseCurrency}{currencyTo}", out var currencyToValue);
 
@@ -33,40 +44,44 @@ namespace TransactionStore.BusinessLayer.Services
 
             if (currencyTo == BaseCurrency)
                 currencyToValue = 1m;
+
             if (currencyFromValue == 0 || currencyToValue == 0)
-                throw new InsufficientFundsException("Значение валюты не было получено");
+                throw new Exception("The request for the currency value was not received");
 
-            var convertAmount = decimal.Round(currencyToValue / currencyFromValue * amount, 4);
+            var convertAmount = decimal.Round(currencyToValue / currencyFromValue * amount, 2);
 
-            _logger.LogInformation("Валюта конвертирована");
+            _logger.LogInformation("Curency converted");
+
             return convertAmount;
         }
 
         public async Task<decimal> GetAccountBalance(List<long> accauntId)
         {
-            _logger.LogInformation("Запрос на получение всех транзакция у текущего аккаунта");
+            _logger.LogInformation("Request to receive all transactions from the current account");
             var listTransactions = new List<TransactionDto>();
-            var listTransactionsFromOneAccount = new List<TransactionDto>();
+
             foreach (var item in accauntId)
             {
+                var listTransactionsFromOneAccount = new List<TransactionDto>();
                 listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountIdMinimal(item);
                 foreach (var transaction in listTransactionsFromOneAccount)
                 {
                     listTransactions.Add(transaction);
                 }
             }
-            _logger.LogInformation("Транзакции получены");
+            _logger.LogInformation("Transactions received");
 
             if (listTransactions.Count == 0)
-                throw new NullReferenceException("Транзакций не найдено");
+                throw new NullReferenceException("No transactions found");
             decimal balance = 0;
+
             foreach (var item in listTransactions)
             {
                 balance += ConvertCurrency(item.Currency, BaseCurrency, item.Amount);
-                // поставил ToString пока
             }
 
-            _logger.LogInformation("Баланс посчитан");
+            _logger.LogInformation("Balance calculated");
+
             return balance;
         }
     }

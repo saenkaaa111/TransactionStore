@@ -33,30 +33,31 @@
                 {
                     hst.Username("nafanya");
                     hst.Password("qwe!23");
-
                 });
-
             });
 
             var source = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
             await busControl.StartAsync(source.Token);
+
             try
             {
                 var transaction = await _transactionService.GetTransactionById(id);
 
                 await busControl.Publish<ITransactionExchangeModel>(new
                 {
-                    Id = transaction.Id,
-                    Amount = transaction.Amount,
-                    Date = transaction.Date,
-                    AccountId = transaction.AccountId,
-                    Type = transaction.Type,
-                    Currency = transaction.Currency,
+                    transaction.Id,
+                    transaction.Amount,
+                    transaction.Date,
+                    transaction.AccountId,
+                    transaction.Type,
+                    transaction.Currency,
                     RubRate = _calculationService.ConvertCurrency(transaction.Currency, Currency.RUB, 1)
                 });
 
+                _logger.LogInformation("Published");
             }
+
             finally
             {
                 await busControl.StopAsync();
