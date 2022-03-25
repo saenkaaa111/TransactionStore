@@ -28,7 +28,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             var currencyRates = new Mock<ICurrencyRatesService>();
             _logger = new Mock<ILogger<CalculationService>>();
-            _calculationService = new CalculationService(_transactionRepository, currencyRates.Object,  _logger.Object);
+            _calculationService = new CalculationService(_transactionRepository, currencyRates.Object, _logger.Object);
         }
 
         [TestCase(Currency.RUB, Currency.EUR, 0.7759)]

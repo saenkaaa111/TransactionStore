@@ -129,7 +129,7 @@ namespace TransactionStore.API.Controller
         [HttpGet("balanse-by-{accountId}")]
         [SwaggerOperation(Summary = "Get balanse by accountId")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
-        public async Task <ActionResult<decimal>> GetBalanceByAccountId(long accountId)
+        public async Task<ActionResult<decimal>> GetBalanceByAccountId(long accountId)
         {
             _logger.LogInformation($"Request to receive a balance by AccountId = {accountId} in the controller");
 
