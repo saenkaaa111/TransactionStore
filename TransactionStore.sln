@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionStore.BusinessLa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionStore.DataLayer", "TransactionStore.DataLayer\TransactionStore.DataLayer.csproj", "{F1AA091E-78A2-4230-B538-A5CA218E7B48}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "TransactionStore.DB", "TransactionStore.DB\TransactionStore.Db.sqlproj", "{347703B1-6168-44F0-97FA-3EDB1CD799A6}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "TransactionStore.Db", "TransactionStore.DB\TransactionStore.Db.sqlproj", "{347703B1-6168-44F0-97FA-3EDB1CD799A6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionStore.API", "TransactionStore.API\TransactionStore.API.csproj", "{A21FBAEE-EB03-4FCC-8295-1DE4FFB7BEC9}"
 EndProject

@@ -74,15 +74,17 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
-        public void WithdrawTest(TransactionModel transactionModel, List<TransactionDto> accountTransactions, long expected)
+        public void WithdrawTest(TransactionModel transactionModel, List<TransactionDto> accountTransactions, long expected, decimal balance)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>())).ReturnsAsync(expected);
             _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(transactionModel.AccountId))
                 .ReturnsAsync(accountTransactions);
+            _transactionRepositoryMock.Setup(w => w.GetAccountBalance(transactionModel.AccountId))
+                .ReturnsAsync(balance);
 
             //when
-            var actual = _transactionService.Withdraw(transactionModel);
+            var actual = _transactionService.Withdraw(transactionModel).Result;
 
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
@@ -108,7 +110,7 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(GetTransactionsByAccountIdsTestCaseSourse))]
-        public void GetTransactionsByAccountIdsTest(List<long> ids, List<TransactionDto> transactions,
+        public void GetTransactionsByAccountIdsTest(List<int> ids, List<TransactionDto> transactions,
             List<TransactionModel> expected)
         {
             //given

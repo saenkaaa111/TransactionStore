@@ -69,7 +69,7 @@ namespace TransactionStore.BusinessLayer.Services
             }
         }
 
-        public async Task<ArrayList> GetTransactionsByAccountId(long id)
+        public async Task<ArrayList> GetTransactionsByAccountId(int id)
         {
             _logger.LogInformation($"Request to add transaction by AccountId = {id}");
             var transactions = await _transactionRepository.GetTransactionsByAccountId(id);
@@ -105,7 +105,7 @@ namespace TransactionStore.BusinessLayer.Services
             return resultList;
         }
 
-        public async Task<List<TransactionModel>> GetTransactionsByAccountIds(List<long> accountIds)
+        public async Task<List<TransactionModel>> GetTransactionsByAccountIds(List<int> accountIds)
         {
             _logger.LogInformation($"Request to add transaction by AccountIds ");
 
@@ -116,29 +116,45 @@ namespace TransactionStore.BusinessLayer.Services
 
         public async Task<TransactionModel> GetTransactionById(long id)
         {
-            _logger.LogInformation($"ЗRequest to add transaction by id = {id}");
+            _logger.LogInformation($"Request to add transaction by id = {id}");
 
             var transaction = await _transactionRepository.GetTransactionById(id);
 
             return _mapper.Map<TransactionModel>(transaction);
         }
 
-        public async Task<decimal> GetBalanceByAccountId(long accountId)
+        public async Task<decimal> GetBalanceByAccountId(int accountId)
         {
             _logger.LogInformation($"Request to add balance by AccountId = {accountId}");
 
-            var balance = await _transactionRepository.GetAccountBalance(accountId);
+            var transactions = await _transactionRepository.GetTransactionsByAccountId(accountId);
 
-            return balance;
+            if (transactions is not null)
+            {
+                var balance = await _transactionRepository.GetAccountBalance(accountId);
+                return balance;
+            }
+            else
+            {
+                return 0m;
+            }
         }
 
-        public async Task<decimal> GetBalanceByAccountIds(List<long> accountId)
+        public async Task<decimal> GetBalanceByAccountIds(List<int> accountIds)
         {
             _logger.LogInformation($"Request to add balance by AccountIds");
 
-            var balance = await _calculationService.GetAccountBalance(accountId);
+            var transactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
 
-            return balance;
+            if (transactions is not null)
+            {
+                var balance = await _calculationService.GetAccountBalance(accountIds);
+                return balance;
+            }
+            else
+            {
+                return 0m;
+            }
         }
 
         public bool CheckCurrency(Currency currency)

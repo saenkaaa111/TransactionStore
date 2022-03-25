@@ -55,12 +55,12 @@ namespace TransactionStore.BusinessLayer.Services
             return convertAmount;
         }
 
-        public async Task<decimal> GetAccountBalance(List<long> accauntId)
+        public async Task<decimal> GetAccountBalance(List<int> accountId)
         {
             _logger.LogInformation("Request to receive all transactions from the current account");
             var listTransactions = new List<TransactionDto>();
 
-            foreach (var item in accauntId)
+            foreach (var item in accountId)
             {
                 var listTransactionsFromOneAccount = new List<TransactionDto>();
                 listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountIdMinimal(item);
