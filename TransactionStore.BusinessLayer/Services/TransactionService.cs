@@ -128,8 +128,8 @@ namespace TransactionStore.BusinessLayer.Services
             _logger.LogInformation($"Request to add balance by AccountId = {accountId}");
 
             var balance = await _transactionRepository.GetAccountBalance(accountId);
-            return balance;
 
+            return balance;
         }
 
         public async Task<decimal> GetBalanceByAccountIds(List<long> accountId)
@@ -137,12 +137,14 @@ namespace TransactionStore.BusinessLayer.Services
             _logger.LogInformation($"Request to add balance by AccountIds");
 
             var balance = await _calculationService.GetAccountBalance(accountId);
+
             return balance;
         }
 
         public bool CheckCurrency(Currency currency)
         {
             _logger.LogInformation($"Request to check currency");
+
             if (currency == Currency.RUB || currency == Currency.USD ||
                 currency == Currency.EUR || currency == Currency.JPY ||
                 currency == Currency.CNY || currency == Currency.RSD ||

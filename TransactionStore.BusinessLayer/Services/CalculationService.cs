@@ -33,12 +33,14 @@ namespace TransactionStore.BusinessLayer.Services
 
             if (currencyTo == BaseCurrency)
                 currencyToValue = 1m;
+
             if (currencyFromValue == 0 || currencyToValue == 0)
                 throw new Exception("The request for the currency value was not received");
 
             var convertAmount = decimal.Round(currencyToValue / currencyFromValue * amount, 4);
 
             _logger.LogInformation("Curency converted");
+
             return convertAmount;
         }
 
@@ -46,9 +48,10 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger.LogInformation("Request to receive all transactions from the current account");
             var listTransactions = new List<TransactionDto>();
-            var listTransactionsFromOneAccount = new List<TransactionDto>();
+
             foreach (var item in accauntId)
             {
+                var listTransactionsFromOneAccount = new List<TransactionDto>();
                 listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountIdMinimal(item);
                 foreach (var transaction in listTransactionsFromOneAccount)
                 {
@@ -60,13 +63,14 @@ namespace TransactionStore.BusinessLayer.Services
             if (listTransactions.Count == 0)
                 throw new NullReferenceException("No transactions found");
             decimal balance = 0;
+
             foreach (var item in listTransactions)
             {
                 balance += ConvertCurrency(item.Currency, BaseCurrency, item.Amount);
-                // поставил ToString пока
             }
 
             _logger.LogInformation("Balance calculated");
+
             return balance;
         }
     }

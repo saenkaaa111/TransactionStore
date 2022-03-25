@@ -37,7 +37,6 @@ namespace TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource
                     Currency = Currency.RUB,
                     Type = TransactionType.Withdraw
                 }
-
             };
 
             long id = 1;

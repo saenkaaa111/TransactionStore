@@ -97,7 +97,7 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
             _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(transactionModel.AccountId))
                 .ReturnsAsync(accountTransactions);
-            var expectedMessage = "Недостаточно средств на счете";
+            var expectedMessage = "Insufficient funds";
 
             //when
             InsufficientFundsException? exception = Assert.ThrowsAsync<InsufficientFundsException>(() =>
