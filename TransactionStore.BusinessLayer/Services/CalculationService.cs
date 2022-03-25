@@ -8,7 +8,7 @@ namespace TransactionStore.BusinessLayer.Services
 {
     public class CalculationService : ICalculationService
     {
-        private ICurrencyRatesService _ratesService;
+        private ICurrencyRatesService _currencyRatesService;
         private readonly ITransactionRepository _transactionRepository;
         private readonly ILogger<CalculationService> _logger;
         public const Currency BaseCurrency = Currency.USD;
@@ -18,13 +18,13 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger = logger;
             _transactionRepository = transactionRepository;
-            _ratesService = currencyRates;
+            _currencyRatesService = currencyRates;
         }
 
         public decimal ConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal amount)
         {
-            _logger.LogInformation($"Request ti convert currency from {currencyFrom} to {currencyTo}");
-            var rates = _ratesService.Pairs;
+            _logger.LogInformation($"Request to convert currency from {currencyFrom} to {currencyTo}");
+            var rates = _currencyRatesService.Pairs;
 
             if (rates == null)
             {
