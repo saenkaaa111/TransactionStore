@@ -1,24 +1,18 @@
-﻿namespace TransactionStore.API.Producers
-{
-    using Marvelous.Contracts.Enums;
-    using Marvelous.Contracts.ExchangeModels;
-    using MassTransit;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using TransactionStore.BusinessLayer.Services;
+﻿using Marvelous.Contracts.Enums;
+using Marvelous.Contracts.ExchangeModels;
+using MassTransit;
+using TransactionStore.BusinessLayer.Services;
 
+namespace TransactionStore.API.Producers
+{
     public class TransactionProducer : ITransactionProducer
     {
-
         private readonly ITransactionService _transactionService;
         private readonly ICalculationService _calculationService;
         private readonly ILogger<TransactionProducer> _logger;
 
-        public TransactionProducer(ITransactionService transactionService,
-            ICalculationService calculationService,
-            ILogger<TransactionProducer> logger
-            )
+        public TransactionProducer(ITransactionService transactionService, ICalculationService calculationService,
+            ILogger<TransactionProducer> logger)
         {
             _transactionService = transactionService;
             _calculationService = calculationService;
@@ -44,7 +38,7 @@
             {
                 var transaction = await _transactionService.GetTransactionById(id);
 
-                await busControl.Publish<ITransactionExchangeModel>(new
+                await busControl.Publish<TransactionExchangeModel>(new
                 {
                     transaction.Id,
                     transaction.Amount,
@@ -57,7 +51,6 @@
 
                 _logger.LogInformation("Published");
             }
-
             finally
             {
                 await busControl.StopAsync();

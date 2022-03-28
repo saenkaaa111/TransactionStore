@@ -1,4 +1,4 @@
-﻿namespace TransactionStore.API.Models
+﻿namespace TransactionStore.API.Configuration
 {
     public class ErrorOutputModel
     {

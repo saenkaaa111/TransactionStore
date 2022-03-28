@@ -2,7 +2,7 @@
 using System.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
-using TransactionStore.API.Models;
+using TransactionStore.API.Configuration;
 using TransactionStore.BusinessLayer;
 using TransactionStore.BusinessLayer.Exceptions;
 
@@ -27,9 +27,9 @@ namespace TransactionStore.API.Middleware
             }
             catch (SqlException)
             {
-                _logger.Debug("Exception: Сервер недоступен");
+                _logger.Debug("Exception: Server unavalible");
 
-                await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "Сервер недоступен");
+                await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "Server unavalible");
             }
             catch (InsufficientFundsException ex)
             {

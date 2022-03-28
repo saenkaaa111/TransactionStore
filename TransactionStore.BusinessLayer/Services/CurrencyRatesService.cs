@@ -6,7 +6,7 @@ namespace TransactionStore.BusinessLayer.Services
     {
         public Dictionary<string, decimal> Pairs { get; set; }
 
-        public void SaveCurrencyRates(ICurrencyRatesExchangeModel currencyRatesModel)
+        public void SaveCurrencyRates(CurrencyRatesExchangeModel currencyRatesModel)
         {
             Pairs = currencyRatesModel.Rates;
         }

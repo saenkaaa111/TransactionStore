@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Marvelous.Contracts.RequestModels;
+using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections;
-using TransactionStore.API.Models;
 using TransactionStore.API.Producers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
