@@ -19,7 +19,7 @@ namespace TransactionStore.API.Consumers
         public Task Consume(ConsumeContext<ICurrencyRatesExchangeModel> context)
         {
             _currencyRatesService.SaveCurrencyRates(context.Message);
-            _logger.LogInformation("Getting CurrencyRatesExchangeModel");
+            _logger.LogInformation("CurrencyRatesExchangeModel recieved");
 
             return Task.CompletedTask;
         }

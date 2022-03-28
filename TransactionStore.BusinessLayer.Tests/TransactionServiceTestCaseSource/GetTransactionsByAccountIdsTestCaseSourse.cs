@@ -10,7 +10,7 @@ namespace TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource
     {
         public IEnumerator GetEnumerator()
         {
-            var ids = new List<long>() { 1, 2 };
+            var ids = new List<int>() { 1, 2 };
 
             var transactions = new List<TransactionDto>()
             {

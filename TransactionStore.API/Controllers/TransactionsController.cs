@@ -83,7 +83,7 @@ namespace TransactionStore.API.Controller
         [HttpGet("transaction/{accountId}")]
         [SwaggerOperation(Summary = "Get transactions by accountId")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(ArrayList))]
-        public async Task<ActionResult<ArrayList>> GetTransactionsByAccountId(long accountId)
+        public async Task<ActionResult<ArrayList>> GetTransactionsByAccountId(int accountId)
         {
             _logger.LogInformation($"Request to receive all transactions by AccountId = {accountId} in the controller");
 
@@ -99,7 +99,7 @@ namespace TransactionStore.API.Controller
         [HttpGet("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<TransactionResponseModel>))]
-        public async Task<ActionResult<List<TransactionResponseModel>>> GetTransactionsByAccountIds([FromQuery] List<long> accountIds)
+        public async Task<ActionResult<List<TransactionResponseModel>>> GetTransactionsByAccountIds([FromQuery] List<int> accountIds)
         {
             _logger.LogInformation($"Request to receive all transactions by AccountIds in the controller");
 
@@ -129,7 +129,7 @@ namespace TransactionStore.API.Controller
         [HttpGet("balanse-by-{accountId}")]
         [SwaggerOperation(Summary = "Get balanse by accountId")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
-        public async Task<ActionResult<decimal>> GetBalanceByAccountId(long accountId)
+        public async Task<ActionResult<decimal>> GetBalanceByAccountId(int accountId)
         {
             _logger.LogInformation($"Request to receive a balance by AccountId = {accountId} in the controller");
 
@@ -144,7 +144,7 @@ namespace TransactionStore.API.Controller
         [HttpGet("balanse-by-accountIds")]
         [SwaggerOperation(Summary = "Get balance by accountIds")]
         [SwaggerResponse(200, "OK")]
-        public async Task<ActionResult> GetBalanceByAccountIds([FromQuery] List<long> accountIds)
+        public async Task<ActionResult> GetBalanceByAccountIds([FromQuery] List<int> accountIds)
         {
             _logger.LogInformation($"Request to receive a balance by AccountIds in the controller");
 
@@ -157,7 +157,7 @@ namespace TransactionStore.API.Controller
 
         [HttpPost("service-payment")]
         [SwaggerOperation(Summary = "Service payment")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(int))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(long))]
         public async Task<ActionResult<long>> ServicePayment([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Request to add Service payment in the conroller");

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using TransactionStore.BuisnessLayer.Configuration;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
@@ -74,15 +75,17 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
-        public void WithdrawTest(TransactionModel transactionModel, List<TransactionDto> accountTransactions, long expected)
+        public void WithdrawTest(TransactionModel transactionModel, List<TransactionDto> accountTransactions, long expected, decimal balance)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>())).ReturnsAsync(expected);
             _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(transactionModel.AccountId))
                 .ReturnsAsync(accountTransactions);
+            _transactionRepositoryMock.Setup(w => w.GetAccountBalance(transactionModel.AccountId))
+                .ReturnsAsync(balance);
 
             //when
-            var actual = _transactionService.Withdraw(transactionModel);
+            var actual = _transactionService.Withdraw(transactionModel).Result;
 
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
@@ -108,7 +111,7 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(GetTransactionsByAccountIdsTestCaseSourse))]
-        public void GetTransactionsByAccountIdsTest(List<long> ids, List<TransactionDto> transactions,
+        public void GetTransactionsByAccountIdsTest(List<int> ids, List<TransactionDto> transactions,
             List<TransactionModel> expected)
         {
             //given
@@ -135,19 +138,19 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Verify(s => s.GetTransactionById(It.IsAny<long>()), Times.Once);
         }
 
-        //[TestCaseSource(typeof(JoinTranferTestCaseSource))]
-        //public void JoinTransferTransactionsTest(List<TransactionDto> transactions)
-        //{
-        //    //given
-        //    _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(It.IsAny<long>())).ReturnsAsync(transactions);
+        [TestCaseSource(typeof(JoinTranferTestCaseSource))]
+        public void JoinTransferTransactionsTest(List<TransactionDto> transactions)
+        {
+            //given
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(It.IsAny<int>())).ReturnsAsync(transactions);
 
-        //    //when
-        //    var result = _transactionService.GetTransactionsByAccountId(It.IsAny<long>());
-        //    var expected = transactions.Count(x => x.Type == TransactionType.Transfer) / 2;
-        //    var actual = result.Count(x => x.Type == TransactionType.Transfer);
+            //when
+            var result = _transactionService.GetTransactionsByAccountId(It.IsAny<int>()).Result;
+            var expected = transactions.Count(x => x.Type == TransactionType.Transfer);
+            var actual = result.Count;
 
-        //    //then
-        //    Assert.AreEqual(expected, actual);
-        //}
+            //then
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
