@@ -7,11 +7,11 @@ namespace TransactionStore.BusinessLayer.Services
     {
         Task<long> AddDeposit(TransactionModel transactionModel);
         Task<List<long>> AddTransfer(TransferModel transactionModel);
-        Task<decimal> GetBalanceByAccountId(long accountId);
-        Task<decimal> GetBalanceByAccountIds(List<long> accountId);
+        Task<decimal> GetBalanceByAccountId(int accountId);
+        Task<decimal> GetBalanceByAccountIds(List<int> accountId);
         Task<TransactionModel> GetTransactionById(long id);
-        Task<List<TransactionModel>> GetTransactionsByAccountIds(List<long> accountIds);
+        Task<List<TransactionModel>> GetTransactionsByAccountIds(List<int> accountIds);
         Task<long> Withdraw(TransactionModel transactionModel);
-        Task<ArrayList> GetTransactionsByAccountId(long id);
+        Task<ArrayList> GetTransactionsByAccountId(int id);
     }
 }

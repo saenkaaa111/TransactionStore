@@ -40,7 +40,9 @@ namespace TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource
 
             long id = 1;
 
-            yield return new object[] { withdraw, accountTransactions, id };
+            decimal balance = 300m; 
+
+            yield return new object[] { withdraw, accountTransactions, id, balance };
         }
     }
 }

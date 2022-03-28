@@ -14,21 +14,21 @@ namespace TransactionStore.BusinessLayer.Tests
         private ITransactionRepository _transactionRepository;
         private Mock<ILogger<CalculationService>> _logger;
 
-        private Dictionary<Currency, decimal> _rates = new()
-        {
-            { Currency.USD, 1m },
-            { Currency.RUB, 116m },
-            { Currency.EUR, 0.9m },
-            { Currency.CNY, 6.3m },
-            { Currency.GBP, 0.7m },
-        };
-
         [SetUp]
         public void Setup()
         {
             var currencyRates = new Mock<ICurrencyRatesService>();
             _logger = new Mock<ILogger<CalculationService>>();
             _calculationService = new CalculationService(_transactionRepository, currencyRates.Object, _logger.Object);
+            var rates = new Dictionary<string, decimal>
+            {
+                { "USDRUB", 105m },
+                { "USDEUR", 0.9m },
+                { "USDJPY", 118m },
+                { "USDCNY", 6m },
+                { "USDTRY", 14m },
+                { "USDRSD", 106m }
+            };
         }
 
         [TestCase(Currency.RUB, Currency.EUR, 0.7759)]
