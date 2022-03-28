@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using TransactionStore.BuisnessLayer.Configuration;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
@@ -137,19 +138,19 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Verify(s => s.GetTransactionById(It.IsAny<long>()), Times.Once);
         }
 
-        //[TestCaseSource(typeof(JoinTranferTestCaseSource))]
-        //public void JoinTransferTransactionsTest(List<TransactionDto> transactions)
-        //{
-        //    //given
-        //    _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(It.IsAny<long>())).ReturnsAsync(transactions);
+        [TestCaseSource(typeof(JoinTranferTestCaseSource))]
+        public void JoinTransferTransactionsTest(List<TransactionDto> transactions)
+        {
+            //given
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(It.IsAny<int>())).ReturnsAsync(transactions);
 
-        //    //when
-        //    var result = _transactionService.GetTransactionsByAccountId(It.IsAny<long>());
-        //    var expected = transactions.Count(x => x.Type == TransactionType.Transfer) / 2;
-        //    var actual = result.Count(x => x.Type == TransactionType.Transfer);
+            //when
+            var result = _transactionService.GetTransactionsByAccountId(It.IsAny<int>()).Result;
+            var expected = transactions.Count(x => x.Type == TransactionType.Transfer);
+            var actual = result.Count;
 
-        //    //then
-        //    Assert.AreEqual(expected, actual);
-        //}
+            //then
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
