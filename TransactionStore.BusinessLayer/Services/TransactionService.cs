@@ -131,7 +131,7 @@ namespace TransactionStore.BusinessLayer.Services
 
             var transactions = await _transactionRepository.GetTransactionsByAccountId(accountId);
 
-            if (transactions is not null)
+            if (transactions.Count != 0)
             {
                 var balance = await _transactionRepository.GetAccountBalance(accountId);
                 return balance;
@@ -148,7 +148,7 @@ namespace TransactionStore.BusinessLayer.Services
 
             var transactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
 
-            if (transactions is not null)
+            if (transactions.Count != 0)
             {
                 var balance = await _calculationService.GetAccountBalance(accountIds);
                 return balance;
