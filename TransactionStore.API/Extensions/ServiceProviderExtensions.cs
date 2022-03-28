@@ -46,7 +46,7 @@ namespace TransactionStore.API
                         hst.Password("qwe!23");
                     });
 
-                    cfg.ReceiveEndpoint("currencyRatesQueue_DDDDDDD", e =>
+                    cfg.ReceiveEndpoint("currencyRatesQueue", e =>
                     {
                         e.ConfigureConsumer<CurrencyRatesConsumer>(context);
                     });

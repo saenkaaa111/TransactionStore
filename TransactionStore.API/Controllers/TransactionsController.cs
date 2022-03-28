@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
 using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
@@ -71,6 +72,7 @@ namespace TransactionStore.API.Controller
             _logger.LogInformation("Request to add Withdraw in the controller");
 
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
+            transactionModel.Type = TransactionType.Withdraw;
             var transactionId = await _transactionService.Withdraw(transactionModel);
 
             _logger.LogInformation($"Withdraw with id = {transactionId} added");
@@ -163,6 +165,7 @@ namespace TransactionStore.API.Controller
             _logger.LogInformation("Request to add Service payment in the conroller");
 
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
+            transactionModel.Type = TransactionType.ServicePayment;
             var transactionId = await _transactionService.Withdraw(transactionModel);
 
             _logger.LogInformation($"Service payment with Id = {transactionId} added");
