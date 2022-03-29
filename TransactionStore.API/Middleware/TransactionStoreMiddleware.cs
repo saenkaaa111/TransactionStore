@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Marvelous.Contracts.ResponseModels;
+using NLog;
 using System.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
@@ -53,11 +54,10 @@ namespace TransactionStore.API.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, HttpStatusCode code, string message)
         {
-            var result = JsonSerializer.Serialize(new ErrorOutputModel
+            var result = JsonSerializer.Serialize(new ExceptionResponseModel
             {
                 Message = message,
-                StatusCode = (int)code,
-                StatusCodeName = code.ToString()
+                Code = (int)code
             });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;
