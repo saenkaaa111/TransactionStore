@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
 using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +41,7 @@ namespace TransactionStore.API.Controller
             var transactionId = await _transactionService.AddDeposit(transactionModel);
 
             _logger.LogInformation($"Deposit with id = {transactionId} added");
-            await _transactionProducer.Main(transactionId);
+            await _transactionProducer.NotifyTransactionAdded(transactionId);
 
             return Ok(transactionId);
         }
@@ -57,8 +58,8 @@ namespace TransactionStore.API.Controller
             var transferIds = await _transactionService.AddTransfer(transferModel);
             
             _logger.LogInformation($"Transfer added");
-            await _transactionProducer.Main(transferIds[0]);
-            await _transactionProducer.Main(transferIds[1]);
+            await _transactionProducer.NotifyTransactionAdded(transferIds[0]);
+            await _transactionProducer.NotifyTransactionAdded(transferIds[1]);
 
             return Ok(transferIds);
         }
@@ -74,7 +75,7 @@ namespace TransactionStore.API.Controller
             var transactionId = await _transactionService.Withdraw(transactionModel);
 
             _logger.LogInformation($"Withdraw with id = {transactionId} added");
-            await _transactionProducer.Main(transactionId);
+            await _transactionProducer.NotifyTransactionAdd(transactionId);
 
             return Ok(transactionId);
         }

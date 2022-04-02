@@ -1,7 +1,9 @@
-﻿namespace TransactionStore.API.Producers
+using TransactionStore.BusinessLayer.Models;
+
+namespace TransactionStore.API.Producers
 {
     public interface ITransactionProducer
     {
-        Task Main(long id);
+        Task NotifyTransactionAdded(long id);
     }
 }
