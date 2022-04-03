@@ -15,7 +15,16 @@ namespace TransactionStore.BusinessLayer.Services
         private readonly ICalculationService _calculationService;
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionService> _logger;
-        private const string _currencyList = "RUB, EUR, USD, JPY, CNY, RSD, TRY";
+        private readonly List<Currency> _currencyList = new() 
+        { 
+            Currency.RUB, 
+            Currency.EUR, 
+            Currency.USD, 
+            Currency.JPY, 
+            Currency.CNY, 
+            Currency.RSD, 
+            Currency.TRY
+        };
         
 
         public TransactionService(ITransactionRepository transactionRepository,
@@ -164,11 +173,11 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger.LogInformation($"Request to check currency");
 
-            if (_currencyList.Contains((Convert.ToString(currency))))
+            if (_currencyList.Contains(currency))
                 return true; 
 
             else
-                throw new CurrencyNotReceivedException("The request for the currency value was not received");
+                throw new CurrencyNotReceivedException("The request for the currency value was not received"); //переписать
             
         }
     }

@@ -19,7 +19,7 @@ namespace TransactionStore.API.Producers
             _logger = logger;
         }
 
-        public async Task Main(long id)
+        public async Task Main(long id)//переименовать и передавать транзакцию
         {
             var busControl = Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
@@ -32,7 +32,7 @@ namespace TransactionStore.API.Producers
 
             var source = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
-            await busControl.StartAsync(source.Token);
+            await busControl.StartAsync(source.Token); //изменить
 
             try
             {
