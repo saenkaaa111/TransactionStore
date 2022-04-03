@@ -13,7 +13,6 @@ namespace TransactionStore.DataLayer.Repository
         private const string _transactionGetByAccountIdsProcedure = "dbo.Transaction_SelectByAccountIds";
         private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
         private const string _transactionTransfer = "dbo.Transaction_Transfer";
-        private const string _transactionGetAccountBalance = "dbo.Transaction_GetAccountBalance";
         private const string _transactionGetByAccountIdMinimalProcedure = "dbo.Transaction_SelectByAccountIdMinimal";
         private readonly ILogger<TransactionRepository> _logger;
 
@@ -140,23 +139,6 @@ namespace TransactionStore.DataLayer.Repository
             _logger.LogInformation($"Transaction by Id = {id} recieved");
 
             return transactionDto;
-        }
-
-        public async Task<decimal> GetAccountBalance(int id)
-        {
-            _logger.LogInformation("Connecting to the database");
-            using IDbConnection connection = Connection;
-            _logger.LogInformation("Connection made");
-
-            var balance = await connection.QuerySingleAsync<decimal>(
-                _transactionGetAccountBalance,
-                 new { Id = id },
-                commandType: CommandType.StoredProcedure
-                );
-
-            _logger.LogInformation($"Balance by AccountId recieved");
-
-            return balance;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace TransactionStore.BusinessLayer.Services
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICalculationService _calculationService;
+        private readonly IBalanceService _balanceService;
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionService> _logger;
         private readonly List<Currency> _currencyList = new() 
@@ -27,11 +28,12 @@ namespace TransactionStore.BusinessLayer.Services
         };
         
 
-        public TransactionService(ITransactionRepository transactionRepository,
-            ICalculationService calculationService, IMapper mapper, ILogger<TransactionService> logger)
+        public TransactionService(ITransactionRepository transactionRepository, 
+            ICalculationService calculationService, IBalanceService balanceService, IMapper mapper, ILogger<TransactionService> logger)
         {
             _transactionRepository = transactionRepository;
             _calculationService = calculationService;
+            _balanceService = balanceService;
             _mapper = mapper;
             _logger = logger;
         }
@@ -65,7 +67,7 @@ namespace TransactionStore.BusinessLayer.Services
             _logger.LogInformation("Request to add Withdraw");
             CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
-            var accountBalance = await GetBalanceByAccountId(transactionModel.AccountId);
+            var accountBalance = await _balanceService.GetBalanceByAccountId(transactionModel.AccountId);
 
             if (withdraw.Amount < accountBalance)
             {
@@ -133,40 +135,6 @@ namespace TransactionStore.BusinessLayer.Services
             var transaction = await _transactionRepository.GetTransactionById(id);
 
             return _mapper.Map<TransactionModel>(transaction);
-        }
-
-        public async Task<decimal> GetBalanceByAccountId(int accountId)
-        {
-            _logger.LogInformation($"Request to add balance by AccountId = {accountId}");
-
-            var transactions = await _transactionRepository.GetTransactionsByAccountId(accountId);
-
-            if (transactions.Count != 0)
-            {
-                var balance = await _transactionRepository.GetAccountBalance(accountId);
-                return balance;
-            }
-            else
-            {
-                return 0m;
-            }
-        }
-
-        public async Task<decimal> GetBalanceByAccountIds(List<int> accountIds)
-        {
-            _logger.LogInformation($"Request to add balance by AccountIds");
-
-            var transactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
-
-            if (transactions.Count != 0)
-            {
-                var balance = await _calculationService.GetAccountBalance(accountIds);
-                return balance;
-            }
-            else
-            {
-                return 0m;
-            }
         }
 
         public bool CheckCurrency(Currency currency)

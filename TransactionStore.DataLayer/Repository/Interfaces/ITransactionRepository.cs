@@ -6,7 +6,6 @@ namespace TransactionStore.DataLayer.Repository
     {
         Task<long> AddTransaction(TransactionDto transaction);
         Task<List<long>> AddTransfer(TransferDto transaction);
-        Task<decimal> GetAccountBalance(int id);
         Task<TransactionDto> GetTransactionById(long id);
         Task<List<TransactionDto>> GetTransactionsByAccountId(int id);
         Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(int id);

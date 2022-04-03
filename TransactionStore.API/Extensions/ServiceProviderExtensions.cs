@@ -14,12 +14,14 @@ namespace TransactionStore.API
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ITransactionProducer, TransactionProducer>();
             services.AddScoped<ICalculationService, CalculationService>();
+            services.AddScoped<IBalanceService, BalanceService>();
             services.AddSingleton<ICurrencyRatesService, CurrencyRatesService>();
         }
 
         public static void AddTransactionStoreRepositories(this IServiceCollection services)
         {
             services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<IBalanceRepository, BalanceRepository>();
         }
 
         public static void AddLogger(this IServiceCollection service, IConfiguration config)

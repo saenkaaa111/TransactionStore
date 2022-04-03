@@ -56,7 +56,7 @@ namespace TransactionStore.API.Controller
 
             var transferModel = _mapper.Map<TransferModel>(transfer);
             var transferIds = await _transactionService.AddTransfer(transferModel);
-            
+
             _logger.LogInformation($"Transfer added");
             await _transactionProducer.Main(transferIds[0]);
             await _transactionProducer.Main(transferIds[1]);
@@ -126,35 +126,6 @@ namespace TransactionStore.API.Controller
             _logger.LogInformation($"Transactions by AccountId = {id} received");
 
             return Ok(transaction);
-        }
-
-        [HttpGet("balanse-by-{accountId}")]
-        [SwaggerOperation(Summary = "Get balanse by accountId")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
-        public async Task<ActionResult<decimal>> GetBalanceByAccountId(int accountId)
-        {
-            _logger.LogInformation($"Request to receive a balance by AccountId = {accountId} in the controller");
-
-            var balance = await _transactionService.GetBalanceByAccountId(accountId);
-
-            _logger.LogInformation($"Balance received");
-
-            return Ok(balance);
-        }
-
-
-        [HttpGet("balanse-by-accountIds")]
-        [SwaggerOperation(Summary = "Get balance by accountIds")]
-        [SwaggerResponse(200, "OK")]
-        public async Task<ActionResult> GetBalanceByAccountIds([FromQuery] List<int> accountIds)
-        {
-            _logger.LogInformation($"Request to receive a balance by AccountIds in the controller");
-
-            var balance = await _transactionService.GetBalanceByAccountIds(accountIds);
-
-            _logger.LogInformation($"Balance received");
-
-            return Ok(balance);
         }
 
         [HttpPost("service-payment")]
