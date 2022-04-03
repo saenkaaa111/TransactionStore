@@ -15,6 +15,17 @@ namespace TransactionStore.BusinessLayer.Services
         private readonly ICalculationService _calculationService;
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionService> _logger;
+        private readonly List<Currency> _currencyList = new() 
+        { 
+            Currency.RUB, 
+            Currency.EUR, 
+            Currency.USD, 
+            Currency.JPY, 
+            Currency.CNY, 
+            Currency.RSD, 
+            Currency.TRY
+        };
+        
 
         public TransactionService(ITransactionRepository transactionRepository,
             ICalculationService calculationService, IMapper mapper, ILogger<TransactionService> logger)
@@ -59,8 +70,7 @@ namespace TransactionStore.BusinessLayer.Services
             if (withdraw.Amount < accountBalance)
             {
                 withdraw.Amount = transactionModel.Amount *= -1;
-                withdraw.Type = TransactionType.Withdraw;
-
+                
                 return await _transactionRepository.AddTransaction(withdraw);
             }
             else
@@ -163,13 +173,12 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger.LogInformation($"Request to check currency");
 
-            if (currency == Currency.RUB || currency == Currency.USD ||
-                currency == Currency.EUR || currency == Currency.JPY ||
-                currency == Currency.CNY || currency == Currency.RSD ||
-                currency == Currency.TRY)
-                return true;
+            if (_currencyList.Contains(currency))
+                return true; 
+
             else
-                throw new CurrencyNotReceivedException("The request for the currency value was not received");
+                throw new CurrencyNotReceivedException("The request for the currency value was not received"); //переписать
+            
         }
     }
 }
