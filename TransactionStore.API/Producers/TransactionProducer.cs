@@ -1,31 +1,28 @@
 using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.ExchangeModels;
 using MassTransit;
+using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
 
 namespace TransactionStore.API.Producers
 {
     public class TransactionProducer : ITransactionProducer
     {
-        private readonly ITransactionService _transactionService;
         private readonly ICalculationService _calculationService;
         private readonly ILogger<TransactionProducer> _logger;
         private readonly IBus _bus;
 
-        public TransactionProducer(ITransactionService transactionService, ICalculationService calculationService,
+        public TransactionProducer(ICalculationService calculationService,
             ILogger<TransactionProducer> logger, IBus bus)
         {
-            _transactionService = transactionService;
             _calculationService = calculationService;
             _logger = logger;
             _bus = bus;
         }
 
-        public async Task NotifyTransactionAdded(long id)
+        public async Task NotifyTransactionAdded(TransactionModel transaction)
         {
             var source = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            var transaction = await _transactionService.GetTransactionById(id);
-
             await _bus.Publish<TransactionExchangeModel>(new
             {
                 transaction.Id,
