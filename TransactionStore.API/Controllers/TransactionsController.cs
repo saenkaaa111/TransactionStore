@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
 using Marvelous.Contracts.ResponseModels;
@@ -41,7 +41,8 @@ namespace TransactionStore.API.Controller
             var transactionId = await _transactionService.AddDeposit(transactionModel);
 
             _logger.LogInformation($"Deposit with id = {transactionId} added");
-            await _transactionProducer.Main(transactionId);
+            var transactionForPublish = await _transactionService.GetTransactionById(transactionId);
+            await _transactionProducer.NotifyTransactionAdded(transactionForPublish);
 
             return Ok(transactionId);
         }
@@ -58,8 +59,11 @@ namespace TransactionStore.API.Controller
             var transferIds = await _transactionService.AddTransfer(transferModel);
 
             _logger.LogInformation($"Transfer added");
-            await _transactionProducer.Main(transferIds[0]);
-            await _transactionProducer.Main(transferIds[1]);
+            var transactionForPublishFirst = await _transactionService.GetTransactionById(transferIds[0]);
+            var transactionForPublishSecond = await _transactionService.GetTransactionById(transferIds[1]);
+
+            await _transactionProducer.NotifyTransactionAdded(transactionForPublishFirst);
+            await _transactionProducer.NotifyTransactionAdded(transactionForPublishSecond);
 
             return Ok(transferIds);
         }
@@ -76,7 +80,9 @@ namespace TransactionStore.API.Controller
             var transactionId = await _transactionService.Withdraw(transactionModel);
 
             _logger.LogInformation($"Withdraw with id = {transactionId} added");
-            await _transactionProducer.Main(transactionId);
+            var transactionForPublish = await _transactionService.GetTransactionById(transactionId);
+
+            await _transactionProducer.NotifyTransactionAdded(transactionForPublish);
 
             return Ok(transactionId);
         }
@@ -140,6 +146,8 @@ namespace TransactionStore.API.Controller
             var transactionId = await _transactionService.Withdraw(transactionModel);
 
             _logger.LogInformation($"Service payment with Id = {transactionId} added");
+            var transactionForPublish = await _transactionService.GetTransactionById(transactionId);
+            await _transactionProducer.NotifyTransactionAdded(transactionForPublish);
 
             return Ok(transactionId);
         }

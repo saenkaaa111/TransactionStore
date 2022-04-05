@@ -20,74 +20,9 @@ namespace TransactionStore.BusinessLayer.Services
             _transactionRepository = transactionRepository;
             _calculationService = calculationService;
             _logger = logger;
-        }
-
-        public async Task<decimal> GetAccountBalance(List<int> accountIds)
-        {
-            _logger.LogInformation("Request to receive all transactions from the current account");
-            var listTransactions = new List<TransactionDto>();
-
-            foreach (var item in accountIds)
-            {
-                var listTransactionsFromOneAccount = new List<TransactionDto>();
-                listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountIdMinimal(item);
-
-                foreach (var transaction in listTransactionsFromOneAccount)
-                {
-                    listTransactions.Add(transaction);
-                }
-            }
-
-            _logger.LogInformation("Transactions received");
-
-            if (listTransactions.Count == 0)
-                throw new NullReferenceException("No transactions found");
-
-            decimal balance = 0;
-
-            foreach (var item in listTransactions)
-            {
-                balance += _calculationService.ConvertCurrency(item.Currency, BaseCurrency, item.Amount);
-            }
-
-            _logger.LogInformation("Balance calculated");
-
-            return balance;
-        }
-
-        public async Task<decimal> GetBalanceByAccountId(int accountId)
-        {
-            _logger.LogInformation($"Request to add balance by AccountId = {accountId}");
-
-            var transactions = await _transactionRepository.GetTransactionsByAccountId(accountId);
-
-            if (transactions.Count != 0)
-            {
-                var balance = await _balanceRepository.GetAccountBalance(accountId);
-                return balance;
-            }
-            else
-            {
-                return 0m;
-            }
-        }
-
-        public async Task<decimal> GetBalanceByAccountIds(List<int> accountIds)
-        {
-            _logger.LogInformation($"Request to add balance by AccountIds");
-
-            var transactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
-
-            if (transactions.Count != 0)
-            {
-                var balance = await GetAccountBalance(accountIds);
-                return balance;
-            }
-            else
-            {
-                return 0m;
-            }
-        }
+        }      
+        
+        
 
         public async Task<decimal> GetBalanceByAccountIdsInGivenCurrency(List<int> accountIds, Currency currency)
         {
@@ -111,6 +46,8 @@ namespace TransactionStore.BusinessLayer.Services
                 throw new NullReferenceException("No transactions found");
 
             decimal balance = 0;
+            if (currency == 0)
+                currency = BaseCurrency;
 
             foreach (var item in listTransactions)
             {

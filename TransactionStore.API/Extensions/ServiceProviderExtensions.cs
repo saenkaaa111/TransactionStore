@@ -1,4 +1,4 @@
-﻿using MassTransit;
+using MassTransit;
 using NLog.Extensions.Logging;
 using TransactionStore.API.Consumers;
 using TransactionStore.API.Producers;
@@ -42,12 +42,6 @@ namespace TransactionStore.API
                 x.AddConsumer<CurrencyRatesConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host("rabbitmq://80.78.240.16", hst =>
-                    {
-                        hst.Username("nafanya");
-                        hst.Password("qwe!23");
-                    });
-
                     cfg.ReceiveEndpoint("currencyRatesQueue", e =>
                     {
                         e.ConfigureConsumer<CurrencyRatesConsumer>(context);

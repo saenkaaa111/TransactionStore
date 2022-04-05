@@ -67,7 +67,7 @@ namespace TransactionStore.BusinessLayer.Services
             _logger.LogInformation("Request to add Withdraw");
             CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
-            var accountBalance = await _balanceService.GetBalanceByAccountId(transactionModel.AccountId);
+            var accountBalance = await _balanceService.GetBalanceByAccountIdsInGivenCurrency(new List<int>() { transactionModel.AccountId }, transactionModel.Currency);
 
             if (withdraw.Amount < accountBalance)
             {
