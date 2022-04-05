@@ -2,6 +2,7 @@ using AutoMapper;
 using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
 using Marvelous.Contracts.ResponseModels;
+using Marvelous.Contracts.Urls;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections;
@@ -12,7 +13,7 @@ using TransactionStore.BusinessLayer.Services;
 namespace TransactionStore.API.Controller
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route(TransactionUrls.ApiTransactions)]
     public class TransactionsController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
@@ -30,7 +31,7 @@ namespace TransactionStore.API.Controller
         }
 
         // api/transaction/
-        [HttpPost("deposit")]
+        [HttpPost(TransactionUrls.Deposit)]
         [SwaggerOperation(Summary = "Add deposit")]
         [SwaggerResponse(StatusCodes.Status201Created, "Deposit added", typeof(long))]
         public async Task<ActionResult<long>> AddDeposit([FromBody] TransactionRequestModel transaction)
@@ -48,7 +49,7 @@ namespace TransactionStore.API.Controller
         }
 
         // api/transaction/
-        [HttpPost("transfer")]
+        [HttpPost(TransactionUrls.Transfer)]
         [SwaggerOperation(Summary = "Add transfer")]
         [SwaggerResponse(StatusCodes.Status200OK, "Transfer successful", typeof(List<long>))]
         public async Task<ActionResult<List<long>>> AddTransfer([FromBody] TransferRequestModel transfer)
@@ -68,7 +69,7 @@ namespace TransactionStore.API.Controller
             return Ok(transferIds);
         }
 
-        [HttpPost("withdraw")]
+        [HttpPost(TransactionUrls.Withdraw)]
         [SwaggerOperation(Summary = "Withdraw")]
         [SwaggerResponse(StatusCodes.Status200OK, "Withdraw successful", typeof(long))]
         public async Task<ActionResult<long>> Withdraw([FromBody] TransactionRequestModel transaction)
@@ -88,17 +89,17 @@ namespace TransactionStore.API.Controller
         }
 
         // api/transaction/
-        [HttpGet("transaction/{accountId}")]
+        [HttpGet(TransactionUrls.AccountId)]
         [SwaggerOperation(Summary = "Get transactions by accountId")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(ArrayList))]
-        public async Task<ActionResult<ArrayList>> GetTransactionsByAccountId(int accountId)
+        public async Task<ActionResult<ArrayList>> GetTransactionsByAccountId([FromQuery] int id)
         {
-            _logger.LogInformation($"Request to receive all transactions by AccountId = {accountId} in the controller");
+            _logger.LogInformation($"Request to receive all transactions by AccountId = {id} in the controller");
 
-            var transactionModel = await _transactionService.GetTransactionsByAccountId(accountId);
+            var transactionModel = await _transactionService.GetTransactionsByAccountId(id);
             var transactions = _mapper.Map<ArrayList>(transactionModel);
 
-            _logger.LogInformation($"Transactions by AccountId = {accountId} received");
+            _logger.LogInformation($"Transactions by AccountId = {id} received");
 
             return Ok(transactions);
         }
@@ -107,7 +108,8 @@ namespace TransactionStore.API.Controller
         [HttpGet("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<TransactionResponseModel>))]
-        public async Task<ActionResult<List<TransactionResponseModel>>> GetTransactionsByAccountIds([FromQuery] List<int> accountIds)
+        public async Task<ActionResult<List<TransactionResponseModel>>> GetTransactionsByAccountIds(
+            [FromQuery] List<int> accountIds)
         {
             _logger.LogInformation($"Request to receive all transactions by AccountIds in the controller");
 
@@ -134,7 +136,7 @@ namespace TransactionStore.API.Controller
             return Ok(transaction);
         }
 
-        [HttpPost("service-payment")]
+        [HttpPost(TransactionUrls.ServicePayment)]
         [SwaggerOperation(Summary = "Service payment")]
         [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(long))]
         public async Task<ActionResult<long>> ServicePayment([FromBody] TransactionRequestModel transaction)

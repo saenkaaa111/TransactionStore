@@ -14,7 +14,7 @@ namespace TransactionStore.DataLayer.Repository
             _logger = logger;
         }
 
-        public async Task<decimal> GetAccountBalance(int id)
+        public async Task<decimal> GetBalanceByAccountId(int id)
         {
             _logger.LogInformation("Connecting to the database");
             using IDbConnection connection = Connection;

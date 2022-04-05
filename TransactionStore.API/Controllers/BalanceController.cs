@@ -1,4 +1,5 @@
 ﻿using Marvelous.Contracts.Enums;
+using Marvelous.Contracts.Urls;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using TransactionStore.BusinessLayer.Services;
@@ -6,7 +7,7 @@ using TransactionStore.BusinessLayer.Services;
 namespace TransactionStore.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route(TransactionUrls.ApiBalance)]
     public class BalanceController : ControllerBase
     {
         private readonly IBalanceService _balanceService;
@@ -16,13 +17,13 @@ namespace TransactionStore.API.Controllers
         {
             _balanceService = balanceService;
             _logger = logger;
-        }
-                     
+        }           
 
-        [HttpGet("by-accountIds/currency")]
+        [HttpGet]
         [SwaggerOperation(Summary = "Get balance by accountIds in given currency")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
-        public async Task<ActionResult> GetBalanceByAccountIdsInGivenCurrency([FromQuery] List<int> id, [FromQuery] Currency currency)
+        public async Task<ActionResult> GetBalanceByAccountIdsInGivenCurrency([FromQuery] List<int> id, 
+            [FromQuery] Currency currency)
         {
             _logger.LogInformation($"Request to receive a balance by AccountIds in the controller");
 

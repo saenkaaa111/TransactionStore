@@ -12,8 +12,8 @@ namespace TransactionStore.BusinessLayer.Services
     public class TransactionService : ITransactionService
     {
         private readonly ITransactionRepository _transactionRepository;
+        private readonly IBalanceRepository _balanceRepository;
         private readonly ICalculationService _calculationService;
-        private readonly IBalanceService _balanceService;
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionService> _logger;
         private readonly List<Currency> _currencyList = new() 
@@ -26,14 +26,13 @@ namespace TransactionStore.BusinessLayer.Services
             Currency.RSD, 
             Currency.TRY
         };
-        
 
         public TransactionService(ITransactionRepository transactionRepository, 
-            ICalculationService calculationService, IBalanceService balanceService, IMapper mapper, ILogger<TransactionService> logger)
+            ICalculationService calculationService, IBalanceRepository balanceRepository, IMapper mapper, ILogger<TransactionService> logger)
         {
             _transactionRepository = transactionRepository;
             _calculationService = calculationService;
-            _balanceService = balanceService;
+            _balanceRepository = balanceRepository;
             _mapper = mapper;
             _logger = logger;
         }
@@ -67,7 +66,7 @@ namespace TransactionStore.BusinessLayer.Services
             _logger.LogInformation("Request to add Withdraw");
             CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
-            var accountBalance = await _balanceService.GetBalanceByAccountIdsInGivenCurrency(new List<int>() { transactionModel.AccountId }, transactionModel.Currency);
+            var accountBalance = await _balanceRepository.GetBalanceByAccountId(transactionModel.AccountId);
 
             if (withdraw.Amount < accountBalance)
             {
@@ -99,7 +98,7 @@ namespace TransactionStore.BusinessLayer.Services
 
             for (int i = 0; i < transactionsOnlyTransfer.Count(); i = i + 2)
             {
-                TransferDto transfer = new TransferDto()
+                TransferDto transfer = new()
                 {
                     IdFrom = transactionsOnlyTransfer[i].Id,
                     IdTo = transactionsOnlyTransfer[i + 1].Id,
@@ -145,8 +144,7 @@ namespace TransactionStore.BusinessLayer.Services
                 return true; 
 
             else
-                throw new CurrencyNotReceivedException("The request for the currency value was not received"); //переписать
-            
+                throw new CurrencyNotReceivedException("The request for the currency value was not received");
         }
     }
 }
