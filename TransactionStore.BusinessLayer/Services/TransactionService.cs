@@ -3,6 +3,7 @@ using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using System.Collections;
 using TransactionStore.BusinessLayer.Exceptions;
+using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
@@ -16,16 +17,7 @@ namespace TransactionStore.BusinessLayer.Services
         private readonly ICalculationService _calculationService;
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionService> _logger;
-        private readonly List<Currency> _currencyList = new() 
-        { 
-            Currency.RUB, 
-            Currency.EUR, 
-            Currency.USD, 
-            Currency.JPY, 
-            Currency.CNY, 
-            Currency.RSD, 
-            Currency.TRY
-        };
+
 
         public TransactionService(ITransactionRepository transactionRepository, 
             ICalculationService calculationService, IBalanceRepository balanceRepository, IMapper mapper, ILogger<TransactionService> logger)
@@ -40,7 +32,7 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<long> AddDeposit(TransactionModel transactionModel)
         {
             _logger.LogInformation("Request to add Deposit");
-            CheckCurrency(transactionModel.Currency);
+            Helper.CheckCurrency(transactionModel.Currency);
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
             transaction.Type = TransactionType.Deposit;
@@ -51,8 +43,8 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<List<long>> AddTransfer(TransferModel transactionModel)
         {
             _logger.LogInformation("Request to add Transfer");
-            CheckCurrency(transactionModel.CurrencyFrom);
-            CheckCurrency(transactionModel.CurrencyTo);
+            Helper.CheckCurrency(transactionModel.CurrencyFrom);
+            Helper.CheckCurrency(transactionModel.CurrencyTo);
             var convertResult = _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
                 transactionModel.CurrencyTo, transactionModel.Amount);
 
@@ -64,7 +56,7 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<long> Withdraw(TransactionModel transactionModel)
         {
             _logger.LogInformation("Request to add Withdraw");
-            CheckCurrency(transactionModel.Currency);
+            Helper.CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
             var accountBalance = await _balanceRepository.GetBalanceByAccountId(transactionModel.AccountId);
 
@@ -134,17 +126,6 @@ namespace TransactionStore.BusinessLayer.Services
             var transaction = await _transactionRepository.GetTransactionById(id);
 
             return _mapper.Map<TransactionModel>(transaction);
-        }
-
-        public bool CheckCurrency(Currency currency)
-        {
-            _logger.LogInformation($"Request to check currency");
-
-            if (_currencyList.Contains(currency))
-                return true; 
-
-            else
-                throw new CurrencyNotReceivedException("The request for the currency value was not received");
         }
     }
 }
