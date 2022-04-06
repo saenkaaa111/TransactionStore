@@ -70,23 +70,6 @@ namespace TransactionStore.DataLayer.Repository
             return new List<long> { result.Item1, result.Item2 };
         }
 
-        public async Task<List<TransactionDto>> GetTransactionsByAccountId(int id)
-        {
-            _logger.LogInformation("Connecting to the database");
-            using IDbConnection connection = Connection;
-            _logger.LogInformation("Connection made");
-
-            var listTransactions = (await connection.QueryAsync<TransactionDto>(
-                _transactionGetByAccountIdProcedure,
-                new { AccountId = id },
-                commandType: CommandType.StoredProcedure
-            )).ToList();
-
-            _logger.LogInformation($"Transactions by AccountId = {id} recieved");
-
-            return listTransactions;
-        }
-
         public async Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(int id)
         {
             _logger.LogInformation("Connecting to the database");
@@ -117,6 +100,28 @@ namespace TransactionStore.DataLayer.Repository
             _logger.LogInformation($"Transaction by Id = {id} recieved");
 
             return transactionDto;
+        }
+
+        public async Task<List<TransactionDto>> GetTransactionsByAccountIds(List<int> accountIds)
+        {
+            _logger.LogInformation("Connecting to the database");
+            using IDbConnection connection = Connection;
+            _logger.LogInformation("Connection made");
+
+            var tvpTable = new DataTable();
+            tvpTable.Columns.Add(new DataColumn("AccountId", typeof(int)));
+            accountIds.ForEach(id => tvpTable.Rows.Add(id));
+
+            var listTransactions = (await connection.QueryAsync<TransactionDto>(
+                    _transactionGetByAccountIdsProcedure,
+                    new { tvp = tvpTable.AsTableValuedParameter("[dbo].[AccountTVP]") },
+                    commandType: CommandType.StoredProcedure
+               ))
+               .ToList();
+
+            _logger.LogInformation($"Transactions by AccountIds recieved");
+
+            return listTransactions;
         }
     }
 }

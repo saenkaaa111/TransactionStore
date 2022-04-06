@@ -75,19 +75,8 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<ArrayList> GetTransactionsByAccountIds(List<int> id)
         {
             _logger.LogInformation($"Request to add transaction by AccountId = {id}");
-            var transactions = new List<TransactionDto>();
-            var listTransaction = new List<TransactionModel>();
-            var listTransactionAll = new List<TransactionModel>();
-            foreach (var item in id)
-            {
-                transactions = await _transactionRepository.GetTransactionsByAccountId(item);
-                listTransaction = _mapper.Map<List<TransactionModel>>(transactions);
-                foreach (var tran in listTransaction)
-                {
-                    listTransactionAll.Add(tran);
-                }
-
-            }
+            var listTransactionAll = await _transactionRepository.GetTransactionsByAccountIds(id);
+            
             var transactionsWithoutTransfer = listTransactionAll.Where(x => x.Type != TransactionType.Transfer);
             var resultList = new ArrayList();
 
