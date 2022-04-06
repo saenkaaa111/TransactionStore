@@ -10,5 +10,12 @@ namespace TransactionStore.DataLayer.Entities
         public decimal Amount { get; set; }
         public int AccountId { get; set; }
         public Currency Currency { get; set; }
+        public override bool Equals(object? obj)
+        {
+            return obj is TransactionDto model &&
+
+                   AccountId == model.AccountId;
+                   
+        }
     }
 }

@@ -27,18 +27,10 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<decimal> GetBalanceByAccountIdsInGivenCurrency(List<int> accountIds, Currency currency)
         {
             _logger.LogInformation("Request to receive all transactions from the current account");
-            var listTransactions = new List<TransactionDto>();
+            var listTransactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
 
-            foreach (var item in accountIds)
-            {
-                var listTransactionsFromOneAccount = new List<TransactionDto>();
-                listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountIdMinimal(item);
-
-                foreach (var transaction in listTransactionsFromOneAccount)
-                {
-                    listTransactions.Add(transaction);
-                }
-            }
+            var listSort = listTransactions.Where(x => x.AccountId == accountIds[0]); 
+            
 
             _logger.LogInformation("Transactions received");
 
