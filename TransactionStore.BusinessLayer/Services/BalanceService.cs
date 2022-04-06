@@ -21,18 +21,14 @@ namespace TransactionStore.BusinessLayer.Services
             _logger = logger;
         }
 
-
-
         public async Task<decimal> GetBalanceByAccountIdsInGivenCurrency(List<int> accountIds, Currency currency)
         {
             _logger.LogInformation("Request to receive all transactions from the current account");
             var listTransactions = await _transactionRepository.GetTransactionsByAccountIdMinimal(accountIds);
-
-
             _logger.LogInformation("Transactions received");
 
             if (listTransactions.Count == 0)
-                throw new NullReferenceException("No transactions found");
+                return 0m;
 
             decimal balance = 0;
             if (currency == 0)

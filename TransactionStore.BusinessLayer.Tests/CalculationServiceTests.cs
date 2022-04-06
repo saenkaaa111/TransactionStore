@@ -11,7 +11,6 @@ namespace TransactionStore.BusinessLayer.Tests
     public class CalculationServiceTests
     {
         private CalculationService _calculationService;
-        private ITransactionRepository _transactionRepository;
         private Mock<ILogger<CalculationService>> _logger;
 
         [SetUp]
@@ -19,7 +18,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             var currencyRates = new Mock<ICurrencyRatesService>();
             _logger = new Mock<ILogger<CalculationService>>();
-            _calculationService = new CalculationService(_transactionRepository, currencyRates.Object, _logger.Object);
+            _calculationService = new CalculationService(currencyRates.Object, _logger.Object);
             var rates = new Dictionary<string, decimal>
             {
                 { "USDRUB", 105m },

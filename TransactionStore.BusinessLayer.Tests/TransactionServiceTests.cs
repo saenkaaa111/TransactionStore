@@ -19,7 +19,8 @@ namespace TransactionStore.BusinessLayer.Tests
 
         private Mock<ITransactionRepository> _transactionRepositoryMock;
         private TransactionService _transactionService;
-        private Mock<ICalculationService> _calculationService;
+        private Mock<ICalculationService> _calculationServiceMock;
+        private Mock<IBalanceRepository> _balanceRepositoryMock;
         private IMapper _mapper;
         private Mock<ILogger<TransactionService>> _logger;
 
@@ -28,10 +29,11 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<DataMapper>()));
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
+            _balanceRepositoryMock = new Mock<IBalanceRepository>();
             _logger = new Mock<ILogger<TransactionService>>();
-            _calculationService = new Mock<ICalculationService>();
+            _calculationServiceMock = new Mock<ICalculationService>();
             _transactionService = new TransactionService(_transactionRepositoryMock.Object,
-                _calculationService.Object, _mapper, _logger.Object);
+                _calculationServiceMock.Object, _balanceRepositoryMock.Object, _mapper, _logger.Object);
         }
 
         [TestCase(4)]
@@ -79,9 +81,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>())).ReturnsAsync(expected);
-            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(transactionModel.AccountId))
-                .ReturnsAsync(accountTransactions);
-            _transactionRepositoryMock.Setup(w => w.GetAccountBalance(transactionModel.AccountId))
+            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transactionModel.AccountId))
                 .ReturnsAsync(balance);
 
             //when
@@ -98,7 +98,7 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
-            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(transactionModel.AccountId))
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountIds(It.IsAny<List<int>>()))
                 .ReturnsAsync(accountTransactions);
             var expectedMessage = "Insufficient funds";
 
@@ -142,10 +142,11 @@ namespace TransactionStore.BusinessLayer.Tests
         public void JoinTransferTransactionsTest(List<TransactionDto> transactions)
         {
             //given
-            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountId(It.IsAny<int>())).ReturnsAsync(transactions);
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountIds(It.IsAny<List<int>>()))
+                .ReturnsAsync(transactions);
 
             //when
-            var result = _transactionService.GetTransactionsByAccountId(It.IsAny<int>()).Result;
+            var result = _transactionService.GetTransactionsByAccountIds(It.IsAny<List<int>>()).Result;
             var expected = transactions.Count(x => x.Type == TransactionType.Transfer);
             var actual = result.Count;
 
