@@ -76,8 +76,10 @@ namespace TransactionStore.BusinessLayer.Services
         {
             _logger.LogInformation($"Request to add transaction by AccountId = {id}");
             var listTransactionAll = await _transactionRepository.GetTransactionsByAccountIds(id);
-            
+            var listTransactionSort = listTransactionAll.GroupBy(x => x.Id).Select(x => x.First());
+
             var transactionsWithoutTransfer = listTransactionAll.Where(x => x.Type != TransactionType.Transfer);
+            
             var resultList = new ArrayList();
 
             foreach (var item in transactionsWithoutTransfer)
@@ -85,7 +87,7 @@ namespace TransactionStore.BusinessLayer.Services
                 resultList.Add(item);
             }
 
-            var transactionsOnlyTransfer = listTransactionAll.Where(x => x.Type == TransactionType.Transfer).ToList();
+            var transactionsOnlyTransfer = listTransactionSort.Where(x => x.Type == TransactionType.Transfer).ToList();
 
             for (int i = 0; i < transactionsOnlyTransfer.Count(); i = i + 2)
             {
