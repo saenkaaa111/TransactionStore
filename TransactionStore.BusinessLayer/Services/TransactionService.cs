@@ -2,7 +2,6 @@
 using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using System.Collections;
-using TransactionStore.BusinessLayer.Exceptions;
 using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
@@ -19,7 +18,7 @@ namespace TransactionStore.BusinessLayer.Services
         private readonly ILogger<TransactionService> _logger;
 
 
-        public TransactionService(ITransactionRepository transactionRepository, 
+        public TransactionService(ITransactionRepository transactionRepository,
             ICalculationService calculationService, IBalanceRepository balanceRepository, IMapper mapper, ILogger<TransactionService> logger)
         {
             _transactionRepository = transactionRepository;
@@ -63,7 +62,7 @@ namespace TransactionStore.BusinessLayer.Services
             if (withdraw.Amount < accountBalance)
             {
                 withdraw.Amount = transactionModel.Amount *= -1;
-                
+
                 return await _transactionRepository.AddTransaction(withdraw);
             }
             else
@@ -73,12 +72,14 @@ namespace TransactionStore.BusinessLayer.Services
             }
         }
 
-        public async Task<ArrayList> GetTransactionsByAccountId(int id)
+        public async Task<ArrayList> GetTransactionsByAccountIds(List<int> ids)
         {
             _logger.LogInformation($"Request to add transaction by AccountId = {id}");
-            var transactions = await _transactionRepository.GetTransactionsByAccountId(id);
-            var listTransaction = _mapper.Map<List<TransactionModel>>(transactions);
-            var transactionsWithoutTransfer = listTransaction.Where(x => x.Type != TransactionType.Transfer);
+            var listTransactionAll = await _transactionRepository.GetTransactionsByAccountIds(ids);
+            var listTransactionSort = listTransactionAll.GroupBy(x => x.Id).Select(x => x.First());
+
+            var transactionsWithoutTransfer = listTransactionAll.Where(x => x.Type != TransactionType.Transfer);
+            
             var resultList = new ArrayList();
 
             foreach (var item in transactionsWithoutTransfer)
@@ -86,7 +87,7 @@ namespace TransactionStore.BusinessLayer.Services
                 resultList.Add(item);
             }
 
-            var transactionsOnlyTransfer = listTransaction.Where(x => x.Type == TransactionType.Transfer).ToList();
+            var transactionsOnlyTransfer = listTransactionSort.Where(x => x.Type == TransactionType.Transfer).ToList();
 
             for (int i = 0; i < transactionsOnlyTransfer.Count(); i = i + 2)
             {
@@ -108,15 +109,6 @@ namespace TransactionStore.BusinessLayer.Services
             }
 
             return resultList;
-        }
-
-        public async Task<List<TransactionModel>> GetTransactionsByAccountIds(List<int> accountIds)
-        {
-            _logger.LogInformation($"Request to add transaction by AccountIds ");
-
-            var transactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
-
-            return _mapper.Map<List<TransactionModel>>(transactions);
         }
 
         public async Task<TransactionModel> GetTransactionById(long id)
