@@ -7,7 +7,7 @@ namespace TransactionStore.DataLayer.Repository
         Task<long> AddTransaction(TransactionDto transaction);
         Task<List<long>> AddTransfer(TransferDto transaction);
         Task<TransactionDto> GetTransactionById(long id);
-        Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(int id);
+        Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(List<int> id);
         Task<List<TransactionDto>> GetTransactionsByAccountIds(List<int> accountIds);
     }
 }
