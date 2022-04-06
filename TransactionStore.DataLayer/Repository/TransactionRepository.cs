@@ -9,7 +9,6 @@ namespace TransactionStore.DataLayer.Repository
     public class TransactionRepository : BaseRepository, ITransactionRepository
     {
         private const string _transactionAddProcedure = "dbo.Transaction_Insert";
-        private const string _transactionGetByAccountIdProcedure = "dbo.Transaction_SelectByAccountId";
         private const string _transactionGetByAccountIdsProcedure = "dbo.Transaction_SelectByAccountIds";
         private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
         private const string _transactionTransfer = "dbo.Transaction_Transfer";
@@ -70,17 +69,22 @@ namespace TransactionStore.DataLayer.Repository
             return new List<long> { result.Item1, result.Item2 };
         }
 
-        public async Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(int id)
+        public async Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(List<int> id)
         {
             _logger.LogInformation("Connecting to the database");
             using IDbConnection connection = Connection;
             _logger.LogInformation("Connection made");
 
+            var tvpTable = new DataTable();
+            tvpTable.Columns.Add(new DataColumn("AccountId", typeof(int)));
+            id.ForEach(id => tvpTable.Rows.Add(id));
+
             var listTransactions = (await connection.QueryAsync<TransactionDto>(
-                _transactionGetByAccountIdMinimalProcedure,
-                new { AccountId = id },
-                commandType: CommandType.StoredProcedure
-            )).ToList();
+                    _transactionGetByAccountIdMinimalProcedure,
+                    new { tvp = tvpTable.AsTableValuedParameter("[dbo].[AccountTVP]") },
+                    commandType: CommandType.StoredProcedure
+               ))
+               .ToList();
 
             _logger.LogInformation($"Transactions by  AccountId = {id} recieved");
 

@@ -1,5 +1,5 @@
 ﻿CREATE proc [dbo].[Transaction_SelectByAccountIdMinimal]
-			@AccountId int
+			@tvp [dbo].[AccountTVP] readonly
 AS
 BEGIN
 SELECT * FROM (
@@ -11,7 +11,7 @@ SELECT
 		AccountId,
 		Currency
 		
-	from dbo.[Transaction]	
-	where AccountId = @AccountId 
+	from dbo.[Transaction]	t
+	INNER JOIN @tvp i ON t.AccountId = i.AccountIds	
 	) q ORDER BY q.Date desc
 END

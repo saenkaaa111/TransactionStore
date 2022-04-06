@@ -1,6 +1,5 @@
 ﻿using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
-using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
 
 namespace TransactionStore.BusinessLayer.Services
@@ -20,25 +19,15 @@ namespace TransactionStore.BusinessLayer.Services
             _transactionRepository = transactionRepository;
             _calculationService = calculationService;
             _logger = logger;
-        }      
-        
-        
+        }
+
+
 
         public async Task<decimal> GetBalanceByAccountIdsInGivenCurrency(List<int> accountIds, Currency currency)
         {
             _logger.LogInformation("Request to receive all transactions from the current account");
-            var listTransactions = new List<TransactionDto>();
+            var listTransactions = await _transactionRepository.GetTransactionsByAccountIdMinimal(accountIds);
 
-            foreach (var item in accountIds)
-            {
-                var listTransactionsFromOneAccount = new List<TransactionDto>();
-                listTransactionsFromOneAccount = await _transactionRepository.GetTransactionsByAccountIdMinimal(item);
-
-                foreach (var transaction in listTransactionsFromOneAccount)
-                {
-                    listTransactions.Add(transaction);
-                }
-            }
 
             _logger.LogInformation("Transactions received");
 

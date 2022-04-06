@@ -63,7 +63,6 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Transaction.sql" />
-    <Build Include="Procedures\Transaction_SelectByAccountId.sql" />
     <Build Include="Procedures\Transaction_SelectByAccountIds.sql" />
     <Build Include="Tables\AccountTVP.sql" />
     <Build Include="Procedures\Transaction_Transfer.sql" />
