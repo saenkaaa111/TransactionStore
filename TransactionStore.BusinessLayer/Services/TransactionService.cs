@@ -72,10 +72,10 @@ namespace TransactionStore.BusinessLayer.Services
             }
         }
 
-        public async Task<ArrayList> GetTransactionsByAccountIds(List<int> id)
+        public async Task<ArrayList> GetTransactionsByAccountIds(List<int> ids)
         {
             _logger.LogInformation($"Request to add transaction by AccountId = {id}");
-            var listTransactionAll = await _transactionRepository.GetTransactionsByAccountIds(id);
+            var listTransactionAll = await _transactionRepository.GetTransactionsByAccountIds(ids);
             var listTransactionSort = listTransactionAll.GroupBy(x => x.Id).Select(x => x.First());
 
             var transactionsWithoutTransfer = listTransactionAll.Where(x => x.Type != TransactionType.Transfer);
