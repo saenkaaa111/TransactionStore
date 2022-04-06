@@ -104,28 +104,6 @@ namespace TransactionStore.DataLayer.Repository
             return listTransactions;
         }
 
-        public async Task<List<TransactionDto>> GetTransactionsByAccountIds(List<int> accountIds)
-        {
-            _logger.LogInformation("Connecting to the database");
-            using IDbConnection connection = Connection;
-            _logger.LogInformation("Connection made");
-
-            var tvpTable = new DataTable();
-            tvpTable.Columns.Add(new DataColumn("AccountId", typeof(int)));
-            accountIds.ForEach(id => tvpTable.Rows.Add(id));
-
-            var listTransactions = (await connection.QueryAsync<TransactionDto>(
-                    _transactionGetByAccountIdsProcedure,
-                    new { tvp = tvpTable.AsTableValuedParameter("[dbo].[AccountTVP]") },
-                    commandType: CommandType.StoredProcedure
-               ))
-               .ToList();
-
-            _logger.LogInformation($"Transactions by AccountIds recieved");
-
-            return listTransactions;
-        }
-
         public async Task<TransactionDto> GetTransactionById(long id)
         {
             _logger.LogInformation("Connecting to the database");

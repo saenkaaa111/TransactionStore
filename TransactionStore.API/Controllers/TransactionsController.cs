@@ -88,33 +88,18 @@ namespace TransactionStore.API.Controller
             return Ok(transactionId);
         }
 
-        // api/transaction/
-        [HttpGet(TransactionUrls.AccountId)]
-        [SwaggerOperation(Summary = "Get transactions by accountId")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(ArrayList))]
-        public async Task<ActionResult<ArrayList>> GetTransactionsByAccountId([FromQuery] int id)
-        {
-            _logger.LogInformation($"Request to receive all transactions by AccountId = {id} in the controller");
-
-            var transactionModel = await _transactionService.GetTransactionsByAccountId(id);
-            var transactions = _mapper.Map<ArrayList>(transactionModel);
-
-            _logger.LogInformation($"Transactions by AccountId = {id} received");
-
-            return Ok(transactions);
-        }
 
         // api/Transactions/by-accountIds?accountIds=1&accountIds=2
         [HttpGet("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<TransactionResponseModel>))]
-        public async Task<ActionResult<List<TransactionResponseModel>>> GetTransactionsByAccountIds(
+        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<ArrayList>))]
+        public async Task<ActionResult<List<ArrayList>>> GetTransactionsByAccountIds(
             [FromQuery] List<int> accountIds)
         {
             _logger.LogInformation($"Request to receive all transactions by AccountIds in the controller");
 
             var transactionModels = await _transactionService.GetTransactionsByAccountIds(accountIds);
-            var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModels);
+            var transactions = _mapper.Map<ArrayList>(transactionModels);
 
             _logger.LogInformation($"Transactions by AccountIds received");
 
