@@ -31,8 +31,6 @@ namespace TransactionStore.BusinessLayer.Services
                 return 0m;
 
             decimal balance = 0;
-            if (currency == 0)
-                currency = BaseCurrency;
 
             foreach (var item in listTransactions)
             {
