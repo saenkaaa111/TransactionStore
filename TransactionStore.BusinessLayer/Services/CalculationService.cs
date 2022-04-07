@@ -1,8 +1,6 @@
 ﻿using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 using TransactionStore.BusinessLayer.Exceptions;
 
 namespace TransactionStore.BusinessLayer.Services
@@ -29,7 +27,7 @@ namespace TransactionStore.BusinessLayer.Services
 
             if (currencyRates is null)
             {
-                _cache.Get<Dictionary<string, decimal>>(Key);
+                currencyRates = _cache.Get<Dictionary<string, decimal>>(Key);
             }
             else
             {
