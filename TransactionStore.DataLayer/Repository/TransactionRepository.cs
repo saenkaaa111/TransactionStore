@@ -9,7 +9,7 @@ namespace TransactionStore.DataLayer.Repository
     public class TransactionRepository : BaseRepository, ITransactionRepository
     {
         private const string _transactionAddProcedure = "dbo.Transaction_Insert";
-        private const string _transactionGetByAccountIdsWithSecondHalfOfTransferProcedure = 
+        private const string _transactionGetByAccountIdsWithSecondHalfOfTransferProcedure =
             "dbo.Transaction_SelectByAccountIdsWithSecondHalfOfTransfer";
         private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
         private const string _transactionTransfer = "dbo.Transaction_Transfer";

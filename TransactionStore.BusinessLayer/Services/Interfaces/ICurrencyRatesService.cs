@@ -5,6 +5,6 @@ namespace TransactionStore.BusinessLayer.Services
     public interface ICurrencyRatesService
     {
         void SaveCurrencyRates(CurrencyRatesExchangeModel currencyRatesModel);
-        Dictionary<string, decimal> Rates { get; protected set; }
+        Dictionary<string, decimal> CurrencyRates { get; protected set; }
     }
 }

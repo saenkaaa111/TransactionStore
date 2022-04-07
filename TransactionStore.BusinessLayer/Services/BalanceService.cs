@@ -21,8 +21,7 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<decimal> GetBalanceByAccountIdsInGivenCurrency(List<int> accountIds, Currency currency)
         {
             _logger.LogInformation("Request to receive all transactions from the current account");
-            var listTransactions = await _transactionRepository
-                .GetTransactionsByAccountIdsWithSecondHalfOfTransfer(accountIds);
+            var listTransactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
             _logger.LogInformation("Transactions received");
 
             if (listTransactions.Count == 0)
