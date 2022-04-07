@@ -30,6 +30,7 @@ builder.Services.AddAutoMapper(typeof(BusinessMapper).Assembly, typeof(DataMappe
 builder.Services.AddTransactionStoreServices();
 builder.Services.AddTransactionStoreRepositories();
 builder.Services.AddMassTransit();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

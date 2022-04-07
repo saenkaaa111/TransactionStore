@@ -4,11 +4,11 @@ namespace TransactionStore.BusinessLayer.Services
 {
     public class CurrencyRatesService : ICurrencyRatesService
     {
-        public Dictionary<string, decimal> Pairs { get; set; }
+        public Dictionary<string, decimal> Rates { get; set; }
 
         public void SaveCurrencyRates(CurrencyRatesExchangeModel currencyRatesModel)
         {
-            Pairs = currencyRatesModel.Rates;
+            Rates = currencyRatesModel.Rates;
         }
     }
 }

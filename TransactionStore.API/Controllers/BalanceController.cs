@@ -22,13 +22,12 @@ namespace TransactionStore.API.Controllers
         [HttpGet]
         [SwaggerOperation(Summary = "Get balance by accountIds in given currency")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
-        public async Task<ActionResult> GetBalanceByAccountIdsInGivenCurrency(
-            [FromQuery] BalanceRequestModel balanceRequestModel)
+        public async Task<ActionResult> GetBalanceByAccountIdsInGivenCurrency([FromQuery] BalanceRequestModel balanceRequestModel)
         {
             _logger.LogInformation($"Request to receive a balance by AccountIds in the controller");
 
-            var balance = await _balanceService.
-                GetBalanceByAccountIdsInGivenCurrency(balanceRequestModel.AccountIds, balanceRequestModel.Currency);
+            var balance = await _balanceService
+                .GetBalanceByAccountIdsInGivenCurrency(balanceRequestModel.AccountIds, balanceRequestModel.Currency);
 
             _logger.LogInformation($"Balance received");
 

@@ -1,6 +1,6 @@
 ﻿using Marvelous.Contracts.Enums;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using TransactionStore.BusinessLayer.Exceptions;
 
 namespace TransactionStore.BusinessLayer.Services
@@ -8,30 +8,32 @@ namespace TransactionStore.BusinessLayer.Services
     public class CalculationService : ICalculationService
     {
         private ICurrencyRatesService _currencyRatesService;
+        private IMemoryCache _cache;
         private readonly ILogger<CalculationService> _logger;
         public const Currency BaseCurrency = Currency.USD;
 
-        public CalculationService(ICurrencyRatesService currencyRates, ILogger<CalculationService> logger)
+        public CalculationService(ICurrencyRatesService currencyRates, IMemoryCache memoryCache,
+            ILogger<CalculationService> logger)
         {
-            _logger = logger;
             _currencyRatesService = currencyRates;
+            _cache = memoryCache;
+            _logger = logger;
         }
 
         public decimal ConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal amount)
         {
-            _logger.LogInformation($"Request to convert currency from {currencyFrom} to {currencyTo}");
-            var rates = _currencyRatesService.Pairs;
+            var rates = _currencyRatesService.Rates;
 
-            if (rates == null)
+            if (rates is null)
             {
-                string jsonread = File.ReadAllText("dictionary.json");
-                rates = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(jsonread);
+                _cache.Get(rates);
             }
             else
             {
-                string json = JsonConvert.SerializeObject(rates, Formatting.Indented);
-                File.WriteAllText("dictionary.json", json);
+                _cache.Remove(rates);
+                _cache.CreateEntry(rates);
             }
+
             rates.TryGetValue($"{BaseCurrency}{currencyFrom}", out var currencyFromValue);
             rates.TryGetValue($"{BaseCurrency}{currencyTo}", out var currencyToValue);
 
@@ -45,8 +47,6 @@ namespace TransactionStore.BusinessLayer.Services
                 throw new CurrencyNotReceivedException("The request for the currency value was not received");
 
             var convertAmount = decimal.Round(currencyToValue / currencyFromValue * amount, 2);
-
-            _logger.LogInformation("Curency converted");
 
             return convertAmount;
         }
