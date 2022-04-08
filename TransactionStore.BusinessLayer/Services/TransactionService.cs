@@ -17,7 +17,6 @@ namespace TransactionStore.BusinessLayer.Services
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionService> _logger;
 
-
         public TransactionService(ITransactionRepository transactionRepository,
             ICalculationService calculationService, IBalanceRepository balanceRepository, IMapper mapper, ILogger<TransactionService> logger)
         {
@@ -39,17 +38,28 @@ namespace TransactionStore.BusinessLayer.Services
             return await _transactionRepository.AddTransaction(transaction);
         }
 
-        public async Task<List<long>> AddTransfer(TransferModel transactionModel)
+        public async Task<List<long>> AddTransfer(TransferModel transferModel)
         {
             _logger.LogInformation("Request to add Transfer");
-            Helper.CheckCurrency(transactionModel.CurrencyFrom);
-            Helper.CheckCurrency(transactionModel.CurrencyTo);
-            var convertResult = _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
-                transactionModel.CurrencyTo, transactionModel.Amount);
+            Helper.CheckCurrency(transferModel.CurrencyFrom);
+            Helper.CheckCurrency(transferModel.CurrencyTo);
+            var convertResult = _calculationService.ConvertCurrency(transferModel.CurrencyFrom,
+                transferModel.CurrencyTo, transferModel.Amount);
 
-            var transferDto = _mapper.Map<TransferDto>(transactionModel);
-            transferDto.ConvertedAmount = convertResult;
-            return await _transactionRepository.AddTransfer(transferDto);
+            var transfer = _mapper.Map<TransferDto>(transferModel);
+            transfer.ConvertedAmount = convertResult;
+
+            var accountBalance = await _balanceRepository.GetBalanceByAccountId(transferModel.AccountIdFrom);
+
+            if (transfer.Amount < accountBalance)
+            {
+                return await _transactionRepository.AddTransfer(transfer);
+            }
+            else
+            {
+                _logger.LogError("Exception: Insufficient funds");
+                throw new InsufficientFundsException("Insufficient funds");
+            }
         }
 
         public async Task<long> Withdraw(TransactionModel transactionModel)

@@ -1,10 +1,9 @@
 ﻿using Marvelous.Contracts.Enums;
 using System.Collections;
 using System.Collections.Generic;
-using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
 
-namespace TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource
+namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
 {
     public class GetTransactionsByAccountIdsTestCaseSourse : IEnumerable
     {
@@ -33,16 +32,24 @@ namespace TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource
                 new TransactionDto
                 {
                     Id = 3,
-                    AccountId = 2,
+                    AccountId = 1,
                     Amount = 700,
                     Currency = Currency.RUB,
+                    Type = TransactionType.Transfer
+                },
+                new TransactionDto
+                {
+                    Id = 4,
+                    AccountId = 2,
+                    Amount = 700,
+                    Currency = Currency.USD,
                     Type = TransactionType.Transfer
                 }
             };
 
-            var expected = new List<TransactionModel>()
+            var expected = new ArrayList()
             {
-                new TransactionModel
+                new TransactionDto
                 {
                     Id = 1,
                     AccountId = 1,
@@ -50,7 +57,7 @@ namespace TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource
                     Currency = Currency.RUB,
                     Type = TransactionType.Deposit
                 },
-                new TransactionModel
+                new TransactionDto
                 {
                     Id = 2,
                     AccountId = 1,
@@ -58,12 +65,16 @@ namespace TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource
                     Currency = Currency.USD,
                     Type = TransactionType.Withdraw
                 },
-                new TransactionModel
+                new TransferDto
                 {
-                    Id = 3,
-                    AccountId = 2,
-                    Amount = 700,
-                    Currency = Currency.RUB,
+                    AccountIdFrom = 1,
+                    AccountIdTo = 2,
+                    IdFrom = 3,
+                    IdTo = 4,
+                    Amount = 700m,
+                    ConvertedAmount = 700,
+                    CurrencyFrom = Currency.RUB,
+                    CurrencyTo = Currency.USD,
                     Type = TransactionType.Transfer
                 }
             };

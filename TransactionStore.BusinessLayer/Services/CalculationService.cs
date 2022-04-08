@@ -1,6 +1,7 @@
 ﻿using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using TransactionStore.BusinessLayer.Exceptions;
 
 namespace TransactionStore.BusinessLayer.Services
@@ -27,11 +28,17 @@ namespace TransactionStore.BusinessLayer.Services
 
             if (currencyRates is null)
             {
-                currencyRates = _cache.Get<Dictionary<string, decimal>>(Key);
+                //currencyRates = _cache.Get<Dictionary<string, decimal>>(Key);
+
+                string jsonread = File.ReadAllText("dictionary.json");
+                currencyRates = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(jsonread);
             }
             else
             {
-                _cache.Set(Key, currencyRates);
+                //_cache.Set(Key, currencyRates);
+
+                string json = JsonConvert.SerializeObject(currencyRates, Formatting.Indented);
+                File.WriteAllText("dictionary.json", json);
             }
 
             currencyRates.TryGetValue($"{BaseCurrency}{currencyFrom}", out var currencyFromValue);
@@ -51,6 +58,6 @@ namespace TransactionStore.BusinessLayer.Services
             _logger.LogInformation("Currency converted");
 
             return convertAmount;
-        }
+         }
     }
 }

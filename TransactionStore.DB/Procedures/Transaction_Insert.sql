@@ -1,4 +1,4 @@
-﻿CREATE proc dbo.Transaction_Insert
+﻿CREATE PROCEDURE [dbo].[Transaction_Insert]
 			@Amount int, 
 			@AccountId int,
 			@Type int,

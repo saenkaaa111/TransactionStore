@@ -45,25 +45,37 @@
         "TSTORE_CONNECTION_STRING": "Data Source = (local); Database=TransactionStore.DB; Integrated Security=True;"
       }
     },
-    "SemaTransactionStore.API": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7272;http://localhost:5272",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "LOG_DIRECTORY": "C:\\Users\\Семён\\source\\repos\\TransactionStore",
-        "TSTORE_CONNECTION_STRING": "Data Source = 80.78.240.16; Database=TransactionStore.DB;User Id = student; Password=qwe!23;"
-      },
-      "IIS Express": {
-        "commandName": "IISExpress",
+    //"SemaTransactionStore.API": {
+    //  "commandName": "Project",
+    //  "dotnetRunMessages": true,
+    //  "launchBrowser": true,
+    //  "launchUrl": "swagger",
+    //  "applicationUrl": "https://localhost:7272;http://localhost:5272",
+    //  "environmentVariables": {
+    //    "ASPNETCORE_ENVIRONMENT": "Development",
+    //    "LOG_DIRECTORY": "C:\\Users\\Семён\\source\\repos\\TransactionStore",
+    //    "TSTORE_CONNECTION_STRING": "Data Source = 80.78.240.16; Database=TransactionStore.DB;User Id = student; Password=qwe!23;"
+    //  },
+      "SemaLocalTransactionStore.API": {
+        "commandName": "Project",
+        "dotnetRunMessages": true,
         "launchBrowser": true,
         "launchUrl": "swagger",
+        "applicationUrl": "https://localhost:7272;http://localhost:5272",
         "environmentVariables": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "LOG_DIRECTORY": "C:\\Users\\Семён\\source\\repos\\TransactionStore",
+          "TSTORE_CONNECTION_STRING": "Server=SIMO\\SQLEXPRESS;Database=TransactionStore.Db;Trusted_Connection=True"
+        },
+        "IIS Express": {
+          "commandName": "IISExpress",
+          "launchBrowser": true,
+          "launchUrl": "swagger",
+          "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development"
+          }
         }
       }
-    }
+    //}
   }
 }

@@ -3,12 +3,12 @@ using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TransactionStore.BuisnessLayer.Configuration;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
-using TransactionStore.BusinessLayer.Tests.TransactionServiceTestCaseSource;
+using TransactionStore.BusinessLayer.Tests.TestCaseSource;
 using TransactionStore.DataLayer.Entities;
 using TransactionStore.DataLayer.Repository;
 
@@ -16,7 +16,6 @@ namespace TransactionStore.BusinessLayer.Tests
 {
     public class TransactionServiceTests
     {
-
         private Mock<ITransactionRepository> _transactionRepositoryMock;
         private TransactionService _transactionService;
         private Mock<ICalculationService> _calculationServiceMock;
@@ -52,32 +51,42 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [Test]
-        public void AddTransferTest()
+        [TestCaseSource(typeof(TransferTestCaseSource))]
+        public void AddTransferTest(TransferModel transferModel, List<long> expected, decimal balance)
         {
             //given
-            var expected = new List<long>() { 1, 2 };
             _transactionRepositoryMock.Setup(d => d.AddTransfer(It.IsAny<TransferDto>())).ReturnsAsync(expected);
-
-            var transfer = new TransferModel()
-            {
-                Amount = 100,
-                AccountIdFrom = 1,
-                AccountIdTo = 2,
-                CurrencyFrom = Currency.RUB,
-                CurrencyTo = Currency.EUR
-            };
+            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transferModel.AccountIdFrom))
+                .ReturnsAsync(balance);
 
             // when
-            var actual = _transactionService.AddTransfer(transfer).Result;
+            var actual = _transactionService.AddTransfer(transferModel).Result;
 
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransfer(It.IsAny<TransferDto>()), Times.Once);
             Assert.AreEqual(expected, actual);
         }
 
+        [TestCaseSource(typeof(TransferNegativeTestCaseSource))]
+        public void TransferNegativeTest_ShouldThrowInsufficientFundsException(TransferModel transferModel,
+            decimal balance)
+        {
+            //given
+            _transactionRepositoryMock.Setup(w => w.AddTransfer(It.IsAny<TransferDto>()));
+            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transferModel.AccountIdFrom))
+                .ReturnsAsync(balance);
+            var expectedMessage = "Insufficient funds";
+
+            //when
+            InsufficientFundsException? exception = Assert.ThrowsAsync<InsufficientFundsException>(() =>
+            _transactionService.AddTransfer(transferModel));
+
+            // then
+            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+        }
+
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
-        public void WithdrawTest(TransactionModel transactionModel, List<TransactionDto> accountTransactions, long expected, decimal balance)
+        public void WithdrawTest(TransactionModel transactionModel, long expected, decimal balance)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>())).ReturnsAsync(expected);
@@ -93,13 +102,12 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(WithdrawNegativeTestCaseSourse))]
-        public void WithdrawNegativeTest_ShouldThrowInsufficientFundsException(TransactionModel transactionModel,
-            List<TransactionDto> accountTransactions)
+        public void WithdrawNegativeTest_ShouldThrowInsufficientFundsException(TransactionModel transactionModel)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
-            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountIds(It.IsAny<List<int>>()))
-                .ReturnsAsync(accountTransactions);
+            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transactionModel.AccountId))
+                .ReturnsAsync(0);
             var expectedMessage = "Insufficient funds";
 
             //when
@@ -112,7 +120,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
         [TestCaseSource(typeof(GetTransactionsByAccountIdsTestCaseSourse))]
         public void GetTransactionsByAccountIdsTest(List<int> ids, List<TransactionDto> transactions,
-            List<TransactionModel> expected)
+            ArrayList expected)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountIds(ids)).ReturnsAsync(transactions);
@@ -136,22 +144,6 @@ namespace TransactionStore.BusinessLayer.Tests
 
             //then
             _transactionRepositoryMock.Verify(s => s.GetTransactionById(It.IsAny<long>()), Times.Once);
-        }
-
-        [TestCaseSource(typeof(JoinTranferTestCaseSource))]
-        public void JoinTransferTransactionsTest(List<TransactionDto> transactions)
-        {
-            //given
-            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountIds(It.IsAny<List<int>>()))
-                .ReturnsAsync(transactions);
-
-            //when
-            var result = _transactionService.GetTransactionsByAccountIds(It.IsAny<List<int>>()).Result;
-            var expected = transactions.Count(x => x.Type == TransactionType.Transfer);
-            var actual = result.Count;
-
-            //then
-            Assert.AreEqual(expected, actual);
         }
     }
 }
