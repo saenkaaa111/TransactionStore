@@ -32,6 +32,18 @@ namespace TransactionStore.API.Middleware
 
                 await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "Server unavalible");
             }
+            catch (RequestTimeoutException)
+            {
+                _logger.Debug("Exception: Request Timeout");
+
+                await HandleExceptionAsync(context, HttpStatusCode.RequestTimeout, "Server unavalible");
+            }
+            catch (ServiceUnavailableException)
+            {
+                _logger.Debug("Exception: Service Unavailable");
+
+                await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "Server unavalible");
+            }
             catch (InsufficientFundsException ex)
             {
                 _logger.Debug($"Exception: {ex.Message}");

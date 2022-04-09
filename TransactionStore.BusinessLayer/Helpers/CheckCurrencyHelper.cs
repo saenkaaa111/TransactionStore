@@ -3,7 +3,7 @@ using TransactionStore.BusinessLayer.Exceptions;
 
 namespace TransactionStore.BusinessLayer.Helpers
 {
-    public static class Helper
+    public static class CheckCurrencyHelper
     {
         private static readonly List<Currency> _currencyList = new()
         {
@@ -15,7 +15,6 @@ namespace TransactionStore.BusinessLayer.Helpers
             Currency.RSD,
             Currency.TRY
         };
-
 
         public static bool CheckCurrency(Currency currency)
         {

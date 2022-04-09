@@ -5,7 +5,7 @@ using TransactionStore.API;
 using TransactionStore.API.Configuration;
 using TransactionStore.API.Middleware;
 using TransactionStore.BuisnessLayer.Configuration;
-
+using TransactionStore.BusinessLayer.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,5 +43,7 @@ app.UseAuthorization();
 app.UseMiddleware<TransactionStoreMiddleware>();
 
 app.MapControllers();
+
+await app.Services.CreateScope().ServiceProvider.GetRequiredService<IInitializationHelper>().InitializeConfigs();
 
 app.Run();
