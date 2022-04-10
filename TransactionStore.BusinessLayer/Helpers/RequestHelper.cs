@@ -1,5 +1,6 @@
 ﻿using Marvelous.Contracts.Autentificator;
 using Marvelous.Contracts.Enums;
+using Marvelous.Contracts.ResponseModels;
 using RestSharp;
 using RestSharp.Authenticators;
 using System.Net;
@@ -9,13 +10,13 @@ namespace TransactionStore.BusinessLayer.Helpers
 {
     public class RequestHelper : IRequestHelper
     {
-        public async Task<RestResponse> SendRequestCheckValidateToken(string url, string path, string jwtToken)
+        public async Task<RestResponse<IdentityResponseModel>> SendRequestCheckValidateToken(string url, string path, string jwtToken)
         {
             var request = new RestRequest(path);
             var client = new RestClient(url);
             client.Authenticator = new MarvelousAuthenticator(jwtToken);
             client.AddDefaultHeader(nameof(Microservice), Microservice.MarvelousTransactionStore.ToString());
-            var response = await client.ExecuteAsync(request);
+            var response = await client.ExecuteAsync<IdentityResponseModel>(request);
             CheckTransactionError(response);
 
             return response;

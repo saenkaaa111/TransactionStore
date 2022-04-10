@@ -6,7 +6,9 @@ using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections;
+using TransactionStore.API.Extensions;
 using TransactionStore.API.Producers;
+using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
 
@@ -14,7 +16,7 @@ namespace TransactionStore.API.Controllers
 {
     [ApiController]
     [Route(TransactionEndpoints.ApiTransactions)]
-    public class TransactionsController : ControllerBase
+    public class TransactionsController : AdvancedController
     {
         private readonly ITransactionService _transactionService;
         private readonly IMapper _mapper;
@@ -22,7 +24,8 @@ namespace TransactionStore.API.Controllers
         private readonly ITransactionProducer _transactionProducer;
 
         public TransactionsController(ITransactionService transactionService, IMapper mapper,
-            ILogger<TransactionsController> logger, ITransactionProducer transactionProducer)
+            ILogger<TransactionsController> logger, ITransactionProducer transactionProducer, 
+            IRequestHelper requestHelper, IConfiguration configuration) : base(configuration, requestHelper)
         {
             _transactionService = transactionService;
             _mapper = mapper;

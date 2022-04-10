@@ -3,7 +3,6 @@ using NLog;
 using System.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
-using TransactionStore.API.Configuration;
 using TransactionStore.BusinessLayer;
 using TransactionStore.BusinessLayer.Exceptions;
 
@@ -31,6 +30,12 @@ namespace TransactionStore.API.Middleware
                 _logger.Debug("Exception: Server unavalible");
 
                 await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "Server unavalible");
+            }
+            catch (ForbiddenException)
+            {
+                _logger.Debug("Exception: Forbidden");
+
+                await HandleExceptionAsync(context, HttpStatusCode.Forbidden, "Forbidden");
             }
             catch (RequestTimeoutException)
             {

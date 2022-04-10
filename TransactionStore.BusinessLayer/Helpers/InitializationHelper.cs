@@ -1,4 +1,5 @@
 ﻿using Marvelous.Contracts.Endpoints;
+using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.ResponseModels;
 using Microsoft.Extensions.Configuration;
 
@@ -16,11 +17,13 @@ namespace TransactionStore.BusinessLayer.Helpers
 
         public async Task InitializeConfigs()
         {
-            var token = await _requestHelper.SendRequestForConfigs<string>("https://piter-education.ru:6042",
+            var token = await _requestHelper.SendRequestForConfigs<string>(
+                _configuration[Microservice.MarvelousAuth.ToString()],
                 AuthEndpoints.ApiAuth + AuthEndpoints.TokenForMicroservice);
 
             var configs = await _requestHelper
-                .SendRequestForConfigs<IEnumerable<ConfigResponseModel>>("https://piter-education.ru:6040",
+                .SendRequestForConfigs<IEnumerable<ConfigResponseModel>>(
+                _configuration[Microservice.MarvelousConfigs.ToString()],
                 ConfigsEndpoints.Configs, token!.Data);
 
             foreach (var c in configs!.Data)

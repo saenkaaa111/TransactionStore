@@ -1,0 +1,4 @@
+2022-04-09 15:31:14.9157 | INFO | MassTransit.DependencyInjection.Registration.ConsumerRegistration`1.MassTransit.Configuration.IConsumerRegistration.Configure Configured endpoint currencyRatesQueue, Consumer: TransactionStore.API.Consumers.CurrencyRatesConsumer
+2022-04-09 15:31:16.5025 | INFO | MassTransit.Logging.EnabledLogger.Log Bus started: rabbitmq://localhost/
+2022-04-09 15:31:16.5744 | INFO | Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync Now listening on: https://localhost:7272
+2022-04-09 15:31:16.5851 | INFO | Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync Now listening on: http://localhost:5272
