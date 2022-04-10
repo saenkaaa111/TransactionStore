@@ -2,6 +2,7 @@ using MassTransit;
 using NLog.Extensions.Logging;
 using TransactionStore.API.Consumers;
 using TransactionStore.API.Producers;
+using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Services;
 using TransactionStore.DataLayer.Repository;
 
@@ -16,6 +17,8 @@ namespace TransactionStore.API
             services.AddScoped<ICalculationService, CalculationService>();
             services.AddScoped<IBalanceService, BalanceService>();
             services.AddSingleton<ICurrencyRatesService, CurrencyRatesService>();
+            services.AddScoped<IRequestHelper, RequestHelper>();
+            services.AddTransient<IInitializationHelper, InitializationHelper>();
         }
 
         public static void AddTransactionStoreRepositories(this IServiceCollection services)

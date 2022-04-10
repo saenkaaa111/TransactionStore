@@ -1,20 +1,22 @@
 using AutoMapper;
+using Marvelous.Contracts.Endpoints;
 using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
 using Marvelous.Contracts.ResponseModels;
-using Marvelous.Contracts.Urls;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections;
+using TransactionStore.API.Extensions;
 using TransactionStore.API.Producers;
+using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
 
-namespace TransactionStore.API.Controller
+namespace TransactionStore.API.Controllers
 {
     [ApiController]
-    [Route(TransactionUrls.ApiTransactions)]
-    public class TransactionsController : ControllerBase
+    [Route(TransactionEndpoints.ApiTransactions)]
+    public class TransactionsController : AdvancedController
     {
         private readonly ITransactionService _transactionService;
         private readonly IMapper _mapper;
@@ -22,7 +24,8 @@ namespace TransactionStore.API.Controller
         private readonly ITransactionProducer _transactionProducer;
 
         public TransactionsController(ITransactionService transactionService, IMapper mapper,
-            ILogger<TransactionsController> logger, ITransactionProducer transactionProducer)
+            ILogger<TransactionsController> logger, ITransactionProducer transactionProducer, 
+            IRequestHelper requestHelper, IConfiguration configuration) : base(configuration, requestHelper)
         {
             _transactionService = transactionService;
             _mapper = mapper;
@@ -31,7 +34,7 @@ namespace TransactionStore.API.Controller
         }
 
         // api/transaction/
-        [HttpPost(TransactionUrls.Deposit)]
+        [HttpPost(TransactionEndpoints.Deposit)]
         [SwaggerOperation(Summary = "Add deposit")]
         [SwaggerResponse(StatusCodes.Status201Created, "Deposit added", typeof(long))]
         public async Task<ActionResult<long>> AddDeposit([FromBody] TransactionRequestModel transaction)
@@ -49,7 +52,7 @@ namespace TransactionStore.API.Controller
         }
 
         // api/transaction/
-        [HttpPost(TransactionUrls.Transfer)]
+        [HttpPost(TransactionEndpoints.Transfer)]
         [SwaggerOperation(Summary = "Add transfer")]
         [SwaggerResponse(StatusCodes.Status200OK, "Transfer successful", typeof(List<long>))]
         public async Task<ActionResult<List<long>>> AddTransfer([FromBody] TransferRequestModel transfer)
@@ -69,7 +72,7 @@ namespace TransactionStore.API.Controller
             return Ok(transferIds);
         }
 
-        [HttpPost(TransactionUrls.Withdraw)]
+        [HttpPost(TransactionEndpoints.Withdraw)]
         [SwaggerOperation(Summary = "Withdraw")]
         [SwaggerResponse(StatusCodes.Status200OK, "Withdraw successful", typeof(long))]
         public async Task<ActionResult<long>> Withdraw([FromBody] TransactionRequestModel transaction)
@@ -121,7 +124,7 @@ namespace TransactionStore.API.Controller
             return Ok(transaction);
         }
 
-        [HttpPost(TransactionUrls.ServicePayment)]
+        [HttpPost(TransactionEndpoints.ServicePayment)]
         [SwaggerOperation(Summary = "Service payment")]
         [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(long))]
         public async Task<ActionResult<long>> ServicePayment([FromBody] TransactionRequestModel transaction)

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Transaction_SelectByAccountIds]
+﻿CREATE PROCEDURE [dbo].[Transaction_SelectByAccountIdsWithSecondHalfOfTransfer]
 	@tvp [dbo].[AccountTVP] readonly
 AS
 BEGIN

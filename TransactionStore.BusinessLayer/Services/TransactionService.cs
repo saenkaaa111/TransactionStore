@@ -17,7 +17,6 @@ namespace TransactionStore.BusinessLayer.Services
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionService> _logger;
 
-
         public TransactionService(ITransactionRepository transactionRepository,
             ICalculationService calculationService, IBalanceRepository balanceRepository, IMapper mapper, ILogger<TransactionService> logger)
         {
@@ -31,7 +30,7 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<long> AddDeposit(TransactionModel transactionModel)
         {
             _logger.LogInformation("Request to add Deposit");
-            Helper.CheckCurrency(transactionModel.Currency);
+            CheckCurrencyHelper.CheckCurrency(transactionModel.Currency);
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
             transaction.Type = TransactionType.Deposit;
@@ -39,23 +38,34 @@ namespace TransactionStore.BusinessLayer.Services
             return await _transactionRepository.AddTransaction(transaction);
         }
 
-        public async Task<List<long>> AddTransfer(TransferModel transactionModel)
+        public async Task<List<long>> AddTransfer(TransferModel transferModel)
         {
             _logger.LogInformation("Request to add Transfer");
-            Helper.CheckCurrency(transactionModel.CurrencyFrom);
-            Helper.CheckCurrency(transactionModel.CurrencyTo);
-            var convertResult = _calculationService.ConvertCurrency(transactionModel.CurrencyFrom,
-                transactionModel.CurrencyTo, transactionModel.Amount);
+            CheckCurrencyHelper.CheckCurrency(transferModel.CurrencyFrom);
+            CheckCurrencyHelper.CheckCurrency(transferModel.CurrencyTo);
+            var convertResult = _calculationService.ConvertCurrency(transferModel.CurrencyFrom,
+                transferModel.CurrencyTo, transferModel.Amount);
 
-            var transferDto = _mapper.Map<TransferDto>(transactionModel);
-            transferDto.ConvertedAmount = convertResult;
-            return await _transactionRepository.AddTransfer(transferDto);
+            var transfer = _mapper.Map<TransferDto>(transferModel);
+            transfer.ConvertedAmount = convertResult;
+
+            var accountBalance = await _balanceRepository.GetBalanceByAccountId(transferModel.AccountIdFrom);
+
+            if (transfer.Amount < accountBalance)
+            {
+                return await _transactionRepository.AddTransfer(transfer);
+            }
+            else
+            {
+                _logger.LogError("Exception: Insufficient funds");
+                throw new InsufficientFundsException("Insufficient funds");
+            }
         }
 
         public async Task<long> Withdraw(TransactionModel transactionModel)
         {
             _logger.LogInformation("Request to add Withdraw");
-            Helper.CheckCurrency(transactionModel.Currency);
+            CheckCurrencyHelper.CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
             var accountBalance = await _balanceRepository.GetBalanceByAccountId(transactionModel.AccountId);
 

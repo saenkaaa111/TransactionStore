@@ -1,4 +1,4 @@
-﻿CREATE proc [dbo].[Transaction_SelectByAccountIdMinimal]
+﻿CREATE PROCEDURE [dbo].[Transaction_SelectByAccountIds]
 			@tvp [dbo].[AccountTVP] readonly
 AS
 BEGIN
