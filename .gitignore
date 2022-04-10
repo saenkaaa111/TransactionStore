@@ -361,6 +361,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-TransactionStore-2022-04-07.txt
-
-TransactionStore-2022-04-08.txt
+TransactionStore*.txt
