@@ -9,6 +9,7 @@ namespace TransactionStore.BusinessLayer.Helpers
     {
         private readonly IRequestHelper _requestHelper;
         private readonly IConfiguration _configuration;
+
         public InitializationHelper(IRequestHelper requestHelper, IConfiguration configuration)
         {
             _requestHelper = requestHelper;
