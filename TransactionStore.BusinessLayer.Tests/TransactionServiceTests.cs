@@ -50,7 +50,11 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
             Assert.AreEqual(expected, actual);
         }
+        // сделать модель транзакции, проверять тип транзакции
 
+
+        //Verify (4 штуки) добавить Balance, getcurrency(2)
+        // moq  для конвертации?
         [TestCaseSource(typeof(TransferTestCaseSource))]
         public void AddTransferTest(TransferModel transferModel, List<long> expected, decimal balance)
         {
@@ -67,8 +71,10 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.AreEqual(expected, actual);
         }
 
+
+        //Verify добавить
         [TestCaseSource(typeof(TransferNegativeTestCaseSource))]
-        public void TransferNegativeTest_ShouldThrowInsufficientFundsException(TransferModel transferModel,
+        public void TransferTest_BalanceLessThenAmount_ShouldThrowInsufficientFundsException(TransferModel transferModel,
             decimal balance)
         {
             //given
@@ -84,6 +90,9 @@ namespace TransactionStore.BusinessLayer.Tests
             // then
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
         }
+
+
+        //Verify добавить
 
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
         public void WithdrawTest(TransactionModel transactionModel, long expected, decimal balance)
@@ -101,6 +110,8 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.AreEqual(expected, actual);
         }
 
+
+        //переименовать
         [TestCaseSource(typeof(WithdrawNegativeTestCaseSourse))]
         public void WithdrawNegativeTest_ShouldThrowInsufficientFundsException(TransactionModel transactionModel)
         {
@@ -118,6 +129,8 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
         }
 
+
+        //можно дополнить
         [TestCaseSource(typeof(GetTransactionsByAccountIdsTestCaseSourse))]
         public void GetTransactionsByAccountIdsTest(List<int> ids, List<TransactionDto> transactions,
             ArrayList expected)
@@ -133,6 +146,8 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Verify(s => s.GetTransactionsByAccountIds(ids), Times.Once);
         }
 
+
+        //конкретная транзакция с айди
         [Test]
         public void GetTransactionByIdTest()
         {

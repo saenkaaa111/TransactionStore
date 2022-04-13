@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionStore.API", "Tra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionStore.BusinessLayer.Tests", "TransactionStore.BusinessLayer.Tests\TransactionStore.BusinessLayer.Tests.csproj", "{1859E1F1-6670-4911-8DC6-EDA972B57232}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionStore.API.Tests", "TransactionStore.API.Tests\TransactionStore.API.Tests.csproj", "{E2132E6D-2B63-47CC-9111-FCD501189D69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{1859E1F1-6670-4911-8DC6-EDA972B57232}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1859E1F1-6670-4911-8DC6-EDA972B57232}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1859E1F1-6670-4911-8DC6-EDA972B57232}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2132E6D-2B63-47CC-9111-FCD501189D69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2132E6D-2B63-47CC-9111-FCD501189D69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2132E6D-2B63-47CC-9111-FCD501189D69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2132E6D-2B63-47CC-9111-FCD501189D69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

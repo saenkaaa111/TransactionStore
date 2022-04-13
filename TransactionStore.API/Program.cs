@@ -34,6 +34,8 @@ builder.Services.AddTransactionStoreServices();
 builder.Services.AddTransactionStoreRepositories();
 builder.Services.AddMassTransit();
 builder.Services.AddMemoryCache();
+builder.Services.AddFluentValidation();
+
 
 var app = builder.Build();
 

@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using MassTransit;
 using NLog.Extensions.Logging;
 using TransactionStore.API.Consumers;
@@ -51,6 +52,10 @@ namespace TransactionStore.API
                     });
                 });
             });
+        }
+        public static void AddFluentValidation(this IServiceCollection services)
+        {
+            services.AddMvc(setup => {}).AddFluentValidation();
         }
     }
 }

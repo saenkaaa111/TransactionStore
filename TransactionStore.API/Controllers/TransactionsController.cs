@@ -40,6 +40,7 @@ namespace TransactionStore.API.Controllers
         public async Task<ActionResult<long>> AddDeposit([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Request to add Deposit in the controller");
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             var transactionId = await _transactionService.AddDeposit(transactionModel);
@@ -58,6 +59,7 @@ namespace TransactionStore.API.Controllers
         public async Task<ActionResult<List<long>>> AddTransfer([FromBody] TransferRequestModel transfer)
         {
             _logger.LogInformation("Request to add Transfer in the controller");
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
             var transferModel = _mapper.Map<TransferModel>(transfer);
             var transferIds = await _transactionService.AddTransfer(transferModel);
@@ -78,6 +80,7 @@ namespace TransactionStore.API.Controllers
         public async Task<ActionResult<long>> Withdraw([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Request to add Withdraw in the controller");
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             transactionModel.Type = TransactionType.Withdraw;
@@ -100,6 +103,7 @@ namespace TransactionStore.API.Controllers
             [FromQuery] List<int> accountIds)
         {
             _logger.LogInformation($"Request to receive all transactions by AccountIds in the controller");
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
             var transactionModels = await _transactionService.GetTransactionsByAccountIds(accountIds);
             var transactions = _mapper.Map<ArrayList>(transactionModels);
@@ -115,6 +119,7 @@ namespace TransactionStore.API.Controllers
         public async Task<ActionResult<TransactionResponseModel>> GetTransactionById(long id)
         {
             _logger.LogInformation($"Request to receive transaction by Id = {id} in the controller");
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
             var transactionModel = await _transactionService.GetTransactionById(id);
             var transaction = _mapper.Map<TransactionResponseModel>(transactionModel);
@@ -130,6 +135,7 @@ namespace TransactionStore.API.Controllers
         public async Task<ActionResult<long>> ServicePayment([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Request to add Service payment in the conroller");
+            await CheckMicroservice(Microservice.MarvelousResource);
 
             var transactionModel = _mapper.Map<TransactionModel>(transaction);
             transactionModel.Type = TransactionType.ServicePayment;
@@ -143,3 +149,8 @@ namespace TransactionStore.API.Controllers
         }
     }
 }
+
+
+//TransactionRequestModel
+//TransferRequestModel
+//ArrayList для антона вопрос
