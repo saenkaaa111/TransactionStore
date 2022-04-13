@@ -24,19 +24,25 @@ namespace TransactionStore.BusinessLayer.Services
             var listTransactions = await _transactionRepository.GetTransactionsByAccountIds(accountIds);
             _logger.LogInformation("Transactions received");
 
-            if (listTransactions.Count == 0)
-                return 0m;
-
-            decimal balance = 0;
-
-            foreach (var item in listTransactions)
+            if (listTransactions.Count != 0)
             {
-                balance += _calculationService.ConvertCurrency(item.Currency, currency, item.Amount);
+                var balance = 0m;
+
+                foreach (var item in listTransactions)
+                {
+                    balance += _calculationService.ConvertCurrency(item.Currency, currency, item.Amount);
+                }
+
+                _logger.LogInformation("Balance calculated");
+
+                return balance;
             }
+            else
+            {
+                _logger.LogInformation("Balance calculated");
 
-            _logger.LogInformation("Balance calculated");
-
-            return balance;
+                return 0m;
+            }
         }
     }
 }
