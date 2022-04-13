@@ -9,7 +9,7 @@ namespace TransactionStore.API.Validation
         public TransactionRequestModelValidator()
         {
             RuleFor(x => x.Amount).NotNull().ExclusiveBetween(0.0m, 100000m);
-            RuleFor(x => x.AccountId).NotNull();
+            RuleFor(x => x.AccountId).NotNull().GreaterThan(0);
             RuleFor(x => x.Currency).NotNull().IsInEnum();
         }
     }

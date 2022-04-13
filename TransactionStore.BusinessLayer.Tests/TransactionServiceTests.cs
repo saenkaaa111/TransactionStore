@@ -35,6 +35,8 @@ namespace TransactionStore.BusinessLayer.Tests
                 _calculationServiceMock.Object, _balanceRepositoryMock.Object, _mapper, _logger.Object);
         }
 
+
+        // сделать модель транзакции, проверять тип транзакции
         [TestCase(4)]
         [TestCase(896)]
         public void AddDepositTest(long expected)
@@ -50,7 +52,7 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
             Assert.AreEqual(expected, actual);
         }
-        // сделать модель транзакции, проверять тип транзакции
+        
 
 
         //Verify (4 штуки) добавить Balance, getcurrency(2)
