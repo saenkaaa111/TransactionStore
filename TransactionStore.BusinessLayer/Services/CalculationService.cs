@@ -9,16 +9,13 @@ namespace TransactionStore.BusinessLayer.Services
     public class CalculationService : ICalculationService
     {
         private ICurrencyRatesService _currencyRatesService;
-        private IMemoryCache _cache;
         private readonly ILogger<CalculationService> _logger;
         public const Currency BaseCurrency = Currency.USD;
         public const string Key = "CurrencyPairs";
 
-        public CalculationService(ICurrencyRatesService currencyRates, IMemoryCache memoryCache,
-            ILogger<CalculationService> logger)
+        public CalculationService(ICurrencyRatesService currencyRates, ILogger<CalculationService> logger)
         {
             _currencyRatesService = currencyRates;
-            _cache = memoryCache;
             _logger = logger;
         }
 
@@ -36,8 +33,10 @@ namespace TransactionStore.BusinessLayer.Services
                 currencyToValue = 1m;
 
             if (currencyFromValue == 0 || currencyToValue == 0)
+            {
+                _logger.LogError("Exception: The request for the currency value was not received");
                 throw new CurrencyNotReceivedException("The request for the currency value was not received");
-
+            }
             var convertAmount = decimal.Round(currencyToValue / currencyFromValue * amount, 2);
 
             _logger.LogInformation("Currency converted");

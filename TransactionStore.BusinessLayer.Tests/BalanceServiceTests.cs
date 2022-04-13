@@ -27,11 +27,16 @@ namespace TransactionStore.BusinessLayer.Tests
             var currencyRatesService = new CurrencyRatesService();
             currencyRatesService.CurrencyRates = new()
             {
-
+                { "USDRUB", 99.00m },
+                { "USDEUR", 0.91m },
+                { "USDJPY", 121.64m},
+                { "USDCNY", 6.37m },
+                { "USDTRY", 14.82m },
+                { "USDRSD", 106.83m}
 
             };
 
-            _calculationService = new CalculationService( currencyRatesService, null, (new Mock<ILogger<CalculationService>>()).Object);
+            _calculationService = new CalculationService( currencyRatesService, (new Mock<ILogger<CalculationService>>()).Object);
             _balanceService = new BalanceService(_transactionRepository.Object,
                 _calculationService, _logger.Object);
         }
