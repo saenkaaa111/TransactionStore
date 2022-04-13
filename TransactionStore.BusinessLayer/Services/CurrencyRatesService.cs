@@ -10,5 +10,20 @@ namespace TransactionStore.BusinessLayer.Services
         {
             CurrencyRates = currencyRatesModel.Rates;
         }
+
+        //if (currencyRates is null)
+        //{
+        //    //currencyRates = _cache.Get<Dictionary<string, decimal>>(Key);
+
+        //    string jsonread = File.ReadAllText("dictionary.json");
+        //    currencyRates = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(jsonread);
+        //}
+        //else
+        //{
+        //    //_cache.Set(Key, currencyRates);
+
+        //    string json = JsonConvert.SerializeObject(currencyRates, Formatting.Indented);
+        //    File.WriteAllText("dictionary.json", json);
+        //}
     }
 }

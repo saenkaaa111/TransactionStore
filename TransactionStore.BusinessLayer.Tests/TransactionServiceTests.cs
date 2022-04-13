@@ -62,8 +62,8 @@ namespace TransactionStore.BusinessLayer.Tests
 
 
         [TestCaseSource(typeof(TransferTestCaseSource))]
-        public void AddTransferTest_ShouldAddTransfer(TransferModel transferModel, TransferDto transferDto,
-            List<long> expected, decimal balance, decimal convertedAmount)
+        public void AddTransfer_ValidRequestRecieved_ShouldAddTransfer(TransferModel transferModel, 
+            TransferDto transferDto, List<long> expected, decimal balance, decimal convertedAmount)
         {
             //given
             _transactionRepositoryMock.Setup(t => t.AddTransfer(transferDto)).ReturnsAsync(expected);
@@ -92,7 +92,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
 
         [TestCaseSource(typeof(TransferNegativeTestCaseSource))]
-        public void AddTransferTest_BalanceLessThanAmount_ShouldThrowInsufficientFundsException(TransferModel transferModel,
+        public void AddTransfer_BalanceLessThanAmount_ShouldThrowInsufficientFundsException(TransferModel transferModel,
             decimal balance)
         {
             //given
@@ -120,7 +120,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
 
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
-        public void WithdrawTest_ShouldAddDeposit(TransactionModel transactionModel, TransactionDto  transactionDto, long expected, decimal balance)
+        public void Withdraw_ValidRequestRecieved_ShouldAddTransation(TransactionModel transactionModel, TransactionDto  transactionDto, long expected, decimal balance)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(transactionDto)).ReturnsAsync(expected);
@@ -146,7 +146,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
 
         [TestCaseSource(typeof(WithdrawNegativeTestCaseSourse))]
-        public void WithdrawTest_BalanceLessThenAmount_InsufficientFundsException(TransactionModel transactionModel)
+        public void Withdraw_BalanceLessThenAmount_InsufficientFundsException(TransactionModel transactionModel)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
@@ -199,7 +199,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
 
         [TestCase(77)]
-        public void GetTransactionByIdTest_ShouldGetTransaction(long id)
+        public void GetTransactionById_ValidRequestRecieved_ShouldGetTransaction(long id)
         {
             //given
             var transaction = new TransactionDto() { Id = 77 };

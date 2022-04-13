@@ -15,7 +15,7 @@ namespace TransactionStore.BusinessLayer.Tests
     public class BalanceServiceTests
     {
         private Mock<ITransactionRepository> _transactionRepository;
-        private Mock<ICalculationService> _calculationService;
+        private CalculationService _calculationService;
         private Mock<ILogger<TransactionService>> _logger;
         private BalanceService _balanceService;
 
@@ -24,13 +24,20 @@ namespace TransactionStore.BusinessLayer.Tests
         {
             _transactionRepository = new Mock<ITransactionRepository>();
             _logger = new Mock<ILogger<TransactionService>>();
-            _calculationService = new Mock<ICalculationService>();
+            var currencyRatesService = new CurrencyRatesService();
+            currencyRatesService.CurrencyRates = new()
+            {
+
+
+            };
+
+            _calculationService = new CalculationService( currencyRatesService, null, (new Mock<ILogger<CalculationService>>()).Object);
             _balanceService = new BalanceService(_transactionRepository.Object,
-                _calculationService.Object, _logger.Object);
+                _calculationService, _logger.Object);
         }
 
         [Test]
-        public void GetBalanceByAccountIdsInGivenCurrencyTest_NoTransactions_ShoulReturnZero()
+        public void GetBalanceByAccountIdsInGivenCurrencyTest_NoTransactionsFound_ShouldReturnZero()
         {
             //given
             var expected = 0;
@@ -71,20 +78,20 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(GetBalanceByAccountIdsInGivenCurrencyTestCaseSourseTestCaseSource))]
-        public async Task GetBalanceByAccountIdsInGivenCurrencyTest_ReturnTransactions_ShoulCalculateBalance(
+        public async Task GetBalanceByAccountIdsInGivenCurrencyTest_SeveralTransactionsFound_ShoulCalculateBalance(
             decimal expected, List<int> ids, List<TransactionDto> transactions)
         {
             //given
             _transactionRepository.Setup(t => t.GetTransactionsByAccountIds(ids)).ReturnsAsync(transactions);
-            _calculationService.Setup(b => b.ConvertCurrency(Currency.RUB, Currency.EUR, 1000m)).Returns(expected);
+            //_calculationService.Setup(c => c.ConvertCurrency(Currency.RUB, Currency.EUR, 100m)).Returns(expected);
 
             //when
             var actual = await _balanceService.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.EUR);
 
             //then
-            Assert.AreEqual(actual, expected);
+            Assert.AreEqual(expected, actual);
             _transactionRepository.Verify(t => t.GetTransactionsByAccountIds(ids), Times.Once);
-            _calculationService.Verify(t => t.ConvertCurrency(Currency.RUB, Currency.EUR, 1000m), Times.Exactly(4));
+            //_calculationService.Verify(t => t.ConvertCurrency(Currency.RUB, Currency.EUR, 1000m), Times.Exactly(4));
             _logger.Verify(
                 x => x.Log(
                     LogLevel.Information,
