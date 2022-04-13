@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Marvelous.Contracts.RequestModels;
 
-namespace TransactionStore.API.Validation
+namespace TransactionStore.API.Validators
 {
 
     public class TransactionRequestModelValidator : AbstractValidator<TransactionRequestModel>

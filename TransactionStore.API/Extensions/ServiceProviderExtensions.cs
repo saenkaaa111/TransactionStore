@@ -1,8 +1,10 @@
 using FluentValidation.AspNetCore;
 using MassTransit;
+using Microsoft.AspNetCore.Mvc;
 using NLog.Extensions.Logging;
 using TransactionStore.API.Consumers;
 using TransactionStore.API.Producers;
+using TransactionStore.API.Validators;
 using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Services;
 using TransactionStore.DataLayer.Repository;
@@ -53,9 +55,16 @@ namespace TransactionStore.API
                 });
             });
         }
+
         public static void AddFluentValidation(this IServiceCollection services)
         {
-            services.AddMvc(setup => {}).AddFluentValidation();
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .AddFluentValidation(o =>
+                {
+                    o.RegisterValidatorsFromAssemblyContaining<TransactionRequestModelValidator>();
+                    o.RegisterValidatorsFromAssemblyContaining<TransferRequestModelValidator>();
+                });
         }
     }
 }

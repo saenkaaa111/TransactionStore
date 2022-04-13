@@ -1,7 +1,7 @@
 ﻿using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
 using NUnit.Framework;
-using TransactionStore.API.Validation;
+using TransactionStore.API.Validators;
 
 namespace TransactionStore.API.Tests
 {

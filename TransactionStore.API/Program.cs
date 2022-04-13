@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using Marvelous.Contracts.Enums;
 using MassTransit;
 using System.Data;
@@ -5,6 +6,7 @@ using System.Data.SqlClient;
 using TransactionStore.API;
 using TransactionStore.API.Configuration;
 using TransactionStore.API.Middleware;
+using TransactionStore.API.Validators;
 using TransactionStore.BuisnessLayer.Configuration;
 using TransactionStore.BusinessLayer.Helpers;
 
@@ -36,11 +38,11 @@ builder.Services.AddMassTransit();
 builder.Services.AddMemoryCache();
 builder.Services.AddFluentValidation();
 
-
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 
