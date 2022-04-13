@@ -1,6 +1,7 @@
 ﻿using Marvelous.Contracts.Enums;
 using System.Collections;
 using TransactionStore.BusinessLayer.Models;
+using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
 {
@@ -10,8 +11,14 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
         {
             var withdraw = new TransactionModel()
             {
-                Id = 1,
                 Amount = 100,
+                AccountId = 1,
+                Currency = Currency.RUB
+            };
+            
+            var withdrawDto = new TransactionDto()
+            {
+                Amount = -100,
                 AccountId = 1,
                 Currency = Currency.RUB
             };
@@ -20,7 +27,7 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
 
             decimal balance = 300m;
 
-            yield return new object[] { withdraw, id, balance };
+            yield return new object[] { withdraw, withdrawDto, id, balance  };
         }
     }
 }
