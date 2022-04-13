@@ -33,25 +33,31 @@ namespace TransactionStore.BusinessLayer.Tests
             _logger = new Mock<ILogger<TransactionService>>();
             _calculationServiceMock = new Mock<ICalculationService>();
             _transactionService = new TransactionService(_transactionRepositoryMock.Object,
-                _calculationServiceMock.Object, _balanceRepositoryMock.Object, _mapper, _logger.Object);
+            _calculationServiceMock.Object, _balanceRepositoryMock.Object, _mapper, _logger.Object);
         }
 
 
-        // сделать модель транзакции, проверять тип транзакции
-        [TestCase(4)]
-        [TestCase(896)]
-        public void AddDepositTest(long expected)
+        [TestCaseSource(typeof(DepositTestCaseSourse))]
+        public void AddDepositTest_ShouldAddDeposit(TransactionModel depositModel, TransactionDto depositDto, long expected)
         {
             //given
-            _transactionRepositoryMock.Setup(d => d.AddTransaction(It.IsAny<TransactionDto>())).ReturnsAsync(expected);
-            var deposit = new TransactionModel() { Type = TransactionType.Deposit, Amount = 600, AccountId = 6, Currency = Currency.RUB };
-
+            _transactionRepositoryMock.Setup(d => d.AddTransaction(depositDto)).ReturnsAsync(expected);
+            
             //when
-            var actual = _transactionService.AddDeposit(deposit).Result;
+            var actual = _transactionService.AddDeposit(depositModel).Result;
 
             // then
-            _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
+            _transactionRepositoryMock.Verify(s => s.AddTransaction(depositDto), Times.Once);
             Assert.AreEqual(expected, actual);
+            _logger.Verify(
+                x => x.Log(
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((o, t) => string.Equals("Request to add Deposit", o.ToString(),
+                    StringComparison.InvariantCultureIgnoreCase)),
+                    It.IsAny<Exception>(),
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Once);
+
         }
 
 
@@ -84,6 +90,7 @@ namespace TransactionStore.BusinessLayer.Tests
                     (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Once);
         }
 
+
         [TestCaseSource(typeof(TransferNegativeTestCaseSource))]
         public void AddTransferTest_BalanceLessThanAmount_ShouldThrowInsufficientFundsException(TransferModel transferModel,
             decimal balance)
@@ -112,13 +119,11 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
 
-        //Verify добавить
-
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
-        public void WithdrawTest(TransactionModel transactionModel, long expected, decimal balance)
+        public void WithdrawTest_ShouldAddDeposit(TransactionModel transactionModel, TransactionDto  transactionDto, long expected, decimal balance)
         {
             //given
-            _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>())).ReturnsAsync(expected);
+            _transactionRepositoryMock.Setup(w => w.AddTransaction(transactionDto)).ReturnsAsync(expected);
             _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transactionModel.AccountId))
                 .ReturnsAsync(balance);
 
@@ -126,14 +131,22 @@ namespace TransactionStore.BusinessLayer.Tests
             var actual = _transactionService.Withdraw(transactionModel).Result;
 
             // then
-            _transactionRepositoryMock.Verify(s => s.AddTransaction(It.IsAny<TransactionDto>()), Times.Once);
             Assert.AreEqual(expected, actual);
+            _transactionRepositoryMock.Verify(s => s.AddTransaction(transactionDto), Times.Once);
+            _balanceRepositoryMock.Verify(s => s.GetBalanceByAccountId(transactionModel.AccountId), Times.Once);
+            _logger.Verify(
+                x => x.Log(
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((o, t) => string.Equals("Request to add Withdraw", o.ToString(),
+                    StringComparison.InvariantCultureIgnoreCase)),
+                    It.IsAny<Exception>(),
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Once);
         }
 
 
-        //переименовать
         [TestCaseSource(typeof(WithdrawNegativeTestCaseSourse))]
-        public void WithdrawNegativeTest_ShouldThrowInsufficientFundsException(TransactionModel transactionModel)
+        public void WithdrawTest_BalanceLessThenAmount_InsufficientFundsException(TransactionModel transactionModel)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
@@ -146,11 +159,20 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionService.Withdraw(transactionModel));
 
             // then
+            _balanceRepositoryMock.Verify(s => s.GetBalanceByAccountId(transactionModel.AccountId), Times.Once);
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            _logger.Verify(
+                x => x.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((o, t) => string.Equals("Exception: Insufficient funds", o.ToString(),
+                    StringComparison.InvariantCultureIgnoreCase)),
+                    It.IsAny<Exception>(),
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Once);
+
         }
 
 
-        //можно дополнить
         [TestCaseSource(typeof(GetTransactionsByAccountIdsTestCaseSourse))]
         public void GetTransactionsByAccountIdsTest(List<int> ids, List<TransactionDto> transactions,
             ArrayList expected)
@@ -160,11 +182,21 @@ namespace TransactionStore.BusinessLayer.Tests
 
             //when
             var actual = _transactionService.GetTransactionsByAccountIds(ids).Result;
-
+            
             //then
             Assert.AreEqual(actual, expected);
             _transactionRepositoryMock.Verify(s => s.GetTransactionsByAccountIds(ids), Times.Once);
+            _logger.Verify(
+                x => x.Log(
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((o, t) => string.Equals($"Request to add transaction by AccountId = {ids}", o.ToString(),
+                    StringComparison.InvariantCultureIgnoreCase)),
+                    It.IsAny<Exception>(),
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Once);
+
         }
+
 
         [TestCase(77)]
         public void GetTransactionByIdTest_ShouldGetTransaction(long id)
