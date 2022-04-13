@@ -16,7 +16,7 @@ namespace TransactionStore.API.Extensions
             _requestHelper = requestHelper;
         }
 
-        public async Task CheckMicroservice(params Microservice[] service)
+        protected async Task CheckMicroservice(params Microservice[] service)
         {
             var token = HttpContext.Request.Headers.Authorization.FirstOrDefault();
             var identity = await _requestHelper

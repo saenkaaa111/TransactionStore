@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TransactionStore.BusinessLayer.Models;
+using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
 {
@@ -9,9 +10,19 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
     {
         public IEnumerator GetEnumerator()
         {
-            var transfer = new TransferModel()
+            var transferModel = new TransferModel()
             {
                 Amount = 100,
+                AccountIdFrom = 1,
+                AccountIdTo = 2,
+                CurrencyFrom = Currency.RUB,
+                CurrencyTo = Currency.EUR
+            };
+
+            var transferDto = new TransferDto()
+            {
+                Amount = 100,
+                ConvertedAmount = 1.2m,
                 AccountIdFrom = 1,
                 AccountIdTo = 2,
                 CurrencyFrom = Currency.RUB,
@@ -22,7 +33,9 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
 
             decimal balance = 1000m;
 
-            yield return new object[] { transfer, expected, balance };
+            decimal convertedAmount = 1.2m;
+
+            yield return new object[] { transferModel, transferDto, expected, balance, convertedAmount };
         }
     }
 }
