@@ -38,7 +38,7 @@ namespace TransactionStore.BusinessLayer.Tests
 
 
         [TestCaseSource(typeof(DepositTestCaseSourse))]
-        public void AddDepositTest_ShouldAddDeposit(TransactionModel depositModel, TransactionDto depositDto, long expected)
+        public void AddDepositTest_ValidRequestRecieved_ShouldAddDeposit(TransactionModel depositModel, TransactionDto depositDto, long expected)
         {
             //given
             _transactionRepositoryMock.Setup(d => d.AddTransaction(depositDto)).ReturnsAsync(expected);

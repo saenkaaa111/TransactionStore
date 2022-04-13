@@ -5,14 +5,8 @@ using TransactionStore.API.Validators;
 
 namespace TransactionStore.API.Tests
 {
-    public class RequestModelTests
+    public class TransactionRequestModelTests
     {
-
-        [SetUp]
-        public void Setup()
-        {
-
-        }
 
         [Test]
         public void TransactionRequestModel_IsValid()
@@ -34,14 +28,17 @@ namespace TransactionStore.API.Tests
         }
 
 
-        [Test]
-        public void TransactionRequestModel_AmountLessThenZero_NotValid()
+        [TestCase(10000000)]
+        [TestCase(-1)]
+        [TestCase(null)]
+        [TestCase(0)]
+        public void TransactionRequestModel_AmountIsNullOrNotBetweenZeroAndTenThouthands_NotValid(decimal amount)
         {
             //given
             var validator = new TransactionRequestModelValidator();
             var transaction = new TransactionRequestModel
             {
-                Amount = -45,
+                Amount = amount,
                 AccountId = 2,
                 Currency = Currency.RUB
             };
@@ -53,15 +50,17 @@ namespace TransactionStore.API.Tests
             Assert.IsFalse(validationResult.IsValid);
         }
 
-        [Test]
-        public void TransactionRequestModel_AccountIdNotCorrect_NotValid()
+        [TestCase(null)]
+        [TestCase(0)]
+        [TestCase(-7)]
+        public void TransactionRequestModel_AccountIdNotCorrect_NotValid(int accountId)
         {
             //given
             var validator = new TransactionRequestModelValidator();
             var transaction = new TransactionRequestModel
             {
                 Amount = 45,
-                AccountId = -7,
+                AccountId = accountId,
                 Currency = Currency.RUB
             };
 
