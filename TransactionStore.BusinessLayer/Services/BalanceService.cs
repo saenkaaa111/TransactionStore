@@ -8,10 +8,10 @@ namespace TransactionStore.BusinessLayer.Services
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICalculationService _calculationService;
-        private readonly ILogger<TransactionService> _logger;
+        private readonly ILogger<BalanceService> _logger;
 
         public BalanceService(ITransactionRepository transactionRepository, ICalculationService calculationService, 
-            ILogger<TransactionService> logger)
+            ILogger<BalanceService> logger)
         {
             _transactionRepository = transactionRepository;
             _calculationService = calculationService;

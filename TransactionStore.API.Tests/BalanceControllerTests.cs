@@ -1,5 +1,5 @@
-﻿using Castle.Core.Configuration;
-using Marvelous.Contracts.Enums;
+﻿using Marvelous.Contracts.Enums;
+using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,17 +17,37 @@ namespace TransactionStore.API.Tests
         private Mock<IBalanceService> _balanceServiceMock;
         private Mock<ILogger<BalanceController>> _loggerMock;
         private BalanceController _balanceController;
+        private Mock<IRequestHelper> _requestHelperMock;
 
         [SetUp]
         public void Setup()
         {
             _balanceServiceMock = new Mock<IBalanceService>();
             _loggerMock = new Mock<ILogger<BalanceController>>();
-            _balanceController = new BalanceController(_balanceServiceMock.Object, _loggerMock.Object, null, null);
+            _requestHelperMock = new Mock<IRequestHelper>();
+            _balanceController = new BalanceController(_balanceServiceMock.Object, _loggerMock.Object, _requestHelperMock.Object, null);
         }
 
         [Test]
-        public void GetBalanceByAccountIdsInGivenCurrency_ValidRequestReceived_ReturnsBalance()
+        public void GetBalanceByAccountIdsInGivenCurrency_ValidRequestReceived_Returns200()
+        {
+            //given
+            var ids = new List<int> { 1 };
+            var balance = 777m;
+            _balanceServiceMock.Setup(b => b.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB)).ReturnsAsync(balance);
+
+
+            //when
+            var result = _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB).Result;
+
+            //then
+            Assert.IsInstanceOf<ActionResult>(result);
+            Assert.AreEqual(StatusCodes.Status200OK, result);
+            Assert.AreEqual(balance, result);
+        }
+
+        [Test]
+        public void GetBalanceByAccountIdsInGivenCurrency_Forbidden_Returns403()
         {
             //given
             var ids = new List<int> { 1 };
@@ -35,11 +55,11 @@ namespace TransactionStore.API.Tests
             _balanceServiceMock.Setup(b => b.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB)).ReturnsAsync(balance);
 
             //when
-            var result = _balanceController.Ok(balance);
+            var result = _balanceController.Forbid();
 
             //then
             Assert.IsInstanceOf<ActionResult>(result);
-            Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+            Assert.AreEqual(StatusCodes.Status403Forbidden, result);
         }
-    } 
+    }
 }
