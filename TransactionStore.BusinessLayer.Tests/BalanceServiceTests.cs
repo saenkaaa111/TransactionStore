@@ -1,10 +1,10 @@
 ﻿using Marvelous.Contracts.Enums;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using TransactionStore.BusinessLayer.Services;
 using TransactionStore.BusinessLayer.Tests.TestCaseSource;
 using TransactionStore.DataLayer.Entities;
@@ -18,31 +18,30 @@ namespace TransactionStore.BusinessLayer.Tests
         private CalculationService _calculationService;
         private Mock<ILogger<TransactionService>> _logger;
         private BalanceService _balanceService;
+        private IMemoryCache _cache;
 
         [SetUp]
         public void Setup()
         {
             _transactionRepository = new Mock<ITransactionRepository>();
             _logger = new Mock<ILogger<TransactionService>>();
-            var currencyRatesService = new CurrencyRatesService();
+            _cache = new MemoryCache(new MemoryCacheOptions());
+            var currencyRatesService = new CurrencyRatesService(_cache);
             currencyRatesService.CurrencyRates = new()
             {
                 { "USDRUB", 99.00m },
                 { "USDEUR", 0.91m },
-                { "USDJPY", 121.64m},
+                { "USDJPY", 121.64m },
                 { "USDCNY", 6.37m },
                 { "USDTRY", 14.82m },
-                { "USDRSD", 106.83m}
-
+                { "USDRSD", 106.83m }
             };
-
-            _calculationService = new CalculationService( currencyRatesService, (new Mock<ILogger<CalculationService>>()).Object);
-            _balanceService = new BalanceService(_transactionRepository.Object,
-                _calculationService, _logger.Object);
+            _calculationService = new CalculationService(currencyRatesService, new Mock<ILogger<CalculationService>>().Object);
+            _balanceService = new BalanceService(_transactionRepository.Object, _calculationService, _logger.Object);
         }
 
         [Test]
-        public void GetBalanceByAccountIdsInGivenCurrencyTest_NoTransactionsFound_ShouldReturnZero()
+        public void GetBalanceByAccountIdsInGivenCurrency_NoTransactionsFound_ShouldReturnZero()
         {
             //given
             var expected = 0;
@@ -55,73 +54,39 @@ namespace TransactionStore.BusinessLayer.Tests
             //then
             Assert.AreEqual(actual, expected);
             _transactionRepository.Verify(b => b.GetTransactionsByAccountIds(ids), Times.Once);
-            _logger.Verify(
-                x => x.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) =>
-                    string.Equals("Request to receive all transactions from the current account", o.ToString(),
-                    StringComparison.InvariantCultureIgnoreCase)),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
-            _logger.Verify(
-                x => x.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => string.Equals("Transactions received", o.ToString(),
-                    StringComparison.InvariantCultureIgnoreCase)),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
-            _logger.Verify(
-                x => x.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => string.Equals("Balance calculated", o.ToString(),
-                    StringComparison.InvariantCultureIgnoreCase)),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
+            LoggerVerify("Request to receive all transactions from the current account", LogLevel.Information);
+            LoggerVerify("Transactions received", LogLevel.Information);
+            LoggerVerify("Balance calculated", LogLevel.Information);
         }
 
         [TestCaseSource(typeof(GetBalanceByAccountIdsInGivenCurrencyTestCaseSourseTestCaseSource))]
-        public async Task GetBalanceByAccountIdsInGivenCurrencyTest_SeveralTransactionsFound_ShoulCalculateBalance(
+        public void GetBalanceByAccountIdsInGivenCurrency_FewTransactionsFound_ShoulCalculateBalance(
             decimal expected, List<int> ids, List<TransactionDto> transactions)
         {
             //given
             _transactionRepository.Setup(t => t.GetTransactionsByAccountIds(ids)).ReturnsAsync(transactions);
-            //_calculationService.Setup(c => c.ConvertCurrency(Currency.RUB, Currency.EUR, 100m)).Returns(expected);
 
             //when
-            var actual = await _balanceService.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.EUR);
+            var actual = _balanceService.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.EUR).Result;
 
             //then
             Assert.AreEqual(expected, actual);
             _transactionRepository.Verify(t => t.GetTransactionsByAccountIds(ids), Times.Once);
-            //_calculationService.Verify(t => t.ConvertCurrency(Currency.RUB, Currency.EUR, 1000m), Times.Exactly(4));
+            LoggerVerify("Request to receive all transactions from the current account", LogLevel.Information);
+            LoggerVerify("Transactions received", LogLevel.Information);
+            LoggerVerify("Balance calculated", LogLevel.Information);
+        }
+
+        private void LoggerVerify(string message, LogLevel logLevel)
+        {
             _logger.Verify(
                 x => x.Log(
-                    LogLevel.Information,
+                    logLevel,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) =>
-                    string.Equals("Request to receive all transactions from the current account", o.ToString(),
+                    It.Is<It.IsAnyType>((o, t) => string.Equals(message, o.ToString(),
                     StringComparison.InvariantCultureIgnoreCase)),
                     It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
-            _logger.Verify(
-                x => x.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => string.Equals("Transactions received", o.ToString(),
-                    StringComparison.InvariantCultureIgnoreCase)),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
-            _logger.Verify(
-                x => x.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => string.Equals("Balance calculated", o.ToString(),
-                    StringComparison.InvariantCultureIgnoreCase)),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Once);
         }
     }
 }

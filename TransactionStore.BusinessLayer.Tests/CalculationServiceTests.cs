@@ -1,5 +1,4 @@
 ﻿using Marvelous.Contracts.Enums;
-using Marvelous.Contracts.ExchangeModels;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -16,8 +15,6 @@ namespace TransactionStore.BusinessLayer.Tests
         private Mock<ILogger<CalculationService>> _logger;
         private IMemoryCache _cache;
 
-
-
         [SetUp]
         public void Setup()
         {
@@ -31,11 +28,9 @@ namespace TransactionStore.BusinessLayer.Tests
                 { "USDCNY", 6.37m },
                 { "USDTRY", 14.82m },
                 { "USDRSD", 106.83m }
-
             };
             _logger = new Mock<ILogger<CalculationService>>();
             _calculationService = new CalculationService(currencyRatesService, _logger.Object);
-            
         }
 
         [TestCase(Currency.RUB, Currency.EUR, 0.92)]
@@ -44,7 +39,7 @@ namespace TransactionStore.BusinessLayer.Tests
         [TestCase(Currency.USD, Currency.CNY, 637)]
         [TestCase(Currency.EUR, Currency.USD, 109.89)]
         [TestCase(Currency.CNY, Currency.USD, 15.7)]
-        public void ConvertCurrency_ValidRequestRecieved_ShouldConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal expected)
+        public void ConvertCurrency_ValidRequestReceived_ShouldConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal expected)
         {
             //given            
             //when
@@ -54,25 +49,24 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.AreEqual(expected, actual);
             LoggerVerify("Currency converted", LogLevel.Information);
         }
-        
+
 
         [TestCase(Currency.ARS, Currency.EUR, 91)]
         [TestCase(Currency.FJD, Currency.CNY, 637)]
         [TestCase(Currency.RUB, Currency.DOP, 91)]
         [TestCase(Currency.RUB, Currency.KRW, 637)]
-        public void ConvertCurrency_CurrencyNotCorrect_(Currency currencyFrom, Currency currencyTo, decimal expected)
+        public void ConvertCurrency_CurrencyNotCorrect_ShouldThrowCurrencyNotReceivedException(Currency currencyFrom, Currency currencyTo, decimal expected)
         {
             //given          
             var expectedMessage = "The request for the currency value was not received";
 
             //when
             CurrencyNotReceivedException? exception = Assert.Throws<CurrencyNotReceivedException>(() =>
-            _calculationService.ConvertCurrency(currencyFrom,currencyTo, expected));
+            _calculationService.ConvertCurrency(currencyFrom, currencyTo, expected));
 
             // then
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             LoggerVerify("Exception: The request for the currency value was not received", LogLevel.Error);
-        
         }
 
         private void LoggerVerify(string message, LogLevel logLevel)

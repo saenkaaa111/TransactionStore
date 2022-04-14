@@ -1,5 +1,4 @@
 using AutoMapper;
-using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -36,9 +35,8 @@ namespace TransactionStore.BusinessLayer.Tests
             _calculationServiceMock.Object, _balanceRepositoryMock.Object, _mapper, _logger.Object);
         }
 
-
         [TestCaseSource(typeof(DepositTestCaseSourse))]
-        public void AddDepositTest_ValidRequestRecieved_ShouldAddDeposit(TransactionModel depositModel, TransactionDto depositDto, long expected)
+        public void AddDepositTest_ValidRequestReceived_ShouldAddDeposit(TransactionModel depositModel, TransactionDto depositDto, long expected)
         {
             //given
             _transactionRepositoryMock.Setup(d => d.AddTransaction(depositDto)).ReturnsAsync(expected);
@@ -49,13 +47,11 @@ namespace TransactionStore.BusinessLayer.Tests
             // then
             _transactionRepositoryMock.Verify(s => s.AddTransaction(depositDto), Times.Once);
             Assert.AreEqual(expected, actual);
-            LoggerVerify("Request to add Deposit", LogLevel.Information);            
-
+            LoggerVerify("Request to add Deposit", LogLevel.Information);
         }
 
-
         [TestCaseSource(typeof(TransferTestCaseSource))]
-        public void AddTransfer_ValidRequestRecieved_ShouldAddTransfer(TransferModel transferModel,
+        public void AddTransfer_ValidRequestReceived_ShouldAddTransfer(TransferModel transferModel,
             TransferDto transferDto, List<long> expected, decimal balance, decimal convertedAmount)
         {
             //given
@@ -74,9 +70,7 @@ namespace TransactionStore.BusinessLayer.Tests
             _calculationServiceMock.Verify(c => c.ConvertCurrency(transferModel.CurrencyFrom, transferModel.CurrencyTo,
                 transferModel.Amount), Times.Once);
             LoggerVerify("Request to add Transfer", LogLevel.Information);
-            
         }
-
 
         [TestCaseSource(typeof(TransferNegativeTestCaseSource))]
         public void AddTransfer_BalanceLessThanAmount_ShouldThrowInsufficientFundsException(TransferModel transferModel,
@@ -96,12 +90,10 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             _balanceRepositoryMock.Verify(b => b.GetBalanceByAccountId(transferModel.AccountIdFrom), Times.Once);
             LoggerVerify("Exception: Insufficient funds", LogLevel.Error);
-            
         }
 
-
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
-        public void Withdraw_ValidRequestRecieved_ShouldAddTransation(TransactionModel transactionModel, TransactionDto transactionDto, long expected, decimal balance)
+        public void Withdraw_ValidRequestReceived_ShouldAddTransation(TransactionModel transactionModel, TransactionDto transactionDto, long expected, decimal balance)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(transactionDto)).ReturnsAsync(expected);
@@ -115,13 +107,11 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.AreEqual(expected, actual);
             _transactionRepositoryMock.Verify(s => s.AddTransaction(transactionDto), Times.Once);
             _balanceRepositoryMock.Verify(s => s.GetBalanceByAccountId(transactionModel.AccountId), Times.Once);
-            LoggerVerify("Request to add Withdraw", LogLevel.Information); 
-            
+            LoggerVerify("Request to add Withdraw", LogLevel.Information);
         }
 
-
         [TestCaseSource(typeof(WithdrawNegativeTestCaseSourse))]
-        public void Withdraw_BalanceLessThenAmount_InsufficientFundsException(TransactionModel transactionModel)
+        public void Withdraw_BalanceLessThenAmount_ShouldThrowInsufficientFundsException(TransactionModel transactionModel)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
@@ -137,12 +127,10 @@ namespace TransactionStore.BusinessLayer.Tests
             _balanceRepositoryMock.Verify(s => s.GetBalanceByAccountId(transactionModel.AccountId), Times.Once);
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             LoggerVerify("Exception: Insufficient funds", LogLevel.Error);
-            
         }
 
-
         [TestCaseSource(typeof(GetTransactionsByAccountIdsTestCaseSourse))]
-        public void GetTransactionsByAccountIds_ValidRequestRecieved_ShouldGetTransactionsByAccountId(List<int> ids, List<TransactionDto> transactions,
+        public void GetTransactionsByAccountIds_ValidRequestReceived_ShouldGetTransactionsByAccountId(List<int> ids, List<TransactionDto> transactions,
             ArrayList expected)
         {
             //given
@@ -155,12 +143,10 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.AreEqual(actual, expected);
             _transactionRepositoryMock.Verify(s => s.GetTransactionsByAccountIds(ids), Times.Once);
             LoggerVerify($"Request to add transaction by AccountId = {ids}", LogLevel.Information);
-           
         }
 
-
         [TestCase(77)]
-        public void GetTransactionById_ValidRequestRecieved_ShouldGetTransaction(long id)
+        public void GetTransactionById_ValidRequestReceived_ShouldGetTransaction(long id)
         {
             //given
             var transaction = new TransactionDto() { Id = 77 };
@@ -173,10 +159,9 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.AreEqual(actual.Id, id);
             _transactionRepositoryMock.Verify(s => s.GetTransactionById(id), Times.Once);
 
-            LoggerVerify($"Request to add transaction by id = {id}", LogLevel.Information);            
+            LoggerVerify($"Request to add transaction by id = {id}", LogLevel.Information);
         }
 
-               
         private void LoggerVerify(string message, LogLevel logLevel)
         {
             _logger.Verify(

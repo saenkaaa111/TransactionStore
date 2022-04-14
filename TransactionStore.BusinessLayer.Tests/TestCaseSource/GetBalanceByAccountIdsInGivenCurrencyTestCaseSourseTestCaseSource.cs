@@ -9,7 +9,7 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
     {
         public IEnumerator GetEnumerator()
         {
-            var expected = 50m;
+            var expected = 1.37m;
 
             var ids = new List<int> { 1 };
 

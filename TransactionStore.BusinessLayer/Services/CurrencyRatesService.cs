@@ -15,7 +15,6 @@ namespace TransactionStore.BusinessLayer.Services
         public void SaveCurrencyRates(CurrencyRatesExchangeModel currencyRatesModel)
         {
             CurrencyRates = currencyRatesModel.Rates;
-            
         }
 
         public Dictionary<string, decimal> GetCurrencyRates()
@@ -23,12 +22,10 @@ namespace TransactionStore.BusinessLayer.Services
             if (CurrencyRates is null)
             {
                 CurrencyRates = _cache.Get<Dictionary<string, decimal>>(Key);
-
             }
             else
             {
                 _cache.Set(Key, CurrencyRates);
-
             }
             return CurrencyRates;
         }
