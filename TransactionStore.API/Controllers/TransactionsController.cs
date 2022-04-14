@@ -59,7 +59,7 @@ namespace TransactionStore.API.Controllers
         public async Task<ActionResult<List<long>>> AddTransfer([FromBody] TransferRequestModel transfer)
         {
             _logger.LogInformation("Request to add Transfer in the controller");
-            await CheckMicroservice(Microservice.MarvelousCrm);
+            //await CheckMicroservice(Microservice.MarvelousCrm);
 
             var transferModel = _mapper.Map<TransferModel>(transfer);
             var transferIds = await _transactionService.AddTransfer(transferModel);

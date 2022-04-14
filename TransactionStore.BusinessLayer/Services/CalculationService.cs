@@ -21,7 +21,7 @@ namespace TransactionStore.BusinessLayer.Services
 
         public decimal ConvertCurrency(Currency currencyFrom, Currency currencyTo, decimal amount)
         {
-            var currencyRates = _currencyRatesService.CurrencyRates;
+            var currencyRates = _currencyRatesService.GetCurrencyRates();
 
             currencyRates.TryGetValue($"{BaseCurrency}{currencyFrom}", out var currencyFromValue);
             currencyRates.TryGetValue($"{BaseCurrency}{currencyTo}", out var currencyToValue);
