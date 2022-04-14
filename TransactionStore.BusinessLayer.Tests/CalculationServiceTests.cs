@@ -14,12 +14,15 @@ namespace TransactionStore.BusinessLayer.Tests
     {
         private CalculationService _calculationService;
         private Mock<ILogger<CalculationService>> _logger;
-        
+        private IMemoryCache _cache;
+
+
 
         [SetUp]
         public void Setup()
         {
-            var currencyRatesService = new CurrencyRatesService();
+            _cache = new MemoryCache(new MemoryCacheOptions());
+            var currencyRatesService = new CurrencyRatesService(_cache);
             currencyRatesService.CurrencyRates = new()
             {
                 { "USDRUB", 99.00m },
