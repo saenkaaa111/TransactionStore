@@ -33,8 +33,7 @@ namespace TransactionStore.API.Controllers
 
             await CheckMicroservice(Microservice.MarvelousCrm);
 
-            var balance = await _balanceService
-                .GetBalanceByAccountIdsInGivenCurrency(id, currency);
+            var balance = await _balanceService.GetBalanceByAccountIdsInGivenCurrency(id, currency);
 
             _logger.LogInformation($"Balance received");
 

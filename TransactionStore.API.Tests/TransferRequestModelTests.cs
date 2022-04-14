@@ -8,7 +8,7 @@ namespace TransactionStore.API.Tests
     public class TransferRequestModelTests
     {
         [Test]
-        public void TransferRequestModel_IsValid()
+        public void TransferRequestModel_IsValid_ValidationPassed()
         {
             //given
             var validator = new TransferRequestModelValidator();
@@ -30,9 +30,9 @@ namespace TransactionStore.API.Tests
 
         [TestCase(null)]
         [TestCase(0)]
-        [TestCase(-100)]
-        [TestCase(1000000)]
-        public void Amount_HasErrorWhenNullOrNotBetweenZeroAndTenThouthands(decimal amount)
+        [TestCase(-77)]
+        [TestCase(7777777)]
+        public void Amount_NotValid_ValidationFailed(decimal amount)
         {
             //given
             var validator = new TransferRequestModelValidator();
@@ -54,8 +54,8 @@ namespace TransactionStore.API.Tests
 
         [TestCase(null)]
         [TestCase(0)]
-        [TestCase(-100)]
-        public void AccountIdFrom_IsNullOrLessThenZero(int accountIdFrom)
+        [TestCase(-77)]
+        public void AccountIdFrom_NotValid_ValidationFailed(int accountIdFrom)
         {
             //given
             var validator = new TransferRequestModelValidator();
@@ -77,8 +77,8 @@ namespace TransactionStore.API.Tests
 
         [TestCase(null)]
         [TestCase(0)]
-        [TestCase(-100)]
-        public void AccountIdTo_IsNullOrLessThenZero(int accountIdTo)
+        [TestCase(-77)]
+        public void AccountIdTo_NotValid_ValidationFailed(int accountIdTo)
         {
             //given
             var validator = new TransferRequestModelValidator();
@@ -98,8 +98,10 @@ namespace TransactionStore.API.Tests
             Assert.IsFalse(validationResult.IsValid);
         }
 
-        [Test]
-        public void CurrencyFrom_IsNull()
+        [TestCase(null)]
+        [TestCase(0)]
+        [TestCase(-77)]
+        public void CurrencyFrom_NotValid_ValidationFailed(int currency)
         {
             //given
             var validator = new TransferRequestModelValidator();
@@ -108,6 +110,7 @@ namespace TransactionStore.API.Tests
                 Amount = 77,
                 AccountIdFrom = 1,
                 AccountIdTo = 2,
+                CurrencyFrom = (Currency)currency,
                 CurrencyTo = Currency.USD,
             };
 
@@ -118,8 +121,10 @@ namespace TransactionStore.API.Tests
             Assert.IsFalse(validationResult.IsValid);
         }
 
-        [Test]
-        public void CurrencyTo_IsNull()
+        [TestCase(null)]
+        [TestCase(0)]
+        [TestCase(-77)]
+        public void CurrencyTo_NotValid_ValidationFailed(int currency)
         {
             //given
             var validator = new TransferRequestModelValidator();
@@ -129,6 +134,7 @@ namespace TransactionStore.API.Tests
                 AccountIdFrom = 1,
                 AccountIdTo = 2,
                 CurrencyFrom = Currency.USD,
+                CurrencyTo = (Currency)currency
             };
 
             //when

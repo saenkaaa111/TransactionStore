@@ -1,4 +1,5 @@
-﻿using Marvelous.Contracts.ResponseModels;
+﻿using FluentValidation;
+using Marvelous.Contracts.ResponseModels;
 using NLog;
 using System.Data.SqlClient;
 using System.Net;
@@ -60,6 +61,10 @@ namespace TransactionStore.API.Middleware
                 _logger.Debug($"Exception: {ex.Message}");
 
                 await HandleExceptionAsync(context, HttpStatusCode.Conflict, ex.Message);
+            }
+            catch (ValidationException ex)
+            {
+                await HandleExceptionAsync(context, HttpStatusCode.UnprocessableEntity, ex.Message);
             }
             catch (Exception ex)
             {
