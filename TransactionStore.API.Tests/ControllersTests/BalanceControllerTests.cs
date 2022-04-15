@@ -45,14 +45,16 @@ namespace TransactionStore.API.Tests
             _balanceController.ControllerContext.HttpContext = context;
             _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
                 It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
-            _balanceServiceMock.Setup(b => b.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB)).ReturnsAsync(balance);
+            _balanceServiceMock.Setup(b => b.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB))
+                .ReturnsAsync(balance);
 
             //when
             var result = await _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB);
+            var okResult = result as OkObjectResult;
 
             //then
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
             _balanceServiceMock.Verify(b => b.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB), Times.Once);
             LoggerVerify("Request to receive a balance by AccountIds in the controller", LogLevel.Information);
             LoggerVerify("Balance received", LogLevel.Information);
@@ -69,7 +71,7 @@ namespace TransactionStore.API.Tests
             var ids = new List<int> { 1 };
             var balance = 777m;
             var expectedMessage = "MarvelousFrontendResource doesn't have access to this endpiont";
-            IdentityResponseModel identityResponseModel = new IdentityResponseModel()
+            var identityResponseModel = new IdentityResponseModel()
             {
                 Id = 1,
                 Role = "role",

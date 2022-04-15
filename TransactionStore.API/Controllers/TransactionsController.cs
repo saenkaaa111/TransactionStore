@@ -1,4 +1,5 @@
 using AutoMapper;
+using FluentValidation;
 using Marvelous.Contracts.Endpoints;
 using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
@@ -22,15 +23,19 @@ namespace TransactionStore.API.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionsController> _logger;
         private readonly ITransactionProducer _transactionProducer;
+        private readonly IValidator<TransactionRequestModel> _transactionRequestModelValidator;
 
         public TransactionsController(ITransactionService transactionService, IMapper mapper,
-            ILogger<TransactionsController> logger, ITransactionProducer transactionProducer, 
-            IRequestHelper requestHelper, IConfiguration configuration) : base(configuration, requestHelper)
+            ILogger<TransactionsController> logger, ITransactionProducer transactionProducer,
+            IRequestHelper requestHelper, IConfiguration configuration, 
+            IValidator<TransactionRequestModel> transactionRequestModelValidator) 
+            : base(configuration, requestHelper)
         {
             _transactionService = transactionService;
             _mapper = mapper;
             _logger = logger;
             _transactionProducer = transactionProducer;
+            _transactionRequestModelValidator = transactionRequestModelValidator;
         }
 
         // api/transaction/
@@ -97,7 +102,6 @@ namespace TransactionStore.API.Controllers
             return Ok(transactionId);
         }
 
-
         // api/Transactions/by-accountIds?accountIds=1&accountIds=2
         [HttpGet("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
@@ -138,20 +142,30 @@ namespace TransactionStore.API.Controllers
         [SwaggerOperation(Summary = "Service payment")]
         [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(long))]
         [SwaggerResponse(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<long>> ServicePayment([FromBody] TransactionRequestModel transaction)
+        public async Task<ActionResult<long>> AddServicePayment([FromBody] TransactionRequestModel transactionRequestModel)
         {
             _logger.LogInformation("Request to add Service payment in the conroller");
             await CheckMicroservice(Microservice.MarvelousResource);
 
-            var transactionModel = _mapper.Map<TransactionModel>(transaction);
-            transactionModel.Type = TransactionType.ServicePayment;
-            var transactionId = await _transactionService.Withdraw(transactionModel);
+            var validationResult = _transactionRequestModelValidator.Validate(transactionRequestModel);
 
-            _logger.LogInformation($"Service payment with Id = {transactionId} added");
-            var transactionForPublish = await _transactionService.GetTransactionById(transactionId);
-            await _transactionProducer.NotifyTransactionAdded(transactionForPublish);
+            if (validationResult.IsValid)
+            {
+                var transactionModel = _mapper.Map<TransactionModel>(transactionRequestModel);
+                transactionModel.Type = TransactionType.ServicePayment;
+                var transactionId = await _transactionService.Withdraw(transactionModel);
 
-            return Ok(transactionId);
+                _logger.LogInformation($"Service payment with Id = {transactionId} added");
+                var transactionForPublish = await _transactionService.GetTransactionById(transactionId);
+                await _transactionProducer.NotifyTransactionAdded(transactionForPublish);
+
+                return Ok(transactionId);
+            }
+            else
+            {
+                _logger.LogError("Error: TransactionRequestModel isn't valid");
+                throw new ValidationException("TransactionRequestModel isn't valid");
+            }
         }
     }
 }

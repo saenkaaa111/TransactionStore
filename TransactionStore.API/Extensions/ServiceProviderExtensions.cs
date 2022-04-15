@@ -59,7 +59,6 @@ namespace TransactionStore.API
         public static void AddFluentValidation(this IServiceCollection services)
         {
             services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddFluentValidation(o =>
                 {
                     o.RegisterValidatorsFromAssemblyContaining<TransactionRequestModelValidator>();
