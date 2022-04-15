@@ -23,9 +23,9 @@ namespace TransactionStore.API.Extensions
                 .SendRequestCheckValidateToken(_configuration[Microservice.MarvelousAuth.ToString()],
                 AuthEndpoints.ApiAuth + AuthEndpoints.ValidationMicroservice, token);
 
-            if (!service.Select(r => r.ToString()).Contains(identity.Data.IssuerMicroservice))
+            if (!service.Select(r => r.ToString()).Contains(identity.IssuerMicroservice))
             {
-                throw new ForbiddenException($"{identity.Data.IssuerMicroservice} doesn't have access to this endpiont");
+                throw new ForbiddenException($"{identity.IssuerMicroservice} doesn't have access to this endpiont");
             }
         }
     }

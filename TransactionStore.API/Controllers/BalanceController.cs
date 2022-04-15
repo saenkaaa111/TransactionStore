@@ -29,13 +29,13 @@ namespace TransactionStore.API.Controllers
         public async Task<ActionResult> GetBalanceByAccountIdsInGivenCurrency(
             [FromQuery] List<int> id, [FromQuery] Currency currency)
         {
-            _logger.LogInformation($"Request to receive a balance by AccountIds in the controller");
+            _logger.LogInformation("Request to receive a balance by AccountIds in the controller");
 
             await CheckMicroservice(Microservice.MarvelousCrm);
 
             var balance = await _balanceService.GetBalanceByAccountIdsInGivenCurrency(id, currency);
 
-            _logger.LogInformation($"Balance received");
+            _logger.LogInformation("Balance received");
 
             return Ok(balance);
         }

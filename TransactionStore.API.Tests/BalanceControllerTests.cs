@@ -2,64 +2,90 @@
 using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TransactionStore.API.Controllers;
+using TransactionStore.API.Tests.TestCaseSource;
+using TransactionStore.BusinessLayer.Exceptions;
 using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Services;
 
 namespace TransactionStore.API.Tests
 {
-    public class BalanceControllerTests
+    public class BalanceControllerTests : VerifyLoggerHelper<BalanceController>
     {
         private Mock<IBalanceService> _balanceServiceMock;
-        private Mock<ILogger<BalanceController>> _loggerMock;
         private BalanceController _balanceController;
         private Mock<IRequestHelper> _requestHelperMock;
+        private Mock<IConfiguration> _configurationMock;
 
         [SetUp]
         public void Setup()
         {
             _balanceServiceMock = new Mock<IBalanceService>();
-            _loggerMock = new Mock<ILogger<BalanceController>>();
+            _logger = new Mock<ILogger<BalanceController>>();
             _requestHelperMock = new Mock<IRequestHelper>();
-            _balanceController = new BalanceController(_balanceServiceMock.Object, _loggerMock.Object, _requestHelperMock.Object, null);
+            _configurationMock = new Mock<IConfiguration>();
+            _balanceController = new BalanceController(_balanceServiceMock.Object, _logger.Object,
+                _requestHelperMock.Object, _configurationMock.Object);
         }
 
-        [Test]
-        public void GetBalanceByAccountIdsInGivenCurrency_ValidRequestReceived_Returns200()
+        [TestCaseSource(typeof(GetBalanceByAccountIdsInGivenCurrency_ValidRequestReceived_TestCaseSource))]
+        public async Task GetBalanceByAccountIdsInGivenCurrency_ValidRequestReceived_ReturnsStatusCode200(
+            IdentityResponseModel identityResponseModel, List<int> ids, decimal balance)
         {
             //given
-            var ids = new List<int> { 1 };
-            var balance = 777m;
+            string token = "token";
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Authorization = token;
+            _balanceController.ControllerContext.HttpContext = context;
+            _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
             _balanceServiceMock.Setup(b => b.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB)).ReturnsAsync(balance);
 
             //when
-            var result = _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB).Result;
-            var okResponse = result as ObjectResult;
+            var result = await _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB);
 
             //then
-            Assert.IsInstanceOf<ActionResult>(result);
-            Assert.AreEqual(StatusCodes.Status200OK, okResponse!.StatusCode);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<ObjectResult>(result);
+            _balanceServiceMock.Verify(b => b.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB), Times.Once);
+            LoggerVerify("Request to receive a balance by AccountIds in the controller", LogLevel.Information);
+            LoggerVerify("Balance received", LogLevel.Information);
         }
 
         [Test]
-        public void GetBalanceByAccountIdsInGivenCurrency_Forbidden_Returns403()
+        public void GetBalanceByAccountIdsInGivenCurrency_Forbidden_ShouldThrowForbiddenException()
         {
             //given
+            string token = "token";
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Authorization = token;
+            _balanceController.ControllerContext.HttpContext = context;
             var ids = new List<int> { 1 };
             var balance = 777m;
+            var expectedMessage = "MarvelousFrontendResource doesn't have access to this endpiont";
+            IdentityResponseModel identityResponseModel = new IdentityResponseModel()
+            {
+                Id = 1,
+                Role = "role",
+                IssuerMicroservice = Microservice.MarvelousFrontendResource.ToString()
+            }; 
+            _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
+                 It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
             _balanceServiceMock.Setup(b => b.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB)).ReturnsAsync(balance);
 
-            //when
-            var result = _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB).Result;
-            var forbiddenResponse = result as ObjectResult;
-
             //then
-            Assert.IsInstanceOf<ActionResult>(result);
-            Assert.AreEqual(StatusCodes.Status403Forbidden, forbiddenResponse!.StatusCode);
+            ForbiddenException? exception = Assert.ThrowsAsync<ForbiddenException>(() =>
+            _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB));
+
+            // then
+            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            LoggerVerify("Request to receive a balance by AccountIds in the controller", LogLevel.Information);
         }
     }
 }
