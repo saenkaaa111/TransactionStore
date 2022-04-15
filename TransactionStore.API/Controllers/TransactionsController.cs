@@ -37,6 +37,7 @@ namespace TransactionStore.API.Controllers
         [HttpPost(TransactionEndpoints.Deposit)]
         [SwaggerOperation(Summary = "Add deposit")]
         [SwaggerResponse(StatusCodes.Status201Created, "Deposit added", typeof(long))]
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<long>> AddDeposit([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Request to add Deposit in the controller");
@@ -56,6 +57,7 @@ namespace TransactionStore.API.Controllers
         [HttpPost(TransactionEndpoints.Transfer)]
         [SwaggerOperation(Summary = "Add transfer")]
         [SwaggerResponse(StatusCodes.Status200OK, "Transfer successful", typeof(List<long>))]
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<List<long>>> AddTransfer([FromBody] TransferRequestModel transfer)
         {
             _logger.LogInformation("Request to add Transfer in the controller");
@@ -77,6 +79,7 @@ namespace TransactionStore.API.Controllers
         [HttpPost(TransactionEndpoints.Withdraw)]
         [SwaggerOperation(Summary = "Withdraw")]
         [SwaggerResponse(StatusCodes.Status200OK, "Withdraw successful", typeof(long))]
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<long>> Withdraw([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Request to add Withdraw in the controller");
@@ -99,6 +102,7 @@ namespace TransactionStore.API.Controllers
         [HttpGet("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<ArrayList>))]
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<List<ArrayList>>> GetTransactionsByAccountIds(
             [FromQuery] List<int> accountIds)
         {
@@ -116,6 +120,7 @@ namespace TransactionStore.API.Controllers
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Get transaction by id")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(TransactionResponseModel))]
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<TransactionResponseModel>> GetTransactionById(long id)
         {
             _logger.LogInformation($"Request to receive transaction by Id = {id} in the controller");
@@ -132,6 +137,7 @@ namespace TransactionStore.API.Controllers
         [HttpPost(TransactionEndpoints.ServicePayment)]
         [SwaggerOperation(Summary = "Service payment")]
         [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(long))]
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<long>> ServicePayment([FromBody] TransactionRequestModel transaction)
         {
             _logger.LogInformation("Request to add Service payment in the conroller");
@@ -149,8 +155,3 @@ namespace TransactionStore.API.Controllers
         }
     }
 }
-
-
-//TransactionRequestModel
-//TransferRequestModel
-//ArrayList для антона вопрос

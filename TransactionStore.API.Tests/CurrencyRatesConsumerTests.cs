@@ -10,11 +10,10 @@ using TransactionStore.BusinessLayer.Services;
 
 namespace TransactionStore.API.Tests
 {
-    public class CurrencyRatesConsumerTests
+    public class CurrencyRatesConsumerTests : VerifyLoggerHelper<CurrencyRatesConsumer>
     {
         private CurrencyRatesConsumer _consumer;
         private Mock<ICurrencyRatesService> _currencyRatesServiceMock;
-        private Mock<ILogger<CurrencyRatesConsumer>> _logger;
 
         [SetUp]
         public void Setup()
@@ -32,20 +31,13 @@ namespace TransactionStore.API.Tests
              _.Message == currencyRatesExchangeModel);
             var messageGet = $"Getting Account {context.Message.Rates}";
             var messageRecive = $"Account {context.Message.Rates} recived";
+
             //when
-
             _consumer.Consume(context);
-            //then
 
+            //then
             _currencyRatesServiceMock.Verify(x => x.SaveCurrencyRates(currencyRatesExchangeModel), Times.Once);
-            _logger.Verify(
-                x => x.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => string.Equals("CurrencyRatesExchangeModel recieved", o.ToString(),
-                    StringComparison.InvariantCultureIgnoreCase)),
-                    It.IsAny<Exception>(),
-                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Once);
+            LoggerVerify("CurrencyRatesExchangeModel recieved", LogLevel.Information);
         }
     }
 }

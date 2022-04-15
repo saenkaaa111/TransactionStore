@@ -14,14 +14,13 @@ using TransactionStore.DataLayer.Repository;
 
 namespace TransactionStore.BusinessLayer.Tests
 {
-    public class TransactionServiceTests
+    public class TransactionServiceTests : VerifyLoggerHelper<TransactionService>
     {
         private Mock<ITransactionRepository> _transactionRepositoryMock;
         private TransactionService _transactionService;
         private Mock<ICalculationService> _calculationServiceMock;
         private Mock<IBalanceRepository> _balanceRepositoryMock;
         private IMapper _mapper;
-        private Mock<ILogger<TransactionService>> _logger;
 
         [SetUp]
         public void Setup()
@@ -160,18 +159,6 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Verify(s => s.GetTransactionById(id), Times.Once);
 
             LoggerVerify($"Request to add transaction by id = {id}", LogLevel.Information);
-        }
-
-        private void LoggerVerify(string message, LogLevel logLevel)
-        {
-            _logger.Verify(
-                x => x.Log(
-                    logLevel,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((o, t) => string.Equals(message, o.ToString(),
-                    StringComparison.InvariantCultureIgnoreCase)),
-                    It.IsAny<Exception>(),
-                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Once);
         }
     }
 }

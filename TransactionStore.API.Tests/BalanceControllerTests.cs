@@ -36,14 +36,13 @@ namespace TransactionStore.API.Tests
             var balance = 777m;
             _balanceServiceMock.Setup(b => b.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB)).ReturnsAsync(balance);
 
-
             //when
             var result = _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB).Result;
+            var okResponse = result as ObjectResult;
 
             //then
             Assert.IsInstanceOf<ActionResult>(result);
-            Assert.AreEqual(StatusCodes.Status200OK, result);
-            Assert.AreEqual(balance, result);
+            Assert.AreEqual(StatusCodes.Status200OK, okResponse!.StatusCode);
         }
 
         [Test]
@@ -55,11 +54,12 @@ namespace TransactionStore.API.Tests
             _balanceServiceMock.Setup(b => b.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB)).ReturnsAsync(balance);
 
             //when
-            var result = _balanceController.Forbid();
+            var result = _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.RUB).Result;
+            var forbiddenResponse = result as ObjectResult;
 
             //then
             Assert.IsInstanceOf<ActionResult>(result);
-            Assert.AreEqual(StatusCodes.Status403Forbidden, result);
+            Assert.AreEqual(StatusCodes.Status403Forbidden, forbiddenResponse!.StatusCode);
         }
     }
 }

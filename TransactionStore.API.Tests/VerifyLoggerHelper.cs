@@ -3,7 +3,7 @@ using Moq;
 using System;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace TransactionStore.BusinessLayer.Tests
+namespace TransactionStore.API.Tests
 {
     public abstract class VerifyLoggerHelper<T>
     {
