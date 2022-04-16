@@ -9,6 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Collections;
 using TransactionStore.API.Extensions;
 using TransactionStore.API.Producers;
+using TransactionStore.API.Validators;
 using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;

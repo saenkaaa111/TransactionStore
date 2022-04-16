@@ -1,3 +1,4 @@
+using FluentValidation.TestHelper;
 using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
 using NUnit.Framework;
@@ -7,12 +8,18 @@ namespace TransactionStore.API.Tests
 {
     public class TransactionRequestModelTests
     {
+        private TransactionRequestModelValidator _validator;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _validator = new TransactionRequestModelValidator();
+        }
 
         [Test]
-        public void TransactionRequestModel_IsValid()
+        public void TransactionRequestModel_IsValid_ValidationPassed()
         {
             //given
-            var validator = new TransactionRequestModelValidator();
             var transaction = new TransactionRequestModel
             {
                 Amount = 45,
@@ -21,10 +28,10 @@ namespace TransactionStore.API.Tests
             };
 
             //when
-            var validationResult = validator.Validate(transaction);
+            var validationResult = _validator.TestValidate(transaction);
 
-            // then
-            Assert.IsTrue(validationResult.IsValid);
+            // the
+            validationResult.ShouldNotHaveAnyValidationErrors();
         }
 
 
@@ -35,7 +42,6 @@ namespace TransactionStore.API.Tests
         public void TransactionRequestModel_AmountIsNullOrNotBetweenZeroAndTenThouthands_NotValid(decimal amount)
         {
             //given
-            var validator = new TransactionRequestModelValidator();
             var transaction = new TransactionRequestModel
             {
                 Amount = amount,
@@ -44,10 +50,10 @@ namespace TransactionStore.API.Tests
             };
 
             //when
-            var validationResult = validator.Validate(transaction);
+            var validationResult = _validator.TestValidate(transaction);
 
             // then
-            Assert.IsFalse(validationResult.IsValid);
+            validationResult.ShouldHaveValidationErrorFor(transaction => transaction.Amount);
         }
 
         [TestCase(null)]
@@ -56,7 +62,6 @@ namespace TransactionStore.API.Tests
         public void TransactionRequestModel_AccountIdNotCorrect_NotValid(int accountId)
         {
             //given
-            var validator = new TransactionRequestModelValidator();
             var transaction = new TransactionRequestModel
             {
                 Amount = 45,
@@ -65,10 +70,30 @@ namespace TransactionStore.API.Tests
             };
 
             //when
-            var validationResult = validator.Validate(transaction);
+            var validationResult = _validator.TestValidate(transaction);
 
             // then
-            Assert.IsFalse(validationResult.IsValid);
+            validationResult.ShouldHaveValidationErrorFor(transaction => transaction.AccountId);
+        }
+
+        [TestCase(null)]
+        [TestCase(0)]
+        [TestCase(-7)]
+        public void TransactionRequestModel_CurrencyNotCorrect_NotValid(int currency)
+        {
+            //given
+            var transaction = new TransactionRequestModel
+            {
+                Amount = 45,
+                AccountId = 2,
+                Currency = (Currency)currency
+            };
+
+            //when
+            var validationResult = _validator.TestValidate(transaction);
+
+            // then
+            validationResult.ShouldHaveValidationErrorFor(transaction => transaction.Currency);
         }
 
     }

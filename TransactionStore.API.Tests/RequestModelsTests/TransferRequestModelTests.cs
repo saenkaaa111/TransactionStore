@@ -2,16 +2,24 @@
 using Marvelous.Contracts.RequestModels;
 using NUnit.Framework;
 using TransactionStore.API.Validators;
+using FluentValidation.TestHelper;
 
 namespace TransactionStore.API.Tests
 {
     public class TransferRequestModelTests
     {
+        private TransferRequestModelValidator _validator;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _validator = new TransferRequestModelValidator();
+        }
+
         [Test]
         public void TransferRequestModel_IsValid_ValidationPassed()
         {
             //given
-            var validator = new TransferRequestModelValidator();
             var transfer = new TransferRequestModel
             {
                 Amount = 77,
@@ -22,10 +30,10 @@ namespace TransactionStore.API.Tests
             };
 
             //when
-            var validationResult = validator.Validate(transfer);
+            var validationResult = _validator.TestValidate(transfer);
 
-            // then
-            Assert.IsTrue(validationResult.IsValid);
+            // the
+            validationResult.ShouldNotHaveAnyValidationErrors();
         }
 
         [TestCase(null)]
@@ -35,7 +43,6 @@ namespace TransactionStore.API.Tests
         public void Amount_NotValid_ValidationFailed(decimal amount)
         {
             //given
-            var validator = new TransferRequestModelValidator();
             var transfer = new TransferRequestModel
             {
                 Amount = amount,
@@ -46,10 +53,10 @@ namespace TransactionStore.API.Tests
             };
 
             //when
-            var validationResult = validator.Validate(transfer);
+            var validationResult = _validator.TestValidate(transfer);
 
             // then
-            Assert.IsFalse(validationResult.IsValid);
+            validationResult.ShouldHaveValidationErrorFor(transfer => transfer.Amount);
         }
 
         [TestCase(null)]
@@ -58,7 +65,6 @@ namespace TransactionStore.API.Tests
         public void AccountIdFrom_NotValid_ValidationFailed(int accountIdFrom)
         {
             //given
-            var validator = new TransferRequestModelValidator();
             var transfer = new TransferRequestModel
             {
                 Amount = 77,
@@ -69,10 +75,10 @@ namespace TransactionStore.API.Tests
             };
 
             //when
-            var validationResult = validator.Validate(transfer);
+            var validationResult = _validator.TestValidate(transfer);
 
             // then
-            Assert.IsFalse(validationResult.IsValid);
+            validationResult.ShouldHaveValidationErrorFor(transfer => transfer.AccountIdFrom);
         }
 
         [TestCase(null)]
@@ -81,7 +87,6 @@ namespace TransactionStore.API.Tests
         public void AccountIdTo_NotValid_ValidationFailed(int accountIdTo)
         {
             //given
-            var validator = new TransferRequestModelValidator();
             var transfer = new TransferRequestModel
             {
                 Amount = 77,
@@ -92,10 +97,10 @@ namespace TransactionStore.API.Tests
             };
 
             //when
-            var validationResult = validator.Validate(transfer);
+            var validationResult = _validator.TestValidate(transfer);
 
             // then
-            Assert.IsFalse(validationResult.IsValid);
+            validationResult.ShouldHaveValidationErrorFor(transfer => transfer.AccountIdTo);
         }
 
         [TestCase(null)]
@@ -104,7 +109,6 @@ namespace TransactionStore.API.Tests
         public void CurrencyFrom_NotValid_ValidationFailed(int currency)
         {
             //given
-            var validator = new TransferRequestModelValidator();
             var transfer = new TransferRequestModel
             {
                 Amount = 77,
@@ -115,10 +119,10 @@ namespace TransactionStore.API.Tests
             };
 
             //when
-            var validationResult = validator.Validate(transfer);
+            var validationResult = _validator.TestValidate(transfer);
 
             // then
-            Assert.IsFalse(validationResult.IsValid);
+            validationResult.ShouldHaveValidationErrorFor(transfer => transfer.CurrencyFrom);
         }
 
         [TestCase(null)]
@@ -127,7 +131,6 @@ namespace TransactionStore.API.Tests
         public void CurrencyTo_NotValid_ValidationFailed(int currency)
         {
             //given
-            var validator = new TransferRequestModelValidator();
             var transfer = new TransferRequestModel
             {
                 Amount = 77,
@@ -138,10 +141,10 @@ namespace TransactionStore.API.Tests
             };
 
             //when
-            var validationResult = validator.Validate(transfer);
+            var validationResult = _validator.TestValidate(transfer);
 
             // then
-            Assert.IsFalse(validationResult.IsValid);
+            validationResult.ShouldHaveValidationErrorFor(transfer => transfer.CurrencyTo);
         }
     }
 }

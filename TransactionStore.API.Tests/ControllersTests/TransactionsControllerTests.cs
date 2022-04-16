@@ -25,13 +25,14 @@ namespace TransactionStore.API.Tests
 {
     public class TransactionsControllerTests : VerifyLoggerHelper<TransactionsController>
     {
-        private Mock<ITransactionService> _transactionServiceMock;
-        private TransactionsController _transactionsController;
-        private Mock<IRequestHelper> _requestHelperMock;
-        private Mock<ITransactionProducer> _transactionProducer;
-        private Mock<IConfiguration> _configurationMock;
-        private Mock<IValidator<TransactionRequestModel>> _transactionRequestModelValidator;
-        private IMapper _mapper;
+        private Mock<ITransactionService>? _transactionServiceMock;
+        private TransactionsController? _transactionsController;
+        private Mock<IRequestHelper>? _requestHelperMock;
+        private Mock<ITransactionProducer>? _transactionProducer;
+        private Mock<IConfiguration>? _configurationMock;
+        private IValidator<TransactionRequestModel>? _validator;
+        private IMapper? _mapper;
+        private DefaultHttpContext? _defaultHttpContext;
 
         [SetUp]
         public void Setup()
@@ -42,11 +43,14 @@ namespace TransactionStore.API.Tests
             _requestHelperMock = new Mock<IRequestHelper>();
             _configurationMock = new Mock<IConfiguration>();
             _transactionProducer = new Mock<ITransactionProducer>();
-            _transactionRequestModelValidator = new Mock<IValidator<TransactionRequestModel>>();
+            //_validator = new IValidator();
             _transactionsController = new TransactionsController(_transactionServiceMock.Object, 
                 _mapper, _logger.Object, _transactionProducer.Object, 
-                _requestHelperMock.Object, _configurationMock.Object, 
-                _transactionRequestModelValidator.Object);
+                _requestHelperMock.Object, _configurationMock.Object,
+                _validator);
+            _defaultHttpContext = new DefaultHttpContext();
+            _transactionsController.ControllerContext.HttpContext = _defaultHttpContext;
+            _defaultHttpContext.Request.Headers.Authorization = "Token";
         }
 
         [Test]

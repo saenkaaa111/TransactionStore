@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TransactionStore.BusinessLayer.Services;
 using TransactionStore.BusinessLayer.Tests.TestCaseSource;
 using TransactionStore.DataLayer.Entities;
@@ -24,22 +25,24 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
             _cache = new MemoryCache(new MemoryCacheOptions());
             _logger = new Mock<ILogger<BalanceService>>();
-            var currencyRatesService = new CurrencyRatesService(_cache);
-            currencyRatesService.CurrencyRates = new()
+            var currencyRatesService = new CurrencyRatesService(_cache)
             {
-                { "USDRUB", 99.00m },
-                { "USDEUR", 0.91m },
-                { "USDJPY", 121.64m },
-                { "USDCNY", 6.37m },
-                { "USDTRY", 14.82m },
-                { "USDRSD", 106.83m }
+                CurrencyRates = new()
+                {
+                    { "USDRUB", 99.00m },
+                    { "USDEUR", 0.91m },
+                    { "USDJPY", 121.64m },
+                    { "USDCNY", 6.37m },
+                    { "USDTRY", 14.82m },
+                    { "USDRSD", 106.83m }
+                }
             };
             _calculationService = new CalculationService(currencyRatesService, new Mock<ILogger<CalculationService>>().Object);
             _balanceService = new BalanceService(_transactionRepositoryMock.Object, _calculationService, _logger.Object);
         }
-
+         
         [Test]
-        public void GetBalanceByAccountIdsInGivenCurrency_NoTransactionsFound_ShouldReturnZero()
+        public async Task GetBalanceByAccountIdsInGivenCurrency_NoTransactionsFound_ShouldReturnZero()
         {
             //given
             var expected = 0;
@@ -47,7 +50,7 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountIds(ids)).ReturnsAsync(new List<TransactionDto>());
 
             //when
-            var actual = _balanceService.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.EUR).Result;
+            var actual = await _balanceService.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.EUR);
 
             //then
             Assert.AreEqual(actual, expected);
@@ -58,14 +61,14 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(GetBalanceByAccountIdsInGivenCurrencyTestCaseSourseTestCaseSource))]
-        public void GetBalanceByAccountIdsInGivenCurrency_FewTransactionsFound_ShoulCalculateBalance(
+        public async Task GetBalanceByAccountIdsInGivenCurrency_FewTransactionsFound_ShoulCalculateBalance(
             decimal expected, List<int> ids, List<TransactionDto> transactions)
         {
             //given
             _transactionRepositoryMock.Setup(t => t.GetTransactionsByAccountIds(ids)).ReturnsAsync(transactions);
 
             //when
-            var actual = _balanceService.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.EUR).Result;
+            var actual = await _balanceService.GetBalanceByAccountIdsInGivenCurrency(ids, Currency.EUR);
 
             //then
             Assert.AreEqual(expected, actual);

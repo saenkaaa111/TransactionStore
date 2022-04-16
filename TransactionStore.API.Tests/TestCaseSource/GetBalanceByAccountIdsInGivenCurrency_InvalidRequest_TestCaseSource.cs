@@ -6,18 +6,19 @@ using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.API.Tests.TestCaseSource
 {
-    public class GetBalanceByAccountIdsInGivenCurrency_ValidRequestReceived_TestCaseSource : IEnumerable
+    public class GetBalanceByAccountIdsInGivenCurrency_InvalidRequest_TestCaseSource : IEnumerable
     {
         public IEnumerator GetEnumerator()
         {
-            IdentityResponseModel identityResponseModel = new IdentityResponseModel()
+            var ids = new List<int> { 0 };
+            var invalidCurrency = Currency.AFN;
+            var expectedMessage = "The request for the currency value was not received";
+            var identityResponseModel = new IdentityResponseModel()
             {
                 Id = 1,
                 Role = "role",
                 IssuerMicroservice = Microservice.MarvelousCrm.ToString()
             };
-            var ids = new List<int> { 1 };
-            var currencyRub = Currency.RUB;
             var transactions = new List<TransactionDto>()
             {
                 new TransactionDto
@@ -51,12 +52,10 @@ namespace TransactionStore.API.Tests.TestCaseSource
                     Amount = 10m,
                     Currency = Currency.RUB,
                     Type = TransactionType.ServicePayment
-                } 
+                }
             };
 
-            yield return new object[] { identityResponseModel, ids, currencyRub, transactions } ;
+            yield return new object[] { ids, invalidCurrency, expectedMessage, identityResponseModel, transactions };
         }
-
-
     }
 }
