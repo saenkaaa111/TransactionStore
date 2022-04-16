@@ -6,7 +6,7 @@ using FluentValidation.TestHelper;
 
 namespace TransactionStore.API.Tests
 {
-    public class TransferRequestModelTests
+    public class TransferRequestModelValidatorTests
     {
         private TransferRequestModelValidator _validator;
 

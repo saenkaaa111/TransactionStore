@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace TransactionStore.API.Tests.TestCaseSource
 {
-    public class AddServicePayment_ValidRequestReceived_TestCaseSource : IEnumerable
+    public class AddTransaction_ValidRequestReceived_TestCaseSource : IEnumerable
     {
         public IEnumerator GetEnumerator()
         {
@@ -13,7 +13,7 @@ namespace TransactionStore.API.Tests.TestCaseSource
             {
                 Id = 1,
                 Role = "role",
-                IssuerMicroservice = Microservice.MarvelousResource.ToString()
+                IssuerMicroservice = Microservice.MarvelousCrm.ToString()
             };
             var transactionRequestModel = new TransactionRequestModel
             {

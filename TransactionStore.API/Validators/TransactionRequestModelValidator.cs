@@ -22,7 +22,7 @@ namespace TransactionStore.API.Validators
 
             RuleFor(x => x.Currency)
                 .NotEmpty()
-                .WithMessage("CurrencyFrom is empty")
+                .WithMessage("Currency is empty")
                 .IsInEnum();
         }
     }

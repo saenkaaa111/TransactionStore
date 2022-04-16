@@ -35,7 +35,7 @@ namespace TransactionStore.API.Producers
             },
             source.Token);
 
-            _logger.LogInformation("Published");
+            _logger.LogInformation($"Transaction with id = {transaction.Id} published");
         }
     }
 }

@@ -1,14 +1,16 @@
 ﻿using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
 using Marvelous.Contracts.ResponseModels;
+using System;
 using System.Collections;
 
 namespace TransactionStore.API.Tests.TestCaseSource
 {
-    public class AddServicePayment_ValidRequestReceived_TestCaseSource : IEnumerable
+    public class AddServicePayment_NotValidModelReceived_TestCaseSource : IEnumerable
     {
         public IEnumerator GetEnumerator()
         {
+            var currency = -1;
             var identityResponseModel = new IdentityResponseModel()
             {
                 Id = 1,
@@ -17,13 +19,13 @@ namespace TransactionStore.API.Tests.TestCaseSource
             };
             var transactionRequestModel = new TransactionRequestModel
             {
-                AccountId = 1,
-                Amount = 100,
-                Currency = Currency.RUB,
+                AccountId = -1,
+                Amount = -1,
+                Currency = (Currency)currency,
             };
-            long expected = 1;
+            var transactionId = 1;
 
-            yield return new object[] { identityResponseModel, transactionRequestModel, expected };
+            yield return new object[] { identityResponseModel, transactionRequestModel, transactionId };
         }
     }
 }

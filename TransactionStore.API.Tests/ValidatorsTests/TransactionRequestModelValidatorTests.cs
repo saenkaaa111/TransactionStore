@@ -6,7 +6,7 @@ using TransactionStore.API.Validators;
 
 namespace TransactionStore.API.Tests
 {
-    public class TransactionRequestModelTests
+    public class TransactionRequestModelValidatorTests
     {
         private TransactionRequestModelValidator _validator;
 
