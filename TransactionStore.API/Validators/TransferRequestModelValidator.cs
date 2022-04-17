@@ -24,7 +24,9 @@ namespace TransactionStore.API.Validators
                 .NotEmpty()
                 .WithMessage("AccountId is empty")
                 .GreaterThan(0)
-                .WithMessage("AccountId is less than 0");
+                .WithMessage("AccountId is less than 0")
+                .NotEqual(x => x.AccountIdFrom)
+                .WithMessage("You entered the same AccountId");
 
             RuleFor(x => x.CurrencyFrom)
                 .NotEmpty()
@@ -34,7 +36,9 @@ namespace TransactionStore.API.Validators
             RuleFor(x => x.CurrencyTo)
                 .NotEmpty()
                 .WithMessage("CurrencyTo is empty")
-                .IsInEnum();
+                .IsInEnum()
+                .NotEqual(x => x.CurrencyFrom)
+                .WithMessage("You entered the same Currency"); ;
         }
     }
 }

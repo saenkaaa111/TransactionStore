@@ -71,12 +71,11 @@ namespace TransactionStore.API.Tests
                 It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
 
             //when
-            var result = await _balanceController!
-                .GetBalanceByAccountIdsInGivenCurrency(ids, currencyRub) as OkObjectResult;
+            var actual = await _balanceController!
+                .GetBalanceByAccountIdsInGivenCurrency(ids, currencyRub);
 
             //then
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(StatusCodes.Status200OK, result!.StatusCode);
+            Assert.IsInstanceOf<OkObjectResult>(actual.Result);
             LoggerVerify("Request to receive a balance by AccountIds in the controller", LogLevel.Information);
             LoggerVerify("Balance received", LogLevel.Information);
         }
@@ -100,7 +99,7 @@ namespace TransactionStore.API.Tests
 
         [TestCaseSource(typeof(GetBalanceByAccountIdsInGivenCurrency_InvalidRequest_TestCaseSource))]
         public void GetBalanceByAccountIdsInGivenCurrency_InvalidRequest_ShouldThrowForbiddenException(
-            List<int> invalidIds, Currency invalidCurrency, string expectedMessage, 
+            List<int> ids, Currency invalidCurrency, string expectedMessage, 
             IdentityResponseModel identityResponseModel, List<TransactionDto> transactions)
         {
             //given
@@ -110,7 +109,7 @@ namespace TransactionStore.API.Tests
 
             //then
             CurrencyNotReceivedException? exception = Assert.ThrowsAsync<CurrencyNotReceivedException>(() =>
-            _balanceController.GetBalanceByAccountIdsInGivenCurrency(invalidIds, invalidCurrency));
+            _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, invalidCurrency));
 
             // then 
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));

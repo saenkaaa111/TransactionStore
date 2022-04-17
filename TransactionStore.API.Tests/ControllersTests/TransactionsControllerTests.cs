@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TransactionStore.API.Configuration;
 using TransactionStore.API.Controllers;
@@ -54,7 +55,7 @@ namespace TransactionStore.API.Tests
         }
 
         [TestCaseSource(typeof(AddTransaction_ValidRequestReceived_TestCaseSource))]
-        public async Task AddDeposit_ValidRequestReceived_ReturnsStatusCode200(
+        public async Task AddDeposit_ValidRequestReceived_ShouldReturnStatusCode200(
             IdentityResponseModel identityResponseModel, TransactionRequestModel transactionRequestModel, long expected)
         {
             //given
@@ -73,8 +74,8 @@ namespace TransactionStore.API.Tests
             LoggerVerify($"Deposit with Id = {expected} added", LogLevel.Information);
         }
 
-        [TestCaseSource(typeof(AddDepositOrWithdraw_Forbidden_TestCaseSource))]
-        public void AddDeposit_Forbidden_ReturnsStatusCode403(
+        [TestCaseSource(typeof(AddTransaction_Forbidden_TestCaseSource))]
+        public void AddDeposit_Forbidden_ShouldThrowForbiddenException(
             IdentityResponseModel identityResponseModel, TransactionRequestModel transactionRequestModel)
         {
             //given
@@ -110,9 +111,68 @@ namespace TransactionStore.API.Tests
             LoggerVerify("Error: TransactionRequestModel isn't valid", LogLevel.Error);
         }
 
+        [TestCaseSource(typeof(AddTransfer_ValidRequestReceived_TestCaseSource))]
+        public async Task AddTransfer_ValidRequestReceived_ShouldReturnStatusCode200(
+            IdentityResponseModel identityResponseModel, TransferRequestModel transferRequestModel,
+            TransactionModel transactionModelFirst, TransactionModel transactionModelSecond, List<long> transferIds)
+        {
+            //given
+            _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
+            _transactionServiceMock.Setup(t => t.AddTransfer(It.IsAny<TransferModel>())).ReturnsAsync(transferIds);
+            _transactionServiceMock.Setup(t => t.GetTransactionById(transferIds[0])).ReturnsAsync(transactionModelFirst);
+            _transactionServiceMock.Setup(t => t.GetTransactionById(transferIds[1])).ReturnsAsync(transactionModelSecond);
+
+            //when
+            var actual = await _transactionsController.AddTransfer(transferRequestModel);
+
+            //then
+            Assert.IsInstanceOf<ObjectResult>(actual.Result);
+            _transactionServiceMock.Verify(t => t.AddTransfer(It.IsAny<TransferModel>()), Times.Once);
+            _transactionProducerMock.Verify(p => p.NotifyTransactionAdded(transactionModelFirst), Times.Once);
+            _transactionProducerMock.Verify(p => p.NotifyTransactionAdded(transactionModelSecond), Times.Once);
+            LoggerVerify("Request to add Transfer in the controller", LogLevel.Information);
+            LoggerVerify("Transfer added", LogLevel.Information);
+        }
+
+        [TestCaseSource(typeof(AddTransfer_Forbidden_TestCaseSource))]
+        public async Task AddTransfer_Forbidden_ShouldThrowForbiddenException(
+            IdentityResponseModel identityResponseModel, TransferRequestModel transferRequestModel)
+        {
+            //given
+            _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
+            var expectedMessage = "MarvelousResource doesn't have access to this endpiont";
+            //when
+            ForbiddenException? exception = Assert.ThrowsAsync<ForbiddenException>(() =>
+            _transactionsController.AddTransfer(transferRequestModel));
+
+            //then
+            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            LoggerVerify("Request to add Transfer in the controller", LogLevel.Information);
+        }
+
+        [TestCaseSource(typeof(AddTransfer_NotValidModelReceived_TestCaseSource))]
+        public async Task AddTransfer_NotValidModelReceived_ShouldThrowValidationException(
+            IdentityResponseModel identityResponseModel, TransferRequestModel transferRequestModel)
+        {
+            //given
+            _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
+            var expectedMessage = "TransferRequestModel isn't valid";
+
+            //when
+            ValidationException? exception = Assert.ThrowsAsync<ValidationException>(() =>
+           _transactionsController.AddTransfer(transferRequestModel));
+
+            //then
+            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            LoggerVerify("Error: TransferRequestModel isn't valid", LogLevel.Error);
+        }
+
         [TestCaseSource(typeof(AddTransaction_ValidRequestReceived_TestCaseSource))]
-        public async Task Withdraw_ValidRequestReceived_ReturnsStatusCode200(
-    IdentityResponseModel identityResponseModel, TransactionRequestModel transactionRequestModel, long expected)
+        public async Task Withdraw_ValidRequestReceived_ShouldReturnStatusCode200(
+            IdentityResponseModel identityResponseModel, TransactionRequestModel transactionRequestModel, long expected)
         {
             //given
             _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
@@ -130,8 +190,8 @@ namespace TransactionStore.API.Tests
             LoggerVerify($"Withdraw with Id = {expected} added", LogLevel.Information);
         }
 
-        [TestCaseSource(typeof(AddDepositOrWithdraw_Forbidden_TestCaseSource))]
-        public void Withdraw_Forbidden_ReturnsStatusCode403(
+        [TestCaseSource(typeof(AddTransaction_Forbidden_TestCaseSource))]
+        public void Withdraw_Forbidden_ShouldThrowForbiddenException(
             IdentityResponseModel identityResponseModel, TransactionRequestModel transactionRequestModel)
         {
             //given
@@ -168,7 +228,7 @@ namespace TransactionStore.API.Tests
         }
 
         [TestCaseSource(typeof(AddServicePayment_ValidRequestReceived_TestCaseSource))]
-        public async Task AddServicePayment_ValidRequestReceived_ReturnsStatusCode200(
+        public async Task AddServicePayment_ValidRequestReceived_ShouldReturnStatusCode200(
             IdentityResponseModel identityResponseModel, TransactionRequestModel transactionRequestModel, long expected)
         {
             //given
@@ -188,7 +248,7 @@ namespace TransactionStore.API.Tests
         }
 
         [TestCaseSource(typeof(AddServicePayment_Forbidden_TestCaseSource))]
-        public void AddServicePayment_Forbidden_ReturnsStatusCode403(
+        public void AddServicePayment_Forbidden_ShouldThrowForbiddenException(
             IdentityResponseModel identityResponseModel, TransactionRequestModel transactionRequestModel)
         {
             //given
@@ -223,35 +283,5 @@ namespace TransactionStore.API.Tests
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             LoggerVerify("Error: TransactionRequestModel isn't valid", LogLevel.Error);
         }
-
-
-
-
-
-
-
-
-
-
-        //[TestCaseSource(typeof(AddTransfer_ValidRequestReceived_TestCaseSource))]
-        //public async Task AddTransfer_ValidRequestReceived_ReturnsStatusCode200(
-        //    TransferRequestModel transferRequestModel, TransferModel transferModel,
-        //    TransactionModel transactionModelFirst, TransactionModel transactionModelSecond,
-        //    List<long> transferIds)
-        //{
-        //    //given
-        //    _transactionServiceMock.Setup(t => t.AddTransfer(transferModel)).ReturnsAsync(transferIds);
-        //    _transactionServiceMock.Setup(t => t.GetTransactionById(transferIds[0])).ReturnsAsync(transactionModelFirst);
-        //    _transactionServiceMock.Setup(t => t.GetTransactionById(transferIds[1])).ReturnsAsync(transactionModelSecond);
-
-        //    //when
-        //    var result = await _transactionsController.AddTransfer(transferRequestModel);
-
-        //    //then
-        //    Assert.IsInstanceOf<ObjectResult>(result);
-        //    _transactionServiceMock.Verify(t => t.AddTransfer(transferModel), Times.Once);
-        //    LoggerVerify("Request to add Service payment in the conroller", LogLevel.Information);
-        //    //LoggerVerify($"Service payment with Id = {transactionId} added", LogLevel.Information);
-        //}
     }
 }

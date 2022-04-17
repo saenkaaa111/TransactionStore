@@ -30,7 +30,7 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transaction);
 
-            // the
+            // then
             validationResult.ShouldNotHaveAnyValidationErrors();
         }
 

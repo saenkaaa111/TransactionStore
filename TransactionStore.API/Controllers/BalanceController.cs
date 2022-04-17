@@ -26,7 +26,7 @@ namespace TransactionStore.API.Controllers
         [SwaggerOperation(Summary = "Get balance by accountIds in given currency")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
         [SwaggerResponse(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> GetBalanceByAccountIdsInGivenCurrency(
+        public async Task<ActionResult<List<int>>> GetBalanceByAccountIdsInGivenCurrency(
             [FromQuery] List<int> id, [FromQuery] Currency currency)
         {
             _logger.LogInformation("Request to receive a balance by AccountIds in the controller");

@@ -84,6 +84,7 @@ namespace TransactionStore.API.Tests
         [TestCase(null)]
         [TestCase(0)]
         [TestCase(-77)]
+        [TestCase(1)]
         public void AccountIdTo_NotValid_ValidationFailed(int accountIdTo)
         {
             //given
@@ -128,6 +129,7 @@ namespace TransactionStore.API.Tests
         [TestCase(null)]
         [TestCase(0)]
         [TestCase(-77)]
+        [TestCase(Currency.USD)]
         public void CurrencyTo_NotValid_ValidationFailed(int currency)
         {
             //given

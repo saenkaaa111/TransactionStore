@@ -50,7 +50,7 @@ namespace TransactionStore.API.Controllers
             _logger.LogInformation("Request to add Deposit in the controller");
             await CheckMicroservice(Microservice.MarvelousCrm);
 
-            var validationResult = _transactionRequestModelValidator.Validate(transactionRequestModel);
+            var validationResult = await _transactionRequestModelValidator.ValidateAsync(transactionRequestModel);
 
             if (validationResult.IsValid)
             {
@@ -80,14 +80,14 @@ namespace TransactionStore.API.Controllers
             _logger.LogInformation("Request to add Transfer in the controller");
             await CheckMicroservice(Microservice.MarvelousCrm);
 
-            var validationResult = _transferRequestModelValidator.Validate(transferRequestModel);
+            var validationResult = await _transferRequestModelValidator.ValidateAsync(transferRequestModel);
 
             if (validationResult.IsValid)
             {
                 var transferModel = _mapper.Map<TransferModel>(transferRequestModel);
                 var transferIds = await _transactionService.AddTransfer(transferModel);
-
                 _logger.LogInformation("Transfer added");
+
                 var transactionForPublishFirst = await _transactionService.GetTransactionById(transferIds[0]);
                 var transactionForPublishSecond = await _transactionService.GetTransactionById(transferIds[1]);
 
@@ -98,8 +98,8 @@ namespace TransactionStore.API.Controllers
             }
             else
             {
-                _logger.LogError("Error: TransactionRequestModel isn't valid");
-                throw new ValidationException("TransactionRequestModel isn't valid");
+                _logger.LogError("Error: TransferRequestModel isn't valid");
+                throw new ValidationException("TransferRequestModel isn't valid");
             }
         }
 
@@ -112,7 +112,7 @@ namespace TransactionStore.API.Controllers
             _logger.LogInformation("Request to add Withdraw in the controller");
             await CheckMicroservice(Microservice.MarvelousCrm);
 
-            var validationResult = _transactionRequestModelValidator.Validate(transactionRequestModel);
+            var validationResult = await _transactionRequestModelValidator.ValidateAsync(transactionRequestModel);
 
             if (validationResult.IsValid)
             {
@@ -140,12 +140,12 @@ namespace TransactionStore.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<ArrayList>))]
         [SwaggerResponse(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<List<ArrayList>>> GetTransactionsByAccountIds(
-            [FromQuery] List<int> accountIds)
+            [FromQuery] List<int> ids)
         {
             _logger.LogInformation($"Request to receive all transactions by AccountIds in the controller");
             await CheckMicroservice(Microservice.MarvelousCrm);
 
-            var transactionModels = await _transactionService.GetTransactionsByAccountIds(accountIds);
+            var transactionModels = await _transactionService.GetTransactionsByAccountIds(ids);
             var transactions = _mapper.Map<ArrayList>(transactionModels);
 
             _logger.LogInformation($"Transactions by AccountIds received");
@@ -179,7 +179,7 @@ namespace TransactionStore.API.Controllers
             _logger.LogInformation("Request to add Service payment in the controller");
             await CheckMicroservice(Microservice.MarvelousResource);
 
-            var validationResult = _transactionRequestModelValidator.Validate(transactionRequestModel);
+            var validationResult = await _transactionRequestModelValidator.ValidateAsync(transactionRequestModel);
 
             if (validationResult.IsValid)
             {

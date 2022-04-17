@@ -10,7 +10,7 @@ namespace TransactionStore.API.Tests.TestCaseSource
     {
         public IEnumerator GetEnumerator()
         {
-            var ids = new List<int> { 0 };
+            var ids = new List<int> { 1 };
             var invalidCurrency = Currency.AFN;
             var expectedMessage = "The request for the currency value was not received";
             var identityResponseModel = new IdentityResponseModel()

@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace TransactionStore.API.Tests.TestCaseSource
 {
-    public class AddTransaction_Forbidden_TestCaseSource : IEnumerable
+    public class AddTransfer_NotValidModelReceived_TestCaseSource : IEnumerable
     {
         public IEnumerator GetEnumerator()
         {
@@ -13,16 +13,17 @@ namespace TransactionStore.API.Tests.TestCaseSource
             {
                 Id = 1,
                 Role = "role",
-                IssuerMicroservice = Microservice.MarvelousResource.ToString()
+                IssuerMicroservice = Microservice.MarvelousCrm.ToString()
             };
-            var transactionRequestModel = new TransactionRequestModel
+            var transferRequestModel = new TransferRequestModel
             {
-                AccountId = 1,
-                Amount = 100,
-                Currency = Currency.RUB,
+                Amount = 1000000000m,
+                AccountIdTo = 0,
+                CurrencyFrom = Currency.AFN,
             };
 
-            yield return new object[] { identityResponseModel, transactionRequestModel };
+            yield return new object[] { identityResponseModel, transferRequestModel };
         }
+    
     }
 }

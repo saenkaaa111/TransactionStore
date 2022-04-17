@@ -59,10 +59,11 @@ namespace TransactionStore.API
         public static void AddFluentValidation(this IServiceCollection services)
         {
             services.AddMvc()
-                .AddFluentValidation(o =>
+                .AddFluentValidation(fv =>
                 {
-                    o.RegisterValidatorsFromAssemblyContaining<TransactionRequestModelValidator>();
-                    o.RegisterValidatorsFromAssemblyContaining<TransferRequestModelValidator>();
+                    fv.RegisterValidatorsFromAssemblyContaining<TransactionRequestModelValidator>();
+                    fv.RegisterValidatorsFromAssemblyContaining<TransferRequestModelValidator>();
+                    fv.ImplicitlyValidateRootCollectionElements = true;
                 });
         }
     }

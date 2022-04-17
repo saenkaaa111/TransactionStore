@@ -2,10 +2,11 @@
 using Marvelous.Contracts.RequestModels;
 using Marvelous.Contracts.ResponseModels;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace TransactionStore.API.Tests.TestCaseSource
 {
-    public class AddTransaction_Forbidden_TestCaseSource : IEnumerable
+    internal class AddTransfer_Forbidden_TestCaseSource : IEnumerable
     {
         public IEnumerator GetEnumerator()
         {
@@ -15,14 +16,16 @@ namespace TransactionStore.API.Tests.TestCaseSource
                 Role = "role",
                 IssuerMicroservice = Microservice.MarvelousResource.ToString()
             };
-            var transactionRequestModel = new TransactionRequestModel
+            var transferRequestModel = new TransferRequestModel
             {
-                AccountId = 1,
-                Amount = 100,
-                Currency = Currency.RUB,
+                Amount = 100m,
+                AccountIdFrom = 1,
+                AccountIdTo = 2,
+                CurrencyFrom = Currency.RUB,
+                CurrencyTo = Currency.EUR
             };
 
-            yield return new object[] { identityResponseModel, transactionRequestModel };
+            yield return new object[] { identityResponseModel, transferRequestModel };
         }
     }
 }
