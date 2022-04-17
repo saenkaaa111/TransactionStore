@@ -64,7 +64,14 @@ namespace TransactionStore.API.Middleware
             }
             catch (ValidationException ex)
             {
+                
                 await HandleExceptionAsync(context, HttpStatusCode.UnprocessableEntity, ex.Message);
+            }
+            catch (TransactionNotFoundException ex)
+            {
+                _logger.Debug($"Exception: {ex.Message}");
+
+                await HandleExceptionAsync(context, HttpStatusCode.NotFound, ex.Message);
             }
             catch (Exception ex)
             {

@@ -38,7 +38,7 @@ namespace TransactionStore.API.Validators
                 .WithMessage("CurrencyTo is empty")
                 .IsInEnum()
                 .NotEqual(x => x.CurrencyFrom)
-                .WithMessage("You entered the same Currency"); ;
+                .WithMessage("You entered the same Currency");
         }
     }
 }

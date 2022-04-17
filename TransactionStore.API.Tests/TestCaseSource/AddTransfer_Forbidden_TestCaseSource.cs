@@ -2,7 +2,6 @@
 using Marvelous.Contracts.RequestModels;
 using Marvelous.Contracts.ResponseModels;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace TransactionStore.API.Tests.TestCaseSource
 {

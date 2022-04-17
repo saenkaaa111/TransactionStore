@@ -2,10 +2,11 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TransactionStore.BuisnessLayer.Configuration;
+using TransactionStore.BusinessLayer.Exceptions;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
 using TransactionStore.BusinessLayer.Tests.TestCaseSource;
@@ -35,22 +36,22 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(DepositTestCaseSourse))]
-        public void AddDepositTest_ValidRequestReceived_ShouldAddDeposit(TransactionModel depositModel, TransactionDto depositDto, long expected)
+        public async Task AddDepositTest_ValidRequestReceived_ShouldAddDeposit(TransactionModel depositModel, TransactionDto depositDto, long expected)
         {
             //given
             _transactionRepositoryMock.Setup(d => d.AddTransaction(depositDto)).ReturnsAsync(expected);
 
             //when
-            var actual = _transactionService.AddDeposit(depositModel).Result;
+            var actual = await _transactionService.AddDeposit(depositModel);
 
             // then
-            _transactionRepositoryMock.Verify(s => s.AddTransaction(depositDto), Times.Once);
             Assert.AreEqual(expected, actual);
+            _transactionRepositoryMock.Verify(s => s.AddTransaction(depositDto), Times.Once);
             LoggerVerify("Request to add Deposit", LogLevel.Information);
         }
 
         [TestCaseSource(typeof(TransferTestCaseSource))]
-        public void AddTransfer_ValidRequestReceived_ShouldAddTransfer(TransferModel transferModel,
+        public async Task AddTransfer_ValidRequestReceived_ShouldAddTransfer(TransferModel transferModel,
             TransferDto transferDto, List<long> expected, decimal balance, decimal convertedAmount)
         {
             //given
@@ -60,7 +61,7 @@ namespace TransactionStore.BusinessLayer.Tests
                 transferModel.CurrencyTo, transferModel.Amount)).Returns(convertedAmount);
 
             // when
-            var actual = _transactionService.AddTransfer(transferModel).Result;
+            var actual = await _transactionService.AddTransfer(transferModel);
 
             // then
             Assert.AreEqual(expected, actual);
@@ -72,7 +73,7 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(TransferNegativeTestCaseSource))]
-        public void AddTransfer_BalanceLessThanAmount_ShouldThrowInsufficientFundsException(TransferModel transferModel,
+        public async Task AddTransfer_BalanceLessThanAmount_ShouldThrowInsufficientFundsException(TransferModel transferModel,
             decimal balance)
         {
             //given
@@ -92,7 +93,7 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
-        public void Withdraw_ValidRequestReceived_ShouldAddTransation(TransactionModel transactionModel, TransactionDto transactionDto, long expected, decimal balance)
+        public async Task Withdraw_ValidRequestReceived_ShouldAddTransation(TransactionModel transactionModel, TransactionDto transactionDto, long expected, decimal balance)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(transactionDto)).ReturnsAsync(expected);
@@ -100,7 +101,7 @@ namespace TransactionStore.BusinessLayer.Tests
                 .ReturnsAsync(balance);
 
             //when
-            var actual = _transactionService.Withdraw(transactionModel).Result;
+            var actual = await _transactionService.Withdraw(transactionModel);
 
             // then
             Assert.AreEqual(expected, actual);
@@ -110,7 +111,7 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(WithdrawNegativeTestCaseSourse))]
-        public void Withdraw_BalanceLessThenAmount_ShouldThrowInsufficientFundsException(TransactionModel transactionModel)
+        public async Task Withdraw_BalanceLessThenAmount_ShouldThrowInsufficientFundsException(TransactionModel transactionModel)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
@@ -129,36 +130,67 @@ namespace TransactionStore.BusinessLayer.Tests
         }
 
         [TestCaseSource(typeof(GetTransactionsByAccountIdsTestCaseSourse))]
-        public void GetTransactionsByAccountIds_ValidRequestReceived_ShouldGetTransactionsByAccountId(List<int> ids, List<TransactionDto> transactions,
-            ArrayList expected)
+        public async Task GetTransactionsByAccountIds_ValidRequestReceived_ShouldGetTransactionsByAccountId(
+            List<int> ids, List<TransactionDto> transactions, ArrayList expected)
         {
             //given
             _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountIds(ids)).ReturnsAsync(transactions);
 
             //when
-            var actual = _transactionService.GetTransactionsByAccountIds(ids).Result;
+            var actual = await _transactionService.GetTransactionsByAccountIds(ids);
 
             //then
             Assert.AreEqual(actual, expected);
             _transactionRepositoryMock.Verify(s => s.GetTransactionsByAccountIds(ids), Times.Once);
-            LoggerVerify($"Request to add transaction by AccountId = {ids}", LogLevel.Information);
+            LoggerVerify($"Request to get transactions by AccountId = {ids}", LogLevel.Information);
+        }
+
+        [Test]
+        public async Task GetTransactionsByAccountIds_TransactionsNotFound_ShouldThrowTransactionNotFoundException()
+        {
+            //given
+            _transactionRepositoryMock.Setup(w => w.GetTransactionsByAccountIds(It.IsAny<List<int>>())).ReturnsAsync((List<TransactionDto>)null);
+            var expectedMessage = $"Transactions weren't found";
+
+            //when
+            TransactionNotFoundException? exception = Assert.ThrowsAsync<TransactionNotFoundException>(async () =>
+            await _transactionService.GetTransactionsByAccountIds(It.IsAny<List<int>>()));
+
+            // then
+            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            LoggerVerify($"Error: Transactions weren't found", LogLevel.Error);
         }
 
         [TestCase(77)]
-        public void GetTransactionById_ValidRequestReceived_ShouldGetTransaction(long id)
+        public async Task GetTransactionById_ValidRequestReceived_ShouldGetTransaction(long id)
         {
             //given
-            var transaction = new TransactionDto() { Id = 77 };
-            _transactionRepositoryMock.Setup(w => w.GetTransactionById(id)).ReturnsAsync(transaction);
+            _transactionRepositoryMock.Setup(w => w.GetTransactionById(id))
+                .ReturnsAsync(new TransactionDto() { Id = id });
 
             //when
-            var actual = _transactionService.GetTransactionById(id).Result;
+            var actual = await _transactionService.GetTransactionById(id);
 
             //then
             Assert.AreEqual(actual.Id, id);
             _transactionRepositoryMock.Verify(s => s.GetTransactionById(id), Times.Once);
+            LoggerVerify($"Request to get transaction by id = {id}", LogLevel.Information);
+        }
 
-            LoggerVerify($"Request to add transaction by id = {id}", LogLevel.Information);
+        [TestCase(-77)]
+        public async Task GetTransactionById_TransactionNotFound_ShouldThrowTransactionNotFoundException(long id)
+        {
+            //given
+            _transactionRepositoryMock.Setup(w => w.GetTransactionById(id)).ReturnsAsync((TransactionDto)null);
+            var expectedMessage = $"Transaction with Id = {id} wasn't found";
+
+            //when
+            TransactionNotFoundException? exception = Assert.ThrowsAsync<TransactionNotFoundException>(async () => 
+            await _transactionService.GetTransactionById(id));
+
+            // then
+            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            LoggerVerify($"Error: Transaction with Id = {id} wasn't found", LogLevel.Error);
         }
     }
 }

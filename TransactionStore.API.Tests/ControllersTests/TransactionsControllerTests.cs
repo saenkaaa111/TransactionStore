@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
 using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TransactionStore.API.Configuration;
@@ -19,6 +21,7 @@ using TransactionStore.BusinessLayer.Exceptions;
 using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
+using TransactionStore.DataLayer.Entities;
 
 namespace TransactionStore.API.Tests
 {
@@ -225,6 +228,80 @@ namespace TransactionStore.API.Tests
             //then
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             LoggerVerify("Error: TransactionRequestModel isn't valid", LogLevel.Error);
+        }
+
+        [TestCaseSource(typeof(GetTransactionsByAccountIds_ValidRequestReceived_TestCaseSource))]
+        public async Task GetTransactionsByAccountIds_ValidRequestReceived_ShouldReturnStatusCode200(
+            IdentityResponseModel identityResponseModel, List<int> ids, ArrayList transactions)
+        {
+            //given
+            _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
+            _transactionServiceMock.Setup(t => t.GetTransactionsByAccountIds(ids)).ReturnsAsync(transactions);
+
+            //when
+            var actual = await _transactionsController.GetTransactionsByAccountIds(ids);
+
+            //then
+            Assert.IsInstanceOf<OkObjectResult>(actual.Result);
+            _transactionServiceMock.Verify(t => t.GetTransactionsByAccountIds(ids), Times.Once);
+            LoggerVerify("Request to receive all transactions by AccountIds in the controller", LogLevel.Information); 
+            LoggerVerify("Transactions by AccountIds received", LogLevel.Information);
+        }
+
+        [TestCaseSource(typeof(GetTransactionsByAccountIds_Forbidden_TestCaseSource))]
+        public async Task GetTransactionsByAccountIds_Forbidden_ShouldThrowForbiddenException(
+            IdentityResponseModel identityResponseModel, List<int> ids)
+        {
+            //given
+            _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
+            var expectedMessage = "MarvelousResource doesn't have access to this endpiont";
+
+            //when
+            ForbiddenException? exception = Assert.ThrowsAsync<ForbiddenException>(() =>
+            _transactionsController.GetTransactionsByAccountIds(ids));
+
+            //then
+            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            LoggerVerify("Request to receive all transactions by AccountIds in the controller", LogLevel.Information);
+        }
+
+        [TestCaseSource(typeof(GetTransactionById_ValidRequestReceived_TestCaseSource))]
+        public async Task GetTransactionById_ValidRequestReceived_ShouldReturnStatusCode200(
+            IdentityResponseModel identityResponseModel, long id, TransactionModel transaction)
+        {
+            //given
+            _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
+            _transactionServiceMock.Setup(t => t.GetTransactionById(id)).ReturnsAsync(transaction);
+
+            //when
+            var actual = await _transactionsController.GetTransactionById(id);
+
+            //then
+            Assert.IsInstanceOf<OkObjectResult>(actual.Result);
+            _transactionServiceMock.Verify(t => t.GetTransactionById(id), Times.Once);
+            LoggerVerify($"Request to receive transaction by Id = {id} in the controller", LogLevel.Information);
+            LoggerVerify($"Transaction by AccountId = {id} received", LogLevel.Information);
+        }
+
+        [TestCaseSource(typeof(GetTransactionById_Forbidden_TestCaseSource))]
+        public async Task GetTransactionById_Forbidden_ShouldThrowForbiddenException(
+            IdentityResponseModel identityResponseModel, long id)
+        {
+            //given
+            _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
+            var expectedMessage = "MarvelousResource doesn't have access to this endpiont";
+
+            //when
+            ForbiddenException? exception = Assert.ThrowsAsync<ForbiddenException>(() =>
+            _transactionsController.GetTransactionById(id));
+
+            //then
+            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            LoggerVerify($"Request to receive transaction by Id = {id} in the controller", LogLevel.Information);
         }
 
         [TestCaseSource(typeof(AddServicePayment_ValidRequestReceived_TestCaseSource))]

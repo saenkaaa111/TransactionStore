@@ -7,8 +7,8 @@ using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections;
-using TransactionStore.API.Extensions;
 using TransactionStore.API.Producers;
+using TransactionStore.BusinessLayer.Exceptions;
 using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
@@ -17,25 +17,29 @@ namespace TransactionStore.API.Controllers
 {
     [ApiController]
     [Route(TransactionEndpoints.ApiTransactions)]
-    public class TransactionsController : AdvancedController
+    public class TransactionsController : Controller
     {
         private readonly ITransactionService _transactionService;
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionsController> _logger;
         private readonly ITransactionProducer _transactionProducer;
+        private readonly IConfiguration _configuration;
+        private readonly IRequestHelper _requestHelper;
         private readonly IValidator<TransactionRequestModel> _transactionRequestModelValidator;
         private readonly IValidator<TransferRequestModel> _transferRequestModelValidator;
+
         public TransactionsController(ITransactionService transactionService, IMapper mapper,
             ILogger<TransactionsController> logger, ITransactionProducer transactionProducer,
             IRequestHelper requestHelper, IConfiguration configuration,
             IValidator<TransactionRequestModel> transactionRequestModelValidator,
             IValidator<TransferRequestModel> transferRequestModelValidator)
-            : base(configuration, requestHelper)
         {
             _transactionService = transactionService;
             _mapper = mapper;
             _logger = logger;
             _transactionProducer = transactionProducer;
+            _configuration = configuration;
+            _requestHelper = requestHelper;
             _transactionRequestModelValidator = transactionRequestModelValidator;
             _transferRequestModelValidator = transferRequestModelValidator;
         }
@@ -137,18 +141,18 @@ namespace TransactionStore.API.Controllers
         // api/Transactions/by-accountIds?accountIds=1&accountIds=2
         [HttpGet("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<ArrayList>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(ArrayList))]
         [SwaggerResponse(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<List<ArrayList>>> GetTransactionsByAccountIds(
+        public async Task<ActionResult<ArrayList>> GetTransactionsByAccountIds(
             [FromQuery] List<int> ids)
         {
-            _logger.LogInformation($"Request to receive all transactions by AccountIds in the controller");
+            _logger.LogInformation("Request to receive all transactions by AccountIds in the controller");
             await CheckMicroservice(Microservice.MarvelousCrm);
 
             var transactionModels = await _transactionService.GetTransactionsByAccountIds(ids);
             var transactions = _mapper.Map<ArrayList>(transactionModels);
 
-            _logger.LogInformation($"Transactions by AccountIds received");
+            _logger.LogInformation("Transactions by AccountIds received");
 
             return Ok(transactions);
         }
@@ -165,7 +169,7 @@ namespace TransactionStore.API.Controllers
             var transactionModel = await _transactionService.GetTransactionById(id);
             var transaction = _mapper.Map<TransactionResponseModel>(transactionModel);
 
-            _logger.LogInformation($"Transactions by AccountId = {id} received");
+            _logger.LogInformation($"Transaction by AccountId = {id} received");
 
             return Ok(transaction);
         }
@@ -196,6 +200,19 @@ namespace TransactionStore.API.Controllers
             {
                 _logger.LogError("Error: TransactionRequestModel isn't valid");
                 throw new ValidationException("TransactionRequestModel isn't valid");
+            }
+        }
+
+        private async Task CheckMicroservice(params Microservice[] service)
+        {
+            var token = HttpContext.Request.Headers.Authorization.FirstOrDefault();
+            var identity = await _requestHelper
+                .SendRequestCheckValidateToken(_configuration[Microservice.MarvelousAuth.ToString()],
+                AuthEndpoints.ApiAuth + AuthEndpoints.ValidationMicroservice, token);
+
+            if (!service.Select(r => r.ToString()).Contains(identity.IssuerMicroservice))
+            {
+                throw new ForbiddenException($"{identity.IssuerMicroservice} doesn't have access to this endpiont");
             }
         }
     }

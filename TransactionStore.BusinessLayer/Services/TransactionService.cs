@@ -2,6 +2,7 @@
 using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using System.Collections;
+using TransactionStore.BusinessLayer.Exceptions;
 using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
@@ -18,7 +19,8 @@ namespace TransactionStore.BusinessLayer.Services
         private readonly ILogger<TransactionService> _logger;
 
         public TransactionService(ITransactionRepository transactionRepository,
-            ICalculationService calculationService, IBalanceRepository balanceRepository, IMapper mapper, ILogger<TransactionService> logger)
+            ICalculationService calculationService, IBalanceRepository balanceRepository, IMapper mapper, 
+            ILogger<TransactionService> logger)
         {
             _transactionRepository = transactionRepository;
             _calculationService = calculationService;
@@ -84,8 +86,14 @@ namespace TransactionStore.BusinessLayer.Services
 
         public async Task<ArrayList> GetTransactionsByAccountIds(List<int> ids)
         {
-            _logger.LogInformation($"Request to add transaction by AccountId = {ids}");
+            _logger.LogInformation($"Request to get transactions by AccountId = {ids}");
             var listTransactionAll = await _transactionRepository.GetTransactionsByAccountIds(ids);
+
+            if (listTransactionAll is null)
+            {
+                _logger.LogError($"Error: Transactions weren't found");
+                throw new TransactionNotFoundException($"Transactions weren't found");
+            }
             var listTransactionSort = listTransactionAll.GroupBy(x => x.Id).Select(x => x.First());
 
             var transactionsWithoutTransfer = listTransactionAll.Where(x => x.Type != TransactionType.Transfer);
@@ -123,11 +131,18 @@ namespace TransactionStore.BusinessLayer.Services
 
         public async Task<TransactionModel> GetTransactionById(long id)
         {
-            _logger.LogInformation($"Request to add transaction by id = {id}");
-
+            _logger.LogInformation($"Request to get transaction by id = {id}");
             var transaction = await _transactionRepository.GetTransactionById(id);
 
-            return _mapper.Map<TransactionModel>(transaction);
+            if(transaction is not null)
+            {
+                return _mapper.Map<TransactionModel>(transaction);
+            }
+            else
+            {
+                _logger.LogError($"Error: Transaction with Id = {id} wasn't found");
+                throw new TransactionNotFoundException($"Transaction with Id = {id} wasn't found");
+            }
         }
     }
 }
