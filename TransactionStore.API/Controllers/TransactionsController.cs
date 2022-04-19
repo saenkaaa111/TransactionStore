@@ -114,7 +114,7 @@ namespace TransactionStore.API.Controllers
         public async Task<ActionResult<long>> Withdraw([FromBody] TransactionRequestModel transactionRequestModel)
         {
             _logger.LogInformation("Request to add Withdraw in the controller");
-            //await CheckMicroservice(Microservice.MarvelousCrm);
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
             var validationResult = await _transactionRequestModelValidator.ValidateAsync(transactionRequestModel);
             if (validationResult.IsValid)
