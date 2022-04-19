@@ -88,7 +88,7 @@ namespace TransactionStore.BusinessLayer.Tests
             var expectedMessage = "Insufficient funds";
 
             //when
-            InsufficientFundsException? exception = Assert.Throws<InsufficientFundsException>(() =>
+            InsufficientFundsException? exception = Assert.ThrowsAsync<InsufficientFundsException>(() =>
             _transactionService.AddTransfer(transferModel));
 
             // then
@@ -131,7 +131,7 @@ namespace TransactionStore.BusinessLayer.Tests
             var expectedMessage = "Insufficient funds";
 
             //when
-            InsufficientFundsException? exception = Assert.Throws<InsufficientFundsException>(() =>
+            InsufficientFundsException? exception = Assert.ThrowsAsync<InsufficientFundsException>(() =>
             _transactionService.Withdraw(transactionModel));
 
             // then
@@ -152,7 +152,7 @@ namespace TransactionStore.BusinessLayer.Tests
             var expectedMessage = "Flood crossing";
 
             //when
-            BDTimeoutException? exception = Assert.Throws<BDTimeoutException>(() =>
+            BDTimeoutException? exception = Assert.ThrowsAsync<BDTimeoutException>(() =>
             _transactionService.Withdraw(transactionModel));
 
             // then
