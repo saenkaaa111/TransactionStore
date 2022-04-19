@@ -73,6 +73,12 @@ namespace TransactionStore.API.Middleware
 
                 await HandleExceptionAsync(context, HttpStatusCode.NotFound, ex.Message);
             }
+            catch (BDTimeoutException)
+            {
+                _logger.Debug("Exception: BD Timeout. Flood crossing");
+
+                await HandleExceptionAsync(context, HttpStatusCode.Conflict, "Flood crossing");
+            }
             catch (Exception ex)
             {
                 _logger.Debug($"Exception: {ex.Message}");

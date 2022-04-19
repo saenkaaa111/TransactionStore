@@ -114,12 +114,11 @@ namespace TransactionStore.API.Controllers
         public async Task<ActionResult<long>> Withdraw([FromBody] TransactionRequestModel transactionRequestModel)
         {
             _logger.LogInformation("Request to add Withdraw in the controller");
-            await CheckMicroservice(Microservice.MarvelousCrm);
+            //await CheckMicroservice(Microservice.MarvelousCrm);
 
-            var validationResult = await _transactionRequestModelValidator.ValidateAsync(transactionRequestModel);
-
-            if (validationResult.IsValid)
-            {
+            //var validationResult = await _transactionRequestModelValidator.ValidateAsync(transactionRequestModel);
+            //if (validationResult.IsValid)
+            //{
                 var transactionModel = _mapper.Map<TransactionModel>(transactionRequestModel);
                 transactionModel.Type = TransactionType.Withdraw;
                 var transactionId = await _transactionService.Withdraw(transactionModel);
@@ -130,12 +129,12 @@ namespace TransactionStore.API.Controllers
                 await _transactionProducer.NotifyTransactionAdded(transactionForPublish);
 
                 return Ok(transactionId);
-            }
-            else
-            {
+            //}
+            //else
+            //{
                 _logger.LogError("Error: TransactionRequestModel isn't valid");
                 throw new ValidationException("TransactionRequestModel isn't valid");
-            }
+            //}
         }
 
         // api/Transactions/by-accountIds?accountIds=1&accountIds=2

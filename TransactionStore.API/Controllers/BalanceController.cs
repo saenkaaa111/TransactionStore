@@ -35,7 +35,7 @@ namespace TransactionStore.API.Controllers
         {
             _logger.LogInformation("Request to receive a balance by AccountIds in the controller");
 
-            await CheckMicroservice(Microservice.MarvelousCrm);
+           // await CheckMicroservice(Microservice.MarvelousCrm);
 
             var balance = await _balanceService.GetBalanceByAccountIdsInGivenCurrency(id, currency);
 

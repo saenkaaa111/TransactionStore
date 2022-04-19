@@ -51,17 +51,10 @@ namespace TransactionStore.BusinessLayer.Services
             var transfer = _mapper.Map<TransferDto>(transferModel);
             transfer.ConvertedAmount = convertResult;
 
-            var accountBalance = await _balanceRepository.GetBalanceByAccountId(transferModel.AccountIdFrom);
+            CheckDateAndBalance(transferModel.AccountIdFrom, transfer.Amount);
 
-            if (transfer.Amount < accountBalance)
-            {
-                return await _transactionRepository.AddTransfer(transfer);
-            }
-            else
-            {
-                _logger.LogError("Exception: Insufficient funds");
-                throw new InsufficientFundsException("Insufficient funds");
-            }
+            return await _transactionRepository.AddTransfer(transfer);
+            
         }
 
         public async Task<long> Withdraw(TransactionModel transactionModel)
@@ -69,19 +62,13 @@ namespace TransactionStore.BusinessLayer.Services
             _logger.LogInformation("Request to add Withdraw");
             CheckCurrencyHelper.CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
-            var accountBalance = await _balanceRepository.GetBalanceByAccountId(transactionModel.AccountId);
+            
+            CheckDateAndBalance(withdraw.AccountId, withdraw.Amount);
 
-            if (withdraw.Amount < accountBalance)
-            {
-                withdraw.Amount = transactionModel.Amount *= -1;
+            withdraw.Amount = transactionModel.Amount *= -1;
 
-                return await _transactionRepository.AddTransaction(withdraw);
-            }
-            else
-            {
-                _logger.LogError("Exception: Insufficient funds");
-                throw new InsufficientFundsException("Insufficient funds");
-            }
+            return await _transactionRepository.AddTransaction(withdraw);
+            
         }
 
         public async Task<ArrayList> GetTransactionsByAccountIds(List<int> ids)
@@ -142,6 +129,22 @@ namespace TransactionStore.BusinessLayer.Services
             {
                 _logger.LogError($"Error: Transaction with Id = {id} wasn't found");
                 throw new TransactionNotFoundException($"Transaction with Id = {id} wasn't found");
+            }
+        }
+
+        public async void CheckDateAndBalance(int accountId, decimal amount)
+        {
+            var dateFromBd = _balanceRepository.GetLastDate();
+            var accountBalanceAndDate = await _balanceRepository.GetBalanceByAccountId(accountId);
+
+            if ((DateTime)accountBalanceAndDate[1] != dateFromBd)
+            {
+                throw new BDTimeoutException("Flood crossing");
+            }
+            if ((decimal)accountBalanceAndDate[0] < amount)
+            {
+                _logger.LogError("Exception: Insufficient funds");
+                throw new InsufficientFundsException("Insufficient funds");
             }
         }
     }

@@ -1,8 +1,11 @@
 ﻿
+using System.Collections;
+
 namespace TransactionStore.DataLayer.Repository
 {
     public interface IBalanceRepository
     {
-        Task<decimal> GetBalanceByAccountId(int id);
+        Task<ArrayList> GetBalanceByAccountId(int id);
+        DateTime GetLastDate();
     }
 }

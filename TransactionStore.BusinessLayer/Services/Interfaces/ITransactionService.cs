@@ -10,5 +10,6 @@ namespace TransactionStore.BusinessLayer.Services
         Task<TransactionModel> GetTransactionById(long id);
         Task<ArrayList> GetTransactionsByAccountIds(List<int> ids);
         Task<long> Withdraw(TransactionModel transactionModel);
+        void CheckDateAndBalance(int accountId, decimal amount);
     }
 }
