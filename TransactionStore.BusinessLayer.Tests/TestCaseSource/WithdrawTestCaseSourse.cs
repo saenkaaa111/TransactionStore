@@ -1,4 +1,5 @@
 ﻿using Marvelous.Contracts.Enums;
+using System;
 using System.Collections;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
@@ -24,10 +25,11 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
             };
 
             long id = 1;
-
             decimal balance = 300m;
-
-            yield return new object[] { withdraw, withdrawDto, id, balance  };
+            DateTime dateTime = DateTime.Now;
+            ArrayList array = new ArrayList() { balance, dateTime };
+            
+            yield return new object[] { withdraw, withdrawDto, id, array  };
         }
     }
 }

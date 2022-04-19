@@ -1,4 +1,5 @@
 ﻿using Marvelous.Contracts.Enums;
+using System;
 using System.Collections;
 using TransactionStore.BusinessLayer.Models;
 
@@ -16,10 +17,11 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
                 CurrencyFrom = Currency.RUB,
                 CurrencyTo = Currency.EUR
             };
-
             decimal balance = 0m;
+            DateTime dateTime = DateTime.Now;
+            ArrayList array = new ArrayList() { balance, dateTime };
 
-            yield return new object[] { transfer, balance };
+            yield return new object[] { transfer, array };
         }
     }
 }

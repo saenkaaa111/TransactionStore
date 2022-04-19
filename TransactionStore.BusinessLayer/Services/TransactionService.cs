@@ -132,20 +132,26 @@ namespace TransactionStore.BusinessLayer.Services
             }
         }
 
-        public async void CheckDateAndBalance(int accountId, decimal amount)
+        public bool CheckDateAndBalance(int accountId, decimal amount)
         {
             var dateFromBd = _balanceRepository.GetLastDate();
             var accountBalanceAndDate = _balanceRepository.GetBalanceByAccountId(accountId);
 
             if ((DateTime)accountBalanceAndDate.Result[1] != dateFromBd)
             {
+                _logger.LogError("Exception: Flood crossing");
                 throw new BDTimeoutException("Flood crossing");
+                return false;
             }
             if ((decimal)accountBalanceAndDate.Result[0] < amount)
             {
                 _logger.LogError("Exception: Insufficient funds");
                 throw new InsufficientFundsException("Insufficient funds");
+                return false;
             }
+            _logger.LogInformation("Correct information");
+            return true;
+
         }
     }
 }
