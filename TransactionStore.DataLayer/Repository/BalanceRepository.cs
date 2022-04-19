@@ -22,7 +22,7 @@ namespace TransactionStore.DataLayer.Repository
             using IDbConnection connection = Connection;
             _logger.LogInformation("Connection made");
 
-            var balance = await connection.QueryFirstOrDefaultAsync<(decimal, DateTime) >(
+            var balance = connection.QueryFirstOrDefault<(decimal, DateTime) >(
                 _transactionGetAccountBalance,
                  new { Id = id },
                 commandType: CommandType.StoredProcedure

@@ -135,13 +135,13 @@ namespace TransactionStore.BusinessLayer.Services
         public async void CheckDateAndBalance(int accountId, decimal amount)
         {
             var dateFromBd = _balanceRepository.GetLastDate();
-            var accountBalanceAndDate = await _balanceRepository.GetBalanceByAccountId(accountId);
+            var accountBalanceAndDate = _balanceRepository.GetBalanceByAccountId(accountId);
 
-            if ((DateTime)accountBalanceAndDate[1] != dateFromBd)
+            if ((DateTime)accountBalanceAndDate.Result[1] != dateFromBd)
             {
                 throw new BDTimeoutException("Flood crossing");
             }
-            if ((decimal)accountBalanceAndDate[0] < amount)
+            if ((decimal)accountBalanceAndDate.Result[0] < amount)
             {
                 _logger.LogError("Exception: Insufficient funds");
                 throw new InsufficientFundsException("Insufficient funds");
