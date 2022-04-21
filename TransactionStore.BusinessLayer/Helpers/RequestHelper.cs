@@ -2,7 +2,6 @@
 using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.ResponseModels;
 using RestSharp;
-using RestSharp.Authenticators;
 using System.Net;
 using TransactionStore.BusinessLayer.Exceptions;
 
@@ -20,18 +19,6 @@ namespace TransactionStore.BusinessLayer.Helpers
             CheckTransactionError(response);
 
             return response.Data;
-        }
-
-        public async Task<RestResponse<T>> SendRequestForConfigs<T>(string url, string path, string jwtToken = "null")
-        {
-            var request = new RestRequest(path);
-            var client = new RestClient(url);
-            client.Authenticator = new JwtAuthenticator(jwtToken);
-            client.AddDefaultHeader(nameof(Microservice), Microservice.MarvelousTransactionStore.ToString());
-            var response = await client.ExecuteAsync<T>(request);
-            CheckTransactionError(response);
-
-            return response;
         }
 
         private static void CheckTransactionError(RestResponse response)

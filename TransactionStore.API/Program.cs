@@ -6,16 +6,13 @@ using System.Data.SqlClient;
 using TransactionStore.API;
 using TransactionStore.API.Configuration;
 using TransactionStore.API.Middleware;
-using TransactionStore.API.Validators;
 using TransactionStore.BuisnessLayer.Configuration;
-using TransactionStore.BusinessLayer.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionEnvironmentVariableName = "TSTORE_CONNECTION_STRING";
 var logDirectoryVariableName = "LOG_DIRECTORY";
-var configs = "https://piter-education.ru:6040";
 var auth = "https://piter-education.ru:6042";
 
 var connectionString = builder.Configuration.GetValue<string>(connectionEnvironmentVariableName);
@@ -51,9 +48,6 @@ app.UseMiddleware<TransactionStoreMiddleware>();
 
 app.MapControllers();
 
-app.Configuration[Microservice.MarvelousConfigs.ToString()] = configs;
 app.Configuration[Microservice.MarvelousAuth.ToString()] = auth;
-
-await app.Services.CreateScope().ServiceProvider.GetRequiredService<IInitializationHelper>().InitializeConfigs();
 
 app.Run();
