@@ -1,4 +1,4 @@
-﻿using Marvelous.Contracts.Enums;
+using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

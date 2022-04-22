@@ -14,15 +14,12 @@ namespace TransactionStore.BusinessLayer.Services
 
         public CurrencyRatesService(IMemoryCache memoryCache) { _cache = memoryCache; }
 
-        public void SaveCurrencyRates(CurrencyRatesExchangeModel currencyRatesModel)
-        {
+        public void SaveCurrencyRates(CurrencyRatesExchangeModel currencyRatesModel) => 
             CurrencyRates = currencyRatesModel.Rates;
-        }
 
-        public void SaveBaseCurrency(CurrencyRatesExchangeModel currencyRatesModel)
-        {
+        public void SaveBaseCurrency(CurrencyRatesExchangeModel currencyRatesModel) => 
             BaseCurrency = currencyRatesModel.BaseCurrency;
-        }
+       
 
         public Dictionary<string, decimal> GetCurrencyRates()
         {

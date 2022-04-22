@@ -34,7 +34,6 @@ namespace TransactionStore.API.Tests
             validationResult.ShouldNotHaveAnyValidationErrors();
         }
 
-
         [TestCase(10000000)]
         [TestCase(-1)]
         [TestCase(null)]
@@ -95,6 +94,5 @@ namespace TransactionStore.API.Tests
             // then
             validationResult.ShouldHaveValidationErrorFor(transaction => transaction.Currency);
         }
-
     }
 }
