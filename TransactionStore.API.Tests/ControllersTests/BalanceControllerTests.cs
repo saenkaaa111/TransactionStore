@@ -103,6 +103,8 @@ namespace TransactionStore.API.Tests
             IdentityResponseModel identityResponseModel, List<TransactionDto> transactions)
         {
             //given
+            var serviceMock = new Mock<BalanceService>();
+            serviceMock.Setup(s => s.GetBalanceByAccountIdsInGivenCurrency(ids, invalidCurrency)).Throws(new CurrencyNotReceivedException("Any message"));
             _transactionRepositoryMock.Setup(t => t.GetTransactionsByAccountIds(It.IsAny<List<int>>())).ReturnsAsync(transactions);
             _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
                 It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
@@ -111,7 +113,7 @@ namespace TransactionStore.API.Tests
             CurrencyNotReceivedException? exception = Assert.ThrowsAsync<CurrencyNotReceivedException>(() =>
             _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, invalidCurrency));
 
-            // then 
+            //then 
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
         }
     }
