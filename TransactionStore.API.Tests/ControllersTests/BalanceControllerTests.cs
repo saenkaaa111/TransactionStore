@@ -99,11 +99,11 @@ namespace TransactionStore.API.Tests
 
         [TestCaseSource(typeof(GetBalanceByAccountIdsInGivenCurrency_InvalidRequest_TestCaseSource))]
         public void GetBalanceByAccountIdsInGivenCurrency_InvalidRequest_ShouldThrowForbiddenException(
-            List<int> ids, Currency invalidCurrency, string expectedMessage, 
+            List<int> ids, Currency invalidCurrency, string expectedMessage,
             IdentityResponseModel identityResponseModel, List<TransactionDto> transactions)
         {
             //given
-            var serviceMock = new Mock<BalanceService>();
+            var serviceMock = new Mock<IBalanceService>();
             serviceMock.Setup(s => s.GetBalanceByAccountIdsInGivenCurrency(ids, invalidCurrency)).Throws(new CurrencyNotReceivedException("Any message"));
             _transactionRepositoryMock.Setup(t => t.GetTransactionsByAccountIds(It.IsAny<List<int>>())).ReturnsAsync(transactions);
             _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
