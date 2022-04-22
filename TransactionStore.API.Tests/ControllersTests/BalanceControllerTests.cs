@@ -21,44 +21,26 @@ namespace TransactionStore.API.Tests
 {
     public class BalanceControllerTests : VerifyLoggerHelper<BalanceController>
     {
-        private BalanceService _balanceService;
-        private CalculationService _calculationService;
+        private Mock<IBalanceService> _balanceServiceMock;
         private BalanceController _balanceController;
         private Mock<IRequestHelper> _requestHelperMock;
         private Mock<IConfiguration> _configurationMock;
         private DefaultHttpContext _defaultHttpContext;
         private Mock<ITransactionRepository> _transactionRepositoryMock;
-        private IMemoryCache _cache;
 
         [SetUp]
         public void Setup()
         {
             _logger = new Mock<ILogger<BalanceController>>();
-            _cache = new MemoryCache(new MemoryCacheOptions());
             _requestHelperMock = new Mock<IRequestHelper>();
             _configurationMock = new Mock<IConfiguration>();
             _transactionRepositoryMock = new Mock<ITransactionRepository>();
-            _balanceService = new BalanceService(_transactionRepositoryMock.Object,
-                _calculationService, new Mock<ILogger<BalanceService>>().Object);
-            _balanceController = new BalanceController(_balanceService, _logger.Object,
+            _balanceServiceMock = new Mock<IBalanceService>();
+            _balanceController = new BalanceController(_balanceServiceMock.Object, _logger.Object,
                 _requestHelperMock.Object, _configurationMock.Object);
             _defaultHttpContext = new DefaultHttpContext();
             _balanceController.ControllerContext.HttpContext = _defaultHttpContext;
             _defaultHttpContext.Request.Headers.Authorization = "Token";
-            var currencyRatesService = new CurrencyRatesService(_cache)
-            {
-                CurrencyRates = new()
-                {
-                    { "USDRUB", 99.00m },
-                    { "USDEUR", 0.91m },
-                    { "USDJPY", 121.64m },
-                    { "USDCNY", 6.37m },
-                    { "USDTRY", 14.82m },
-                    { "USDRSD", 106.83m }
-                }
-            };
-            _calculationService = new CalculationService(currencyRatesService, 
-                new Mock<ILogger<CalculationService>>().Object);
         }
 
         [TestCaseSource(typeof(GetBalanceByAccountIdsInGivenCurrency_ValidRequestReceived_TestCaseSource))]
@@ -103,8 +85,8 @@ namespace TransactionStore.API.Tests
             IdentityResponseModel identityResponseModel, List<TransactionDto> transactions)
         {
             //given
-            var serviceMock = new Mock<IBalanceService>();
-            serviceMock.Setup(s => s.GetBalanceByAccountIdsInGivenCurrency(ids, invalidCurrency)).Throws(new CurrencyNotReceivedException("Any message"));
+            _balanceServiceMock.Setup(s => s.GetBalanceByAccountIdsInGivenCurrency(ids, invalidCurrency))
+                .Throws(new CurrencyNotReceivedException("The request for the currency value was not received"));
             _transactionRepositoryMock.Setup(t => t.GetTransactionsByAccountIds(It.IsAny<List<int>>())).ReturnsAsync(transactions);
             _requestHelperMock.Setup(x => x.SendRequestCheckValidateToken(It.IsAny<string>(),
                 It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
