@@ -32,7 +32,8 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<long> AddDeposit(TransactionModel transactionModel)
         {
             _logger.LogInformation("Request to add Deposit");
-            CheckCurrencyHelper.CheckCurrency(transactionModel.Currency);
+            CheckCurrencyHelper checkCurrency = new CheckCurrencyHelper();
+            checkCurrency.CheckCurrency(transactionModel.Currency);
             var transaction = _mapper.Map<TransactionDto>(transactionModel);
 
             transaction.Type = TransactionType.Deposit;
@@ -43,8 +44,9 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<List<long>> AddTransfer(TransferModel transferModel)
         {
             _logger.LogInformation("Request to add Transfer");
-            CheckCurrencyHelper.CheckCurrency(transferModel.CurrencyFrom);
-            CheckCurrencyHelper.CheckCurrency(transferModel.CurrencyTo);
+            CheckCurrencyHelper checkCurrency = new CheckCurrencyHelper();
+            checkCurrency.CheckCurrency(transferModel.CurrencyFrom);
+            checkCurrency.CheckCurrency(transferModel.CurrencyTo);
             var convertResult = _calculationService.ConvertCurrency(transferModel.CurrencyFrom,
                 transferModel.CurrencyTo, transferModel.Amount);
 
@@ -60,7 +62,8 @@ namespace TransactionStore.BusinessLayer.Services
         public async Task<long> Withdraw(TransactionModel transactionModel)
         {
             _logger.LogInformation("Request to add Withdraw");
-            CheckCurrencyHelper.CheckCurrency(transactionModel.Currency);
+            CheckCurrencyHelper checkCurrency = new CheckCurrencyHelper();
+            checkCurrency.CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
             
             CheckDateAndBalance(withdraw.AccountId, withdraw.Amount);

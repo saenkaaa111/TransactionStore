@@ -21,7 +21,6 @@ namespace TransactionStore.API
             services.AddScoped<IBalanceService, BalanceService>();
             services.AddSingleton<ICurrencyRatesService, CurrencyRatesService>();
             services.AddScoped<IRequestHelper, RequestHelper>();
-            services.AddTransient<IInitializationHelper, InitializationHelper>();
         }
 
         public static void AddTransactionStoreRepositories(this IServiceCollection services)
