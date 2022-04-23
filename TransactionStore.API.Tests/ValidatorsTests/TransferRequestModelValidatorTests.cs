@@ -141,7 +141,6 @@ namespace TransactionStore.API.Tests
         [TestCase(null)]
         [TestCase(0)]
         [TestCase(-77)]
-        [TestCase(Currency.USD)]
         public void CurrencyTo_NotValid_ValidationFailed(int currency)
         {
             //given

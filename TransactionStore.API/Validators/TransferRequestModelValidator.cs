@@ -37,9 +37,7 @@ namespace TransactionStore.API.Validators
             RuleFor(x => x.CurrencyTo)
                 .NotEmpty()
                 .WithMessage("CurrencyTo is empty")
-                .IsInEnum()
-                .NotEqual(x => x.CurrencyFrom)
-                .WithMessage("You entered the same Currency");
+                .IsInEnum();
         }
 
         public override ValidationResult Validate(ValidationContext<TransferRequestModel> context)
