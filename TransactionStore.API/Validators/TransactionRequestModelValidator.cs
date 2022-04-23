@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Marvelous.Contracts.RequestModels;
 
 namespace TransactionStore.API.Validators
@@ -24,6 +25,13 @@ namespace TransactionStore.API.Validators
                 .NotEmpty()
                 .WithMessage("Currency is empty")
                 .IsInEnum();
+        }
+
+        public override ValidationResult Validate(ValidationContext<TransactionRequestModel> context)
+        {
+            return context.InstanceToValidate == null
+                ? new ValidationResult(new[] { new ValidationFailure(nameof(TransferRequestModel), 
+                "TransactionRequestModel cannot be null") }) : base.Validate(context);
         }
     }
 }

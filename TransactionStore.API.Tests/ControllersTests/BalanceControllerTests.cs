@@ -2,7 +2,6 @@ using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -53,8 +52,7 @@ namespace TransactionStore.API.Tests
                 It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
 
             //when
-            var actual = await _balanceController!
-                .GetBalanceByAccountIdsInGivenCurrency(ids, currencyRub);
+            var actual = await _balanceController.GetBalanceByAccountIdsInGivenCurrency(ids, currencyRub);
 
             //then
             Assert.IsInstanceOf<OkObjectResult>(actual.Result);
@@ -71,8 +69,8 @@ namespace TransactionStore.API.Tests
                  It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResponseModel);
 
             //then
-            ForbiddenException? exception = Assert.ThrowsAsync<ForbiddenException>( async () => await
-            _balanceController.GetBalanceByAccountIdsInGivenCurrency(It.IsAny<List<int>>(), It.IsAny<Currency>()));
+            ForbiddenException? exception = Assert.ThrowsAsync<ForbiddenException>(async () => await
+           _balanceController.GetBalanceByAccountIdsInGivenCurrency(It.IsAny<List<int>>(), It.IsAny<Currency>()));
 
             // then 
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));

@@ -12,8 +12,10 @@ namespace TransactionStore.BusinessLayer.Helpers
         public async Task<IdentityResponseModel> SendRequestCheckValidateToken(string url, string path, string jwtToken)
         {
             var request = new RestRequest(path);
-            var client = new RestClient(url);
-            client.Authenticator = new MarvelousAuthenticator(jwtToken);
+            var client = new RestClient(url)
+            {
+                Authenticator = new MarvelousAuthenticator(jwtToken)
+            };
             client.AddDefaultHeader(nameof(Microservice), Microservice.MarvelousTransactionStore.ToString());
             var response = await client.ExecuteAsync<IdentityResponseModel>(request);
             CheckTransactionError(response);

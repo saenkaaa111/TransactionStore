@@ -30,8 +30,20 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transaction);
 
-            // then
+            //then
             validationResult.ShouldNotHaveAnyValidationErrors();
+        }
+
+        [Test]
+        public void TransactionRequestModel_IsNull_ValidationFaliled()
+        {
+            //given
+
+            //when
+            var validationResult = _validator!.TestValidate(null);
+
+            //then
+            validationResult.ShouldHaveAnyValidationError();
         }
 
         [TestCase(10000000)]
@@ -51,7 +63,7 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transaction);
 
-            // then
+            //then
             validationResult.ShouldHaveValidationErrorFor(transaction => transaction.Amount);
         }
 
@@ -71,7 +83,7 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transaction);
 
-            // then
+            //then
             validationResult.ShouldHaveValidationErrorFor(transaction => transaction.AccountId);
         }
 
@@ -91,7 +103,7 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transaction);
 
-            // then
+            //then
             validationResult.ShouldHaveValidationErrorFor(transaction => transaction.Currency);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Marvelous.Contracts.RequestModels;
 
 namespace TransactionStore.API.Validators
@@ -39,6 +40,13 @@ namespace TransactionStore.API.Validators
                 .IsInEnum()
                 .NotEqual(x => x.CurrencyFrom)
                 .WithMessage("You entered the same Currency");
+        }
+
+        public override ValidationResult Validate(ValidationContext<TransferRequestModel> context)
+        {
+            return context.InstanceToValidate == null
+                ? new ValidationResult(new[] { new ValidationFailure(nameof(TransferRequestModel), 
+                "TransferRequestModel is null") }) : base.Validate(context);
         }
     }
 }

@@ -32,8 +32,20 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transfer);
 
-            // the
+            //then
             validationResult.ShouldNotHaveAnyValidationErrors();
+        }
+
+        [Test]
+        public void TransferRequestModel_IsNull_ValidationFailed()
+        {
+            //given
+
+            //when
+            var validationResult = _validator!.TestValidate(null);
+
+            //then
+            validationResult.ShouldHaveAnyValidationError();
         }
 
         [TestCase(null)]
@@ -55,7 +67,7 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transfer);
 
-            // then
+            //then
             validationResult.ShouldHaveValidationErrorFor(transfer => transfer.Amount);
         }
 
@@ -77,7 +89,7 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transfer);
 
-            // then
+            //then
             validationResult.ShouldHaveValidationErrorFor(transfer => transfer.AccountIdFrom);
         }
 
@@ -100,7 +112,7 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transfer);
 
-            // then
+            //then
             validationResult.ShouldHaveValidationErrorFor(transfer => transfer.AccountIdTo);
         }
 
@@ -122,7 +134,7 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transfer);
 
-            // then
+            //then
             validationResult.ShouldHaveValidationErrorFor(transfer => transfer.CurrencyFrom);
         }
 
@@ -145,7 +157,7 @@ namespace TransactionStore.API.Tests
             //when
             var validationResult = _validator.TestValidate(transfer);
 
-            // then
+            //then
             validationResult.ShouldHaveValidationErrorFor(transfer => transfer.CurrencyTo);
         }
     }

@@ -160,12 +160,6 @@ namespace TransactionStore.BusinessLayer.Tests
             _balanceRepositoryMock.Verify(n => n.GetLastDate(), Times.Once);
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             LoggerVerify("Exception: Flood crossing", LogLevel.Error);
-
-
-            
-
-
-
         }
 
         [TestCaseSource(typeof(GetTransactionsByAccountIdsTestCaseSourse))]
