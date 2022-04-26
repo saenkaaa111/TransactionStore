@@ -109,7 +109,7 @@ namespace TransactionStore.BusinessLayer.Tests
             var actual = _currencyRatesService.GetCurrencyRates();
 
             //then
-            Assert.IsNotNull(actual);
+            Assert.AreEqual(actual, _currencyRatesService.CurrencyRates);
         }
     }
 }
