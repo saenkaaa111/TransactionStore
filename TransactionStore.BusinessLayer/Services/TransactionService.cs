@@ -143,7 +143,7 @@ namespace TransactionStore.BusinessLayer.Services
             if ((DateTime)accountBalanceAndDate.Result[1] != dateFromBd)
             {
                 _logger.LogError("Exception: Flood crossing");
-                throw new BDTimeoutException("Flood crossing");
+                throw new DbTimeoutException("Flood crossing");
                 return false;
             }
             if ((decimal)accountBalanceAndDate.Result[0] < amount)

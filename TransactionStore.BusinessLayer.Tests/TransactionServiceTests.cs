@@ -152,7 +152,7 @@ namespace TransactionStore.BusinessLayer.Tests
             var expectedMessage = "Flood crossing";
 
             //when
-            BDTimeoutException? exception = Assert.ThrowsAsync<BDTimeoutException>(() =>
+            DbTimeoutException? exception = Assert.ThrowsAsync<DbTimeoutException>(() =>
             _transactionService.Withdraw(transactionModel));
 
             // then
@@ -275,7 +275,7 @@ namespace TransactionStore.BusinessLayer.Tests
             var expectedMessage = "Flood crossing";
 
             //when
-            BDTimeoutException? exception = Assert.ThrowsAsync<BDTimeoutException>(async () =>
+            DbTimeoutException? exception = Assert.ThrowsAsync<DbTimeoutException>(async () =>
             _transactionService.CheckDateAndBalance(accountId, amount));
 
             // then
