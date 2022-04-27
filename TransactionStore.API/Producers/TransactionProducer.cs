@@ -23,14 +23,14 @@ namespace TransactionStore.API.Producers
         public async Task NotifyTransactionAdded(TransactionModel transaction)
         {
             var source = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            await _bus.Publish<TransactionExchangeModel>(new
+            await _bus.Publish(new TransactionExchangeModel
             {
-                transaction.Id,
-                transaction.Amount,
-                transaction.Date,
-                transaction.AccountId,
-                transaction.Type,
-                transaction.Currency,
+                Id = transaction.Id,
+                Amount = transaction.Amount,
+                Date = transaction.Date,
+                AccountId = transaction.AccountId,
+                Type = transaction.Type,
+                Currency = transaction.Currency,
                 RubRate = _calculationService.ConvertCurrency(transaction.Currency, Currency.RUB, 1)
             },
             source.Token);

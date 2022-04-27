@@ -3,7 +3,6 @@ using MassTransit;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using System;
 using TransactionStore.API.Consumers;
 using TransactionStore.API.Tests.TestCaseSource;
 using TransactionStore.BusinessLayer.Services;
