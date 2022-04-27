@@ -27,9 +27,8 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
             long id = 1;
             decimal balance = 300m;
             DateTime dateTime = DateTime.Now;
-            ArrayList array = new ArrayList() { balance, dateTime };
             
-            yield return new object[] { withdraw, withdrawDto, id, array  };
+            yield return new object[] { withdraw, withdrawDto, id, balance, dateTime };
         }
     }
 }

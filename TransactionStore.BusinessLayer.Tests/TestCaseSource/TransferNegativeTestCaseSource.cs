@@ -1,6 +1,7 @@
 ﻿using Marvelous.Contracts.Enums;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TransactionStore.BusinessLayer.Models;
 
 namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
@@ -19,9 +20,9 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
             };
             decimal balance = 0m;
             DateTime dateTime = DateTime.Now;
-            ArrayList array = new ArrayList() { balance, dateTime };
+            var expected = new List<long>() { 1, 2 };
 
-            yield return new object[] { transfer, array };
+            yield return new object[] { transfer, balance, dateTime, expected  };
         }
     }
 }

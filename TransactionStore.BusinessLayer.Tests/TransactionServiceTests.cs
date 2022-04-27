@@ -40,51 +40,48 @@ namespace TransactionStore.BusinessLayer.Tests
         public async Task AddDepositTest_ValidRequestReceived_ShouldAddDeposit(TransactionModel depositModel, TransactionDto depositDto, long expected)
         {
             //given
-            _transactionRepositoryMock.Setup(d => d.AddTransaction(depositDto)).ReturnsAsync(expected);
+            _transactionRepositoryMock.Setup(d => d.AddDeposit(depositDto)).ReturnsAsync(expected);
 
             //when
             var actual = await _transactionService.AddDeposit(depositModel);
 
             // then
             Assert.AreEqual(expected, actual);
-            _transactionRepositoryMock.Verify(s => s.AddTransaction(depositDto), Times.Once);
+            _transactionRepositoryMock.Verify(s => s.AddDeposit(depositDto), Times.Once);
             LoggerVerify("Request to add Deposit", LogLevel.Information);
         }
 
         [TestCaseSource(typeof(TransferTestCaseSource))]
         public async Task AddTransfer_ValidRequestReceived_ShouldAddTransfer(TransferModel transferModel,
-            TransferDto transferDto, List<long> expected, ArrayList array, decimal convertedAmount)
+            TransferDto transferDto, List<long> expected, decimal balance, decimal convertedAmount, DateTime dateTime)
         {
             //given
-            _transactionRepositoryMock.Setup(t => t.AddTransfer(transferDto)).ReturnsAsync(expected);
-            _balanceRepositoryMock.Setup(b => b.GetBalanceByAccountId(transferModel.AccountIdFrom)).ReturnsAsync(array);
-            _balanceRepositoryMock.Setup(h => h.GetLastDate()).Returns((DateTime)array[1]);
+            _transactionRepositoryMock.Setup(t => t.AddTransfer(transferDto, dateTime)).ReturnsAsync(expected);
             _calculationServiceMock.Setup(c => c.ConvertCurrency(transferModel.CurrencyFrom,
                 transferModel.CurrencyTo, transferModel.Amount)).Returns(convertedAmount);
+            _balanceRepositoryMock.Setup(b => b.GetBalanceByAccountId(transferModel.AccountIdFrom)).ReturnsAsync((balance, dateTime));
+            
 
             // when
             var actual = await _transactionService.AddTransfer(transferModel);
 
             // then
             Assert.AreEqual(expected, actual);
-            _transactionRepositoryMock.Verify(t => t.AddTransfer(transferDto), Times.Once);
+            _transactionRepositoryMock.Verify(t => t.AddTransfer(transferDto, dateTime), Times.Once);
             _balanceRepositoryMock.Verify(b => b.GetBalanceByAccountId(transferModel.AccountIdFrom), Times.Once);
-            _balanceRepositoryMock.Verify(n => n.GetLastDate(), Times.Once);
             _calculationServiceMock.Verify(c => c.ConvertCurrency(transferModel.CurrencyFrom, transferModel.CurrencyTo,
                 transferModel.Amount), Times.Once);
             LoggerVerify("Request to add Transfer", LogLevel.Information);
         }
 
         [TestCaseSource(typeof(TransferNegativeTestCaseSource))]
-        public async Task AddTransfer_BalanceLessThanAmount_ShouldThrowInsufficientFundsException(TransferModel transferModel,
-            ArrayList array)
+        public async Task AddTransfere_BalanceLessThanAmount_ShouldThrowInsufficientFundsException(TransferModel transferModel,
+            decimal balance, DateTime dateTime, List<long> expected)
         {
-            //given
-            
-            _transactionRepositoryMock.Setup(w => w.AddTransfer(It.IsAny<TransferDto>()));
+            //given            
+            _transactionRepositoryMock.Setup(w => w.AddTransfer(It.IsAny<TransferDto>(), dateTime )).ReturnsAsync(expected);
             _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transferModel.AccountIdFrom))
-                .ReturnsAsync(array);
-            _balanceRepositoryMock.Setup(h => h.GetLastDate()).Returns((DateTime)array[1]);
+                .ReturnsAsync((balance, dateTime));
             var expectedMessage = "Insufficient funds";
 
             //when
@@ -94,40 +91,34 @@ namespace TransactionStore.BusinessLayer.Tests
             // then
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             _balanceRepositoryMock.Verify(b => b.GetBalanceByAccountId(transferModel.AccountIdFrom), Times.Once);
-            _balanceRepositoryMock.Verify(n => n.GetLastDate(), Times.Once);
             LoggerVerify("Exception: Insufficient funds", LogLevel.Error);
         }
 
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
-        public async Task Withdraw_ValidRequestReceived_ShouldAddTransation(TransactionModel transactionModel, TransactionDto transactionDto, long expected, ArrayList array)
+        public async Task Withdraw_ValidRequestReceived_ShouldAddTransation(TransactionModel transactionModel, TransactionDto transactionDto, long expected, Decimal balance, DateTime dateTime)
         {
             //given
-            _transactionRepositoryMock.Setup(w => w.AddTransaction(transactionDto)).ReturnsAsync(expected);
+            _transactionRepositoryMock.Setup(w => w.AddTransaction(transactionDto, dateTime)).ReturnsAsync(expected);
             _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transactionModel.AccountId))
-                .ReturnsAsync(array);
-            _balanceRepositoryMock.Setup(h => h.GetLastDate()).Returns((DateTime)array[1]);
-
-
-
+                .ReturnsAsync((balance, dateTime));
+            
             //when
             var actual = await _transactionService.Withdraw(transactionModel);
 
             // then
             Assert.AreEqual(expected, actual);
-            _transactionRepositoryMock.Verify(s => s.AddTransaction(transactionDto), Times.Once);
+            _transactionRepositoryMock.Verify(s => s.AddTransaction(transactionDto, dateTime), Times.Once);
             _balanceRepositoryMock.Verify(s => s.GetBalanceByAccountId(transactionModel.AccountId), Times.Once);
-            _balanceRepositoryMock.Verify(n => n.GetLastDate(), Times.Once);
             LoggerVerify("Request to add Withdraw", LogLevel.Information);
         }
 
         [TestCaseSource(typeof(WithdrawNegativeTestCaseSourse))]
-        public async Task Withdraw_BalanceLessThenAmount_ShouldThrowInsufficientFundsException(TransactionModel transactionModel, ArrayList array)
+        public async Task Withdraw_BalanceLessThenAmount_ShouldThrowInsufficientFundsException(TransactionModel transactionModel, Decimal balance, DateTime dateTime)
         {
             //given
-            _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
+            _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>(), dateTime));
             _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transactionModel.AccountId))
-                .ReturnsAsync(array );
-            _balanceRepositoryMock.Setup(n => n.GetLastDate()).Returns((DateTime)array[1]);
+                .ReturnsAsync((balance, dateTime));
             var expectedMessage = "Insufficient funds";
 
             //when
@@ -142,17 +133,17 @@ namespace TransactionStore.BusinessLayer.Tests
         }
         
         [TestCaseSource(typeof(WithdrawNegativeTestCaseSourse))]
-        public async Task Withdraw_DateDoesntMatch_ShouldThrowBDTimeoutException(TransactionModel transactionModel, ArrayList array)
+        public async Task Withdraw_DateDoesntMatch_ShouldThrowBDTimeoutException(TransactionModel transactionModel, decimal balance, DateTime dateTime)
         {
             //given
-            _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>()));
+            _transactionRepositoryMock.Setup(w => w.AddTransaction(It.IsAny<TransactionDto>(), dateTime));
             _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transactionModel.AccountId))
-                .ReturnsAsync(array );
+                .ReturnsAsync((balance, dateTime));
             _balanceRepositoryMock.Setup(n => n.GetLastDate()).Returns(It.IsAny<DateTime>());
             var expectedMessage = "Flood crossing";
 
             //when
-            BDTimeoutException? exception = Assert.ThrowsAsync<BDTimeoutException>(() =>
+            DbTimeoutException? exception = Assert.ThrowsAsync<DbTimeoutException>(() =>
             _transactionService.Withdraw(transactionModel));
 
             // then
@@ -225,66 +216,37 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             LoggerVerify($"Error: Transaction with Id = {id} wasn't found", LogLevel.Error);
         }
-        
+
         [TestCase(77, 100, 120)]
         public async Task CheckDateAndBalance_ValidRequestReceived_ShouldReturnTrue(int accountId, decimal amount, decimal amountForCheck)
         {
             //given
             var date = DateTime.Now;
-            ArrayList array = new ArrayList() { amountForCheck, date};
-            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(accountId)).ReturnsAsync(array);
-            _balanceRepositoryMock.Setup(n => n.GetLastDate()).Returns(date);
-                        
+            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(accountId)).ReturnsAsync((amountForCheck, date));
+
             //when
-            var actual = _transactionService.CheckDateAndBalance(accountId, amount);
+            var actual = await _transactionService.CheckBalanceAndGetLastTransactionDate(accountId, amount);
 
             // then
-            Assert.IsTrue(actual);
+            Assert.AreEqual(date, actual);
             LoggerVerify("Correct information", LogLevel.Information);
         }
-        
+
         [TestCase(77, 120, 100)]
-        public async Task CheckDateAndBalance_BalanceLessThenAmount_ShouldThrowInsufficientFundsExceptionn(int accountId, decimal amount, decimal amountForCheck)
+        public async Task CheckBalanceAndGetLastTransactionDate_BalanceLessThenAmount_ShouldThrowInsufficientFundsExceptionn(int accountId, decimal amount, decimal amountForCheck)
         {
             //given
-            var date = DateTime.Now;
-            ArrayList array = new ArrayList() { amountForCheck, date};
-            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(accountId)).ReturnsAsync(array);
-            _balanceRepositoryMock.Setup(n => n.GetLastDate()).Returns(date);            
+            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(accountId)).ReturnsAsync((amountForCheck, DateTime.Now));
             var expectedMessage = "Insufficient funds";
 
             //when
-            InsufficientFundsException? exception = Assert.Throws<InsufficientFundsException>(() =>
-            _transactionService.CheckDateAndBalance(accountId, amount));
+            InsufficientFundsException? exception = Assert.ThrowsAsync<InsufficientFundsException>(() =>
+            _transactionService.CheckBalanceAndGetLastTransactionDate(accountId, amount));
 
             // then
             _balanceRepositoryMock.Verify(s => s.GetBalanceByAccountId(accountId), Times.Once);
-            _balanceRepositoryMock.Verify(n => n.GetLastDate(), Times.Once);
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             LoggerVerify("Exception: Insufficient funds", LogLevel.Error);
-        }
-        
-        [TestCase(77, 100, 120)]
-        public async Task CheckDateAndBalance_DateDoesntMatch_ShouldThrowBDTimeoutException(int accountId, decimal amount, decimal amountForCheck)
-        {
-            //given
-            var date = DateTime.Now;
-            ArrayList array = new ArrayList() { amountForCheck, date};
-            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(accountId)).ReturnsAsync(array);
-            _balanceRepositoryMock.Setup(n => n.GetLastDate()).Returns(It.IsAny<DateTime>());            
-            var expectedMessage = "Flood crossing";
-
-            //when
-            BDTimeoutException? exception = Assert.ThrowsAsync<BDTimeoutException>(async () =>
-            _transactionService.CheckDateAndBalance(accountId, amount));
-
-            // then
-            //Assert.IsFalse(Action);
-            _balanceRepositoryMock.Verify(s => s.GetBalanceByAccountId(accountId), Times.Once);
-            _balanceRepositoryMock.Verify(n => n.GetLastDate(), Times.Once);
-            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
-            LoggerVerify("Exception: Flood crossing", LogLevel.Error);
-        }
+        }        
     }
-
 }

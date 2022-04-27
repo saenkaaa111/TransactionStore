@@ -34,10 +34,9 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
 
             decimal balance = 1000m;
             DateTime dateTime = DateTime.Now;
-            ArrayList array = new ArrayList() { balance, dateTime };
             decimal convertedAmount = 1.2m;
 
-            yield return new object[] { transferModel, transferDto, expected, array, convertedAmount };
+            yield return new object[] { transferModel, transferDto, expected, balance, convertedAmount, dateTime };
         }
     }
 }

@@ -4,7 +4,6 @@ using NLog;
 using System.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
-using TransactionStore.BusinessLayer;
 using TransactionStore.BusinessLayer.Exceptions;
 
 namespace TransactionStore.API.Middleware
@@ -64,7 +63,7 @@ namespace TransactionStore.API.Middleware
             }
             catch (ValidationException ex)
             {
-                
+
                 await HandleExceptionAsync(context, HttpStatusCode.UnprocessableEntity, ex.Message);
             }
             catch (TransactionNotFoundException ex)
@@ -73,11 +72,11 @@ namespace TransactionStore.API.Middleware
 
                 await HandleExceptionAsync(context, HttpStatusCode.NotFound, ex.Message);
             }
-            catch (BDTimeoutException)
+            catch (DbTimeoutException ex)
             {
-                _logger.Debug("Exception: BD Timeout. Flood crossing");
+                _logger.Debug($"Exception: {ex.Message}");
 
-                await HandleExceptionAsync(context, HttpStatusCode.Conflict, "Flood crossing");
+                await HandleExceptionAsync(context, HttpStatusCode.Conflict, ex.Message);
             }
             catch (Exception ex)
             {

@@ -5,7 +5,7 @@ namespace TransactionStore.DataLayer.Repository
 {
     public interface IBalanceRepository
     {
-        Task<ArrayList> GetBalanceByAccountId(int id);
+        Task<(decimal, DateTime)> GetBalanceByAccountId(int accountId);
         DateTime GetLastDate();
     }
 }
