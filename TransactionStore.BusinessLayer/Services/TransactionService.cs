@@ -1,11 +1,14 @@
-﻿using AutoMapper;
+﻿
+using AutoMapper;
 using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using System.Collections;
+using System.Data.SqlClient;
 using TransactionStore.BusinessLayer.Exceptions;
 using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.DataLayer.Entities;
+using TransactionStore.DataLayer.Exceptions;
 using TransactionStore.DataLayer.Repository;
 
 namespace TransactionStore.BusinessLayer.Services
@@ -19,7 +22,7 @@ namespace TransactionStore.BusinessLayer.Services
         private readonly ILogger<TransactionService> _logger;
 
         public TransactionService(ITransactionRepository transactionRepository,
-            ICalculationService calculationService, IBalanceRepository balanceRepository, IMapper mapper, 
+            ICalculationService calculationService, IBalanceRepository balanceRepository, IMapper mapper,
             ILogger<TransactionService> logger)
         {
             _transactionRepository = transactionRepository;
@@ -38,7 +41,7 @@ namespace TransactionStore.BusinessLayer.Services
 
             transaction.Type = TransactionType.Deposit;
 
-            return await _transactionRepository.AddTransaction(transaction);
+            return await _transactionRepository.AddDeposit(transaction);
         }
 
         public async Task<List<long>> AddTransfer(TransferModel transferModel)
@@ -53,10 +56,18 @@ namespace TransactionStore.BusinessLayer.Services
             var transfer = _mapper.Map<TransferDto>(transferModel);
             transfer.ConvertedAmount = convertResult;
 
-            CheckDateAndBalance(transferModel.AccountIdFrom, transfer.Amount);
+            var lastTransactionDate = await CheckBalanceAndGetLastTransactionDate(transferModel.AccountIdFrom, transfer.Amount);
 
-            return await _transactionRepository.AddTransfer(transfer);
-            
+            try
+            {
+                return await _transactionRepository.AddTransfer(transfer, lastTransactionDate);
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError("Error: Flood crossing");
+                throw new DbTimeoutException(ex.Message);
+            }                               
+                
         }
 
         public async Task<long> Withdraw(TransactionModel transactionModel)
@@ -65,13 +76,20 @@ namespace TransactionStore.BusinessLayer.Services
             CheckCurrencyHelper checkCurrency = new CheckCurrencyHelper();
             checkCurrency.CheckCurrency(transactionModel.Currency);
             var withdraw = _mapper.Map<TransactionDto>(transactionModel);
-            
-            CheckDateAndBalance(withdraw.AccountId, withdraw.Amount);
+
+            var lastTransactionDate = await CheckBalanceAndGetLastTransactionDate(withdraw.AccountId, withdraw.Amount);
 
             withdraw.Amount = transactionModel.Amount *= -1;
-
-            return await _transactionRepository.AddTransaction(withdraw);
             
+            try
+            {
+                return await _transactionRepository.AddTransaction(withdraw, lastTransactionDate);
+            }
+            catch (TransactionsConflictException ex)
+            {
+                _logger.LogError("Error: Flood crossing");
+                throw new DbTimeoutException(ex.Message);
+            }         
         }
 
         public async Task<ArrayList> GetTransactionsByAccountIds(List<int> ids)
@@ -87,7 +105,7 @@ namespace TransactionStore.BusinessLayer.Services
             var listTransactionSort = listTransactionAll.GroupBy(x => x.Id).Select(x => x.First());
 
             var transactionsWithoutTransfer = listTransactionAll.Where(x => x.Type != TransactionType.Transfer);
-            
+
             var resultList = new ArrayList();
 
             foreach (var item in transactionsWithoutTransfer)
@@ -124,7 +142,7 @@ namespace TransactionStore.BusinessLayer.Services
             _logger.LogInformation($"Request to get transaction by id = {id}");
             var transaction = await _transactionRepository.GetTransactionById(id);
 
-            if(transaction is not null)
+            if (transaction is not null)
             {
                 return _mapper.Map<TransactionModel>(transaction);
             }
@@ -135,12 +153,11 @@ namespace TransactionStore.BusinessLayer.Services
             }
         }
 
-        public bool CheckDateAndBalance(int accountId, decimal amount)
+        public async Task<DateTime> CheckBalanceAndGetLastTransactionDate(int accountId, decimal amount)
         {
-            var dateFromBd = _balanceRepository.GetLastDate();
-            var accountBalanceAndDate = _balanceRepository.GetBalanceByAccountId(accountId);
+            var (accountBalance, lastTransactionDate) = await _balanceRepository.GetBalanceByAccountId(accountId);
 
-            if ((DateTime)accountBalanceAndDate.Result[1] != dateFromBd)
+            if (accountBalance < amount)
             {
                 _logger.LogError("Exception: Flood crossing");
                 throw new DbTimeoutException("Flood crossing");
@@ -148,12 +165,12 @@ namespace TransactionStore.BusinessLayer.Services
             }
             if ((decimal)accountBalanceAndDate.Result[0] < amount)
             {
-                _logger.LogError("Exception: Insufficient funds");
+                _logger.LogError("Error: Insufficient funds");
                 throw new InsufficientFundsException("Insufficient funds");
-                return false;
+
             }
             _logger.LogInformation("Correct information");
-            return true;
+            return lastTransactionDate;
 
         }
     }

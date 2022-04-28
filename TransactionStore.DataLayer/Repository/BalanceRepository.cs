@@ -16,7 +16,7 @@ namespace TransactionStore.DataLayer.Repository
             _logger = logger;
         }
 
-        public async Task<ArrayList> GetBalanceByAccountId(int id)
+        public async Task<(decimal, DateTime)> GetBalanceByAccountId(int accountId)
         {
             _logger.LogInformation("Connecting to the database");
             using IDbConnection connection = Connection;
@@ -24,13 +24,12 @@ namespace TransactionStore.DataLayer.Repository
 
             var balance = connection.QueryFirstOrDefault<(decimal, DateTime) >(
                 _transactionGetAccountBalance,
-                 new { Id = id },
+                 new { Id = accountId },
                 commandType: CommandType.StoredProcedure
                 );
 
             _logger.LogInformation($"Balance by AccountId recieved");
-            var result = new ArrayList() { balance.Item1 , balance.Item2};
-            return result;
+            return balance;
         }
         
         public DateTime GetLastDate()
