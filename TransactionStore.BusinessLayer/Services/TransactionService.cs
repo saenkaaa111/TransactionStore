@@ -64,6 +64,7 @@ namespace TransactionStore.BusinessLayer.Services
             }
             catch (SqlException ex)
             {
+                _logger.LogError("Error: Flood crossing");
                 throw new DbTimeoutException(ex.Message);
             }                               
                 
@@ -83,13 +84,12 @@ namespace TransactionStore.BusinessLayer.Services
             try
             {
                 return await _transactionRepository.AddTransaction(withdraw, lastTransactionDate);
-                
             }
             catch (TransactionsConflictException ex)
             {
+                _logger.LogError("Error: Flood crossing");
                 throw new DbTimeoutException(ex.Message);
-            }            
-
+            }         
         }
 
         public async Task<ArrayList> GetTransactionsByAccountIds(List<int> ids)
@@ -159,7 +159,7 @@ namespace TransactionStore.BusinessLayer.Services
 
             if (accountBalance < amount)
             {
-                _logger.LogError("Exception: Insufficient funds");
+                _logger.LogError("Error: Insufficient funds");
                 throw new InsufficientFundsException("Insufficient funds");
 
             }

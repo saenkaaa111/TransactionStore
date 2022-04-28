@@ -10,25 +10,25 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
     {
         public IEnumerator GetEnumerator()
         {
-            var withdraw = new TransactionModel()
+            var transactionModel = new TransactionModel()
             {
                 Amount = 100,
                 AccountId = 1,
                 Currency = Currency.RUB
             };
             
-            var withdrawDto = new TransactionDto()
+            var transactionDto = new TransactionDto()
             {
                 Amount = -100,
                 AccountId = 1,
                 Currency = Currency.RUB
             };
 
-            long id = 1;
+            long expected = 1;
             decimal balance = 300m;
-            DateTime dateTime = DateTime.Now;
+            DateTime dateTime = DateTime.Today;
             
-            yield return new object[] { withdraw, withdrawDto, id, balance, dateTime };
+            yield return new object[] { transactionModel, transactionDto, expected, balance, dateTime };
         }
     }
 }

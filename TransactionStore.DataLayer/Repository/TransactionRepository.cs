@@ -73,6 +73,7 @@ namespace TransactionStore.DataLayer.Repository
             }
             catch (SqlException ex)
             {
+                _logger.LogError("Error: Flood crossing");
                 throw new TransactionsConflictException("Flood crossing, try again");                
             }                    
         }
@@ -107,6 +108,7 @@ namespace TransactionStore.DataLayer.Repository
 
             catch (SqlException ex)
             {
+                _logger.LogError("Error: Flood crossing");
                 throw new Exception("Flood crossing, try again");
             }
         }

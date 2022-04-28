@@ -19,7 +19,7 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
                 CurrencyTo = Currency.EUR
             };
             decimal balance = 0m;
-            DateTime dateTime = DateTime.Now;
+            DateTime dateTime = DateTime.Today;
             var expected = new List<long>() { 1, 2 };
 
             yield return new object[] { transfer, balance, dateTime, expected  };

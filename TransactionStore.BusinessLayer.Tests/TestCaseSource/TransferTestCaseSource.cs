@@ -33,7 +33,7 @@ namespace TransactionStore.BusinessLayer.Tests.TestCaseSource
             var expected = new List<long>() { 1, 2 };
 
             decimal balance = 1000m;
-            DateTime dateTime = DateTime.Now;
+            DateTime dateTime = DateTime.Today;
             decimal convertedAmount = 1.2m;
 
             yield return new object[] { transferModel, transferDto, expected, balance, convertedAmount, dateTime };
