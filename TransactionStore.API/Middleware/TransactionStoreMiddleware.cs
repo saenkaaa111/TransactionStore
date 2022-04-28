@@ -25,29 +25,23 @@ namespace TransactionStore.API.Middleware
             {
                 await _next(context);
             }
-            catch (SqlException)
-            {
-                _logger.Debug("Exception: Server unavalible");
-
-                await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "Server unavalible");
-            }
-            catch (ForbiddenException)
+            catch (ForbiddenException ex)
             {
                 _logger.Debug("Exception: Forbidden");
 
-                await HandleExceptionAsync(context, HttpStatusCode.Forbidden, "Forbidden");
+                await HandleExceptionAsync(context, HttpStatusCode.Forbidden, ex.Message);
             }
-            catch (RequestTimeoutException)
+            catch (RequestTimeoutException ex)
             {
                 _logger.Debug("Exception: Request Timeout");
 
-                await HandleExceptionAsync(context, HttpStatusCode.RequestTimeout, "Server unavalible");
+                await HandleExceptionAsync(context, HttpStatusCode.RequestTimeout, ex.Message);
             }
-            catch (ServiceUnavailableException)
+            catch (ServiceUnavailableException ex)
             {
                 _logger.Debug("Exception: Service Unavailable");
 
-                await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "Server unavalible");
+                await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, ex.Message);
             }
             catch (InsufficientFundsException ex)
             {
@@ -63,7 +57,7 @@ namespace TransactionStore.API.Middleware
             }
             catch (ValidationException ex)
             {
-
+                _logger.Debug($"Exception: {ex.Message}");
                 await HandleExceptionAsync(context, HttpStatusCode.UnprocessableEntity, ex.Message);
             }
             catch (TransactionNotFoundException ex)
@@ -74,7 +68,7 @@ namespace TransactionStore.API.Middleware
             }
             catch (DbTimeoutException ex)
             {
-                _logger.Debug($"Exception: {ex.Message}");
+                _logger.Debug("Exception: Db Timeout. Flood crossing");
 
                 await HandleExceptionAsync(context, HttpStatusCode.Conflict, ex.Message);
             }
