@@ -159,6 +159,12 @@ namespace TransactionStore.BusinessLayer.Services
 
             if (accountBalance < amount)
             {
+                _logger.LogError("Exception: Flood crossing");
+                throw new DbTimeoutException("Flood crossing");
+                return false;
+            }
+            if ((decimal)accountBalanceAndDate.Result[0] < amount)
+            {
                 _logger.LogError("Error: Insufficient funds");
                 throw new InsufficientFundsException("Insufficient funds");
 
