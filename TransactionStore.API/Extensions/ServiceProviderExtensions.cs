@@ -1,7 +1,11 @@
-﻿using MassTransit;
+using FluentValidation.AspNetCore;
+using MassTransit;
+using Microsoft.AspNetCore.Mvc;
 using NLog.Extensions.Logging;
 using TransactionStore.API.Consumers;
 using TransactionStore.API.Producers;
+using TransactionStore.API.Validators;
+using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Services;
 using TransactionStore.DataLayer.Repository;
 
@@ -14,12 +18,15 @@ namespace TransactionStore.API
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ITransactionProducer, TransactionProducer>();
             services.AddScoped<ICalculationService, CalculationService>();
+            services.AddScoped<IBalanceService, BalanceService>();
             services.AddSingleton<ICurrencyRatesService, CurrencyRatesService>();
+            services.AddScoped<IRequestHelper, RequestHelper>();
         }
 
         public static void AddTransactionStoreRepositories(this IServiceCollection services)
         {
             services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<IBalanceRepository, BalanceRepository>();
         }
 
         public static void AddLogger(this IServiceCollection service, IConfiguration config)
@@ -40,18 +47,23 @@ namespace TransactionStore.API
                 x.AddConsumer<CurrencyRatesConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host("rabbitmq://80.78.240.16", hst =>
-                    {
-                        hst.Username("nafanya");
-                        hst.Password("qwe!23");
-                    });
-
-                    cfg.ReceiveEndpoint("currencyRatesQueue_DDDDDDD", e =>
+                    cfg.ReceiveEndpoint("currencyRatesQueue", e =>
                     {
                         e.ConfigureConsumer<CurrencyRatesConsumer>(context);
                     });
                 });
             });
+        }
+
+        public static void AddFluentValidation(this IServiceCollection services)
+        {
+            services.AddMvc()
+                .AddFluentValidation(fv =>
+                {
+                    fv.RegisterValidatorsFromAssemblyContaining<TransactionRequestModelValidator>();
+                    fv.RegisterValidatorsFromAssemblyContaining<TransferRequestModelValidator>();
+                    fv.ImplicitlyValidateRootCollectionElements = true;
+                });
         }
     }
 }

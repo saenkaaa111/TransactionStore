@@ -1,3 +1,5 @@
+using FluentValidation.AspNetCore;
+using Marvelous.Contracts.Enums;
 using MassTransit;
 using System.Data;
 using System.Data.SqlClient;
@@ -6,12 +8,12 @@ using TransactionStore.API.Configuration;
 using TransactionStore.API.Middleware;
 using TransactionStore.BuisnessLayer.Configuration;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionEnvironmentVariableName = "TSTORE_CONNECTION_STRING";
 var logDirectoryVariableName = "LOG_DIRECTORY";
+var auth = "https://piter-education.ru:6042";
 
 var connectionString = builder.Configuration.GetValue<string>(connectionEnvironmentVariableName);
 builder.Services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
@@ -30,11 +32,14 @@ builder.Services.AddAutoMapper(typeof(BusinessMapper).Assembly, typeof(DataMappe
 builder.Services.AddTransactionStoreServices();
 builder.Services.AddTransactionStoreRepositories();
 builder.Services.AddMassTransit();
+builder.Services.AddMemoryCache();
+builder.Services.AddFluentValidation();
 
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 
@@ -42,5 +47,7 @@ app.UseAuthorization();
 app.UseMiddleware<TransactionStoreMiddleware>();
 
 app.MapControllers();
+
+app.Configuration[Microservice.MarvelousAuth.ToString()] = auth;
 
 app.Run();

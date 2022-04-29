@@ -1,4 +1,4 @@
-﻿namespace TransactionStore.BusinessLayer
+﻿namespace TransactionStore.BusinessLayer.Exceptions
 {
     public class InsufficientFundsException : Exception
     {

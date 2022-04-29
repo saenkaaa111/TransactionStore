@@ -6,12 +6,10 @@ namespace TransactionStore.BusinessLayer.Services
     public interface ITransactionService
     {
         Task<long> AddDeposit(TransactionModel transactionModel);
-        Task<List<long>> AddTransfer(TransferModel transactionModel);
-        Task<decimal> GetBalanceByAccountId(int accountId);
-        Task<decimal> GetBalanceByAccountIds(List<int> accountId);
+        Task<List<long>> AddTransfer(TransferModel transferModel);
         Task<TransactionModel> GetTransactionById(long id);
-        Task<List<TransactionModel>> GetTransactionsByAccountIds(List<int> accountIds);
+        Task<ArrayList> GetTransactionsByAccountIds(List<int> ids);
         Task<long> Withdraw(TransactionModel transactionModel);
-        Task<ArrayList> GetTransactionsByAccountId(int id);
+        Task<DateTime> CheckBalanceAndGetLastTransactionDate(int accountId, decimal amount);
     }
 }

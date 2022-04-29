@@ -1,112 +1,157 @@
-﻿using AutoMapper;
+using AutoMapper;
+using FluentValidation;
+using Marvelous.Contracts.Endpoints;
+using Marvelous.Contracts.Enums;
 using Marvelous.Contracts.RequestModels;
+using Marvelous.Contracts.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections;
-using TransactionStore.API.Models;
 using TransactionStore.API.Producers;
+using TransactionStore.BusinessLayer.Exceptions;
+using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
 using TransactionStore.BusinessLayer.Services;
 
-namespace TransactionStore.API.Controller
+namespace TransactionStore.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class TransactionsController : ControllerBase
+    [Route(TransactionEndpoints.ApiTransactions)]
+    public class TransactionsController : Controller
     {
         private readonly ITransactionService _transactionService;
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionsController> _logger;
         private readonly ITransactionProducer _transactionProducer;
+        private readonly IConfiguration _configuration;
+        private readonly IRequestHelper _requestHelper;
+        private readonly IValidator<TransactionRequestModel> _transactionRequestModelValidator;
+        private readonly IValidator<TransferRequestModel> _transferRequestModelValidator;
 
         public TransactionsController(ITransactionService transactionService, IMapper mapper,
-            ILogger<TransactionsController> logger, ITransactionProducer transactionProducer)
+            ILogger<TransactionsController> logger, ITransactionProducer transactionProducer,
+            IRequestHelper requestHelper, IConfiguration configuration,
+            IValidator<TransactionRequestModel> transactionRequestModelValidator,
+            IValidator<TransferRequestModel> transferRequestModelValidator)
         {
             _transactionService = transactionService;
             _mapper = mapper;
             _logger = logger;
             _transactionProducer = transactionProducer;
+            _configuration = configuration;
+            _requestHelper = requestHelper;
+            _transactionRequestModelValidator = transactionRequestModelValidator;
+            _transferRequestModelValidator = transferRequestModelValidator;
         }
 
         // api/transaction/
-        [HttpPost("deposit")]
+        [HttpPost(TransactionEndpoints.Deposit)]
         [SwaggerOperation(Summary = "Add deposit")]
         [SwaggerResponse(StatusCodes.Status201Created, "Deposit added", typeof(long))]
-        public async Task<ActionResult<long>> AddDeposit([FromBody] TransactionRequestModel transaction)
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<long>> AddDeposit([FromBody] TransactionRequestModel transactionRequestModel)
         {
             _logger.LogInformation("Request to add Deposit in the controller");
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
-            var transactionModel = _mapper.Map<TransactionModel>(transaction);
-            var transactionId = await _transactionService.AddDeposit(transactionModel);
+            var validationResult = await _transactionRequestModelValidator.ValidateAsync(transactionRequestModel);
 
-            _logger.LogInformation($"Deposit with id = {transactionId} added");
-            await _transactionProducer.Main(transactionId);
+            if (validationResult.IsValid)
+            {
+                var transactionModel = _mapper.Map<TransactionModel>(transactionRequestModel);
+                var transactionId = await _transactionService.AddDeposit(transactionModel);
 
-            return Ok(transactionId);
+                _logger.LogInformation($"Deposit with id = {transactionId} added");
+                var transactionForPublish = await _transactionService.GetTransactionById(transactionId);
+                await _transactionProducer.NotifyTransactionAdded(transactionForPublish);
+
+                return Ok(transactionId);
+            }
+            else
+            {
+                _logger.LogError("Error: TransactionRequestModel isn't valid");
+                throw new ValidationException("TransactionRequestModel isn't valid");
+            }
         }
 
         // api/transaction/
-        [HttpPost("transfer")]
+        [HttpPost(TransactionEndpoints.Transfer)]
         [SwaggerOperation(Summary = "Add transfer")]
         [SwaggerResponse(StatusCodes.Status200OK, "Transfer successful", typeof(List<long>))]
-        public async Task<ActionResult<List<long>>> AddTransfer([FromBody] TransferRequestModel transfer)
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<List<long>>> AddTransfer([FromBody] TransferRequestModel transferRequestModel)
         {
             _logger.LogInformation("Request to add Transfer in the controller");
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
-            var transferModel = _mapper.Map<TransferModel>(transfer);
-            var transferIds = await _transactionService.AddTransfer(transferModel);
-            
-            _logger.LogInformation($"Transfer added");
-            await _transactionProducer.Main(transferIds[0]);
-            await _transactionProducer.Main(transferIds[1]);
+            var validationResult = await _transferRequestModelValidator.ValidateAsync(transferRequestModel);
 
-            return Ok(transferIds);
+            if (validationResult.IsValid)
+            {
+                var transferModel = _mapper.Map<TransferModel>(transferRequestModel);
+                var transferIds = await _transactionService.AddTransfer(transferModel);
+                _logger.LogInformation("Transfer added");
+
+                var transactionForPublishFirst = await _transactionService.GetTransactionById(transferIds[0]);
+                var transactionForPublishSecond = await _transactionService.GetTransactionById(transferIds[1]);
+
+                await _transactionProducer.NotifyTransactionAdded(transactionForPublishFirst);
+                await _transactionProducer.NotifyTransactionAdded(transactionForPublishSecond);
+
+                return Ok(transferIds);
+            }
+            else
+            {
+                _logger.LogError("Error: TransferRequestModel isn't valid");
+                throw new ValidationException("TransferRequestModel isn't valid");
+            }
         }
 
-        [HttpPost("withdraw")]
+        [HttpPost(TransactionEndpoints.Withdraw)]
         [SwaggerOperation(Summary = "Withdraw")]
         [SwaggerResponse(StatusCodes.Status200OK, "Withdraw successful", typeof(long))]
-        public async Task<ActionResult<long>> Withdraw([FromBody] TransactionRequestModel transaction)
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<long>> Withdraw([FromBody] TransactionRequestModel transactionRequestModel)
         {
             _logger.LogInformation("Request to add Withdraw in the controller");
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
-            var transactionModel = _mapper.Map<TransactionModel>(transaction);
-            var transactionId = await _transactionService.Withdraw(transactionModel);
+            var validationResult = await _transactionRequestModelValidator.ValidateAsync(transactionRequestModel);
+            if (validationResult.IsValid)
+            {
+                var transactionModel = _mapper.Map<TransactionModel>(transactionRequestModel);
+                transactionModel.Type = TransactionType.Withdraw;
+                var transactionId = await _transactionService.Withdraw(transactionModel);
 
-            _logger.LogInformation($"Withdraw with id = {transactionId} added");
-            await _transactionProducer.Main(transactionId);
+                _logger.LogInformation($"Withdraw with id = {transactionId} added");
+                var transactionForPublish = await _transactionService.GetTransactionById(transactionId);
 
-            return Ok(transactionId);
-        }
+                await _transactionProducer.NotifyTransactionAdded(transactionForPublish);
 
-        // api/transaction/
-        [HttpGet("transaction/{accountId}")]
-        [SwaggerOperation(Summary = "Get transactions by accountId")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(ArrayList))]
-        public async Task<ActionResult<ArrayList>> GetTransactionsByAccountId(int accountId)
-        {
-            _logger.LogInformation($"Request to receive all transactions by AccountId = {accountId} in the controller");
-
-            var transactionModel = await _transactionService.GetTransactionsByAccountId(accountId);
-            var transactions = _mapper.Map<ArrayList>(transactionModel);
-
-            _logger.LogInformation($"Transactions by AccountId = {accountId} received");
-
-            return Ok(transactions);
+                return Ok(transactionId);
+            }
+            else
+            {
+                _logger.LogError("Error: TransactionRequestModel isn't valid");
+                throw new ValidationException("TransactionRequestModel isn't valid");
+            }
         }
 
         // api/Transactions/by-accountIds?accountIds=1&accountIds=2
         [HttpGet("by-accountIds")]
         [SwaggerOperation(Summary = "Get transactions by accountIds")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(List<TransactionResponseModel>))]
-        public async Task<ActionResult<List<TransactionResponseModel>>> GetTransactionsByAccountIds([FromQuery] List<int> accountIds)
+        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(ArrayList))]
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<ArrayList>> GetTransactionsByAccountIds(
+            [FromQuery] List<int> ids)
         {
-            _logger.LogInformation($"Request to receive all transactions by AccountIds in the controller");
+            _logger.LogInformation("Request to receive all transactions by AccountIds in the controller");
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
-            var transactionModels = await _transactionService.GetTransactionsByAccountIds(accountIds);
-            var transactions = _mapper.Map<List<TransactionResponseModel>>(transactionModels);
+            var transactionModels = await _transactionService.GetTransactionsByAccountIds(ids);
+            var transactions = _mapper.Map<ArrayList>(transactionModels);
 
-            _logger.LogInformation($"Transactions by AccountIds received");
+            _logger.LogInformation("Transactions by AccountIds received");
 
             return Ok(transactions);
         }
@@ -114,60 +159,60 @@ namespace TransactionStore.API.Controller
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Get transaction by id")]
         [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(TransactionResponseModel))]
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<TransactionResponseModel>> GetTransactionById(long id)
         {
             _logger.LogInformation($"Request to receive transaction by Id = {id} in the controller");
+            await CheckMicroservice(Microservice.MarvelousCrm);
 
             var transactionModel = await _transactionService.GetTransactionById(id);
             var transaction = _mapper.Map<TransactionResponseModel>(transactionModel);
 
-            _logger.LogInformation($"Transactions by AccountId = {id} received");
+            _logger.LogInformation($"Transaction by AccountId = {id} received");
 
             return Ok(transaction);
         }
 
-        [HttpGet("balanse-by-{accountId}")]
-        [SwaggerOperation(Summary = "Get balanse by accountId")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Successful", typeof(decimal))]
-        public async Task<ActionResult<decimal>> GetBalanceByAccountId(int accountId)
-        {
-            _logger.LogInformation($"Request to receive a balance by AccountId = {accountId} in the controller");
-
-            var balance = await _transactionService.GetBalanceByAccountId(accountId);
-
-            _logger.LogInformation($"Balance received");
-
-            return Ok(balance);
-        }
-
-
-        [HttpGet("balanse-by-accountIds")]
-        [SwaggerOperation(Summary = "Get balance by accountIds")]
-        [SwaggerResponse(200, "OK")]
-        public async Task<ActionResult> GetBalanceByAccountIds([FromQuery] List<int> accountIds)
-        {
-            _logger.LogInformation($"Request to receive a balance by AccountIds in the controller");
-
-            var balance = await _transactionService.GetBalanceByAccountIds(accountIds);
-
-            _logger.LogInformation($"Balance received");
-
-            return Ok(balance);
-        }
-
-        [HttpPost("service-payment")]
+        [HttpPost(TransactionEndpoints.ServicePayment)]
         [SwaggerOperation(Summary = "Service payment")]
         [SwaggerResponse(StatusCodes.Status200OK, "Payment successful", typeof(long))]
-        public async Task<ActionResult<long>> ServicePayment([FromBody] TransactionRequestModel transaction)
+        [SwaggerResponse(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<long>> AddServicePayment([FromBody] TransactionRequestModel transactionRequestModel)
         {
-            _logger.LogInformation("Request to add Service payment in the conroller");
+            _logger.LogInformation("Request to add Service payment in the controller");
+            await CheckMicroservice(Microservice.MarvelousResource);
 
-            var transactionModel = _mapper.Map<TransactionModel>(transaction);
-            var transactionId = await _transactionService.Withdraw(transactionModel);
+            var validationResult = await _transactionRequestModelValidator.ValidateAsync(transactionRequestModel);
 
-            _logger.LogInformation($"Service payment with Id = {transactionId} added");
+            if (validationResult.IsValid)
+            {
+                var transactionModel = _mapper.Map<TransactionModel>(transactionRequestModel);
+                transactionModel.Type = TransactionType.ServicePayment;
+                var transactionId = await _transactionService.Withdraw(transactionModel);
+                _logger.LogInformation($"Service payment with Id = {transactionId} added");
+                var transactionForPublish = await _transactionService.GetTransactionById(transactionId);
+                await _transactionProducer.NotifyTransactionAdded(transactionForPublish);
 
-            return Ok(transactionId);
+                return Ok(transactionId);
+            }
+            else
+            {
+                _logger.LogError("Error: TransactionRequestModel isn't valid");
+                throw new ValidationException("TransactionRequestModel isn't valid");
+            }
+        }
+
+        private async Task CheckMicroservice(params Microservice[] service)
+        {
+            var token = HttpContext.Request.Headers.Authorization.FirstOrDefault();
+            var identity = await _requestHelper
+                .SendRequestCheckValidateToken(_configuration[Microservice.MarvelousAuth.ToString()],
+                AuthEndpoints.ApiAuth + AuthEndpoints.ValidationMicroservice, token);
+
+            if (!service.Select(r => r.ToString()).Contains(identity.IssuerMicroservice))
+            {
+                throw new ForbiddenException($"{identity.IssuerMicroservice} doesn't have access to this endpiont");
+            }
         }
     }
 }

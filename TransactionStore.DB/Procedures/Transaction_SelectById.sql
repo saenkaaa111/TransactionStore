@@ -1,4 +1,4 @@
-﻿CREATE proc dbo.Transaction_SelectById
+﻿CREATE PROCEDURE [dbo].[Transaction_SelectById]
 			@Id bigint
 AS
 BEGIN

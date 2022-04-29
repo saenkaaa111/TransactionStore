@@ -1,14 +1,17 @@
 ﻿CREATE PROCEDURE [dbo].[Transaction_SelectByAccountIds]
-	@tvp [dbo].[AccountTVP] readonly
-AS 
+			@tvp [dbo].[AccountTVP] readonly
+AS
 BEGIN
-SELECT 	
+SELECT * FROM (
+SELECT
 		Id,
 		Amount,
-		Date,
+		Date ,
 		Type, 
 		AccountId,
 		Currency
-		FROM [dbo].[Transaction] t
-    INNER JOIN @tvp i ON t.AccountId = i.AccountIds
+		
+	from dbo.[Transaction]	t
+	INNER JOIN @tvp i ON t.AccountId = i.AccountIds	
+	) q ORDER BY q.Date desc
 END

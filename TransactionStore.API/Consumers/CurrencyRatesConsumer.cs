@@ -4,7 +4,7 @@ using TransactionStore.BusinessLayer.Services;
 
 namespace TransactionStore.API.Consumers
 {
-    public class CurrencyRatesConsumer : IConsumer<ICurrencyRatesExchangeModel>
+    public class CurrencyRatesConsumer : IConsumer<CurrencyRatesExchangeModel>
     {
         private readonly ICurrencyRatesService _currencyRatesService;
         private readonly ILogger<CurrencyRatesConsumer> _logger;
@@ -16,7 +16,7 @@ namespace TransactionStore.API.Consumers
             _logger = logger;
         }
 
-        public Task Consume(ConsumeContext<ICurrencyRatesExchangeModel> context)
+        public Task Consume(ConsumeContext<CurrencyRatesExchangeModel> context)
         {
             _currencyRatesService.SaveCurrencyRates(context.Message);
             _logger.LogInformation("CurrencyRatesExchangeModel recieved");

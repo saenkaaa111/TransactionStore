@@ -1,4 +1,4 @@
-﻿CREATE proc dbo.Transaction_Transfer
+﻿CREATE PROCEDURE [dbo].[Transaction_Transfer]
 	@AccountIdFrom			int,
 	@AccountIdTo			int,
 	@Amount					decimal (9, 2),

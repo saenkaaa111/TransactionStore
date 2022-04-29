@@ -1,9 +1,9 @@
-﻿using NLog;
+﻿using FluentValidation;
+using Marvelous.Contracts.ResponseModels;
+using NLog;
 using System.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
-using TransactionStore.API.Models;
-using TransactionStore.BusinessLayer;
 using TransactionStore.BusinessLayer.Exceptions;
 
 namespace TransactionStore.API.Middleware
@@ -25,11 +25,23 @@ namespace TransactionStore.API.Middleware
             {
                 await _next(context);
             }
-            catch (SqlException)
+            catch (ForbiddenException ex)
             {
-                _logger.Debug("Exception: Сервер недоступен");
+                _logger.Debug("Exception: Forbidden");
 
-                await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, "Сервер недоступен");
+                await HandleExceptionAsync(context, HttpStatusCode.Forbidden, ex.Message);
+            }
+            catch (RequestTimeoutException ex)
+            {
+                _logger.Debug("Exception: Request Timeout");
+
+                await HandleExceptionAsync(context, HttpStatusCode.RequestTimeout, ex.Message);
+            }
+            catch (ServiceUnavailableException ex)
+            {
+                _logger.Debug("Exception: Service Unavailable");
+
+                await HandleExceptionAsync(context, HttpStatusCode.ServiceUnavailable, ex.Message);
             }
             catch (InsufficientFundsException ex)
             {
@@ -43,6 +55,23 @@ namespace TransactionStore.API.Middleware
 
                 await HandleExceptionAsync(context, HttpStatusCode.Conflict, ex.Message);
             }
+            catch (ValidationException ex)
+            {
+                _logger.Debug($"Exception: {ex.Message}");
+                await HandleExceptionAsync(context, HttpStatusCode.UnprocessableEntity, ex.Message);
+            }
+            catch (TransactionNotFoundException ex)
+            {
+                _logger.Debug($"Exception: {ex.Message}");
+
+                await HandleExceptionAsync(context, HttpStatusCode.NotFound, ex.Message);
+            }
+            catch (DbTimeoutException ex)
+            {
+                _logger.Debug("Exception: Db Timeout. Flood crossing");
+
+                await HandleExceptionAsync(context, HttpStatusCode.Conflict, ex.Message);
+            }
             catch (Exception ex)
             {
                 _logger.Debug($"Exception: {ex.Message}");
@@ -53,11 +82,10 @@ namespace TransactionStore.API.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, HttpStatusCode code, string message)
         {
-            var result = JsonSerializer.Serialize(new ErrorOutputModel
+            var result = JsonSerializer.Serialize(new ExceptionResponseModel
             {
                 Message = message,
-                StatusCode = (int)code,
-                StatusCodeName = code.ToString()
+                Code = (int)code
             });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;

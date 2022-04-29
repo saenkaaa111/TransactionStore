@@ -4,12 +4,11 @@ namespace TransactionStore.DataLayer.Repository
 {
     public interface ITransactionRepository
     {
-        Task<long> AddTransaction(TransactionDto transaction);
-        Task<List<long>> AddTransfer(TransferDto transaction);
-        Task<decimal> GetAccountBalance(int id);
+        Task<long> AddDeposit(TransactionDto transaction);
+        Task<long> AddTransaction(TransactionDto transaction, DateTime lastTransactionDate);
+        Task<List<long>> AddTransfer(TransferDto transaction, DateTime lastTransactionDate);
         Task<TransactionDto> GetTransactionById(long id);
-        Task<List<TransactionDto>> GetTransactionsByAccountId(int id);
-        Task<List<TransactionDto>> GetTransactionsByAccountIdMinimal(int id);
-        Task<List<TransactionDto>> GetTransactionsByAccountIds(List<int> accountIds);
+        Task<List<TransactionDto>> GetTransactionsByAccountIds(List<int> ids);
+        Task<List<TransactionDto>> GetTransactionsByAccountIdsWithSecondHalfOfTransfer(List<int> ids);
     }
 }

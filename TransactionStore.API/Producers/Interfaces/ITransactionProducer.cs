@@ -1,7 +1,10 @@
-﻿namespace TransactionStore.API.Producers
+using Marvelous.Contracts.ExchangeModels;
+using TransactionStore.BusinessLayer.Models;
+
+namespace TransactionStore.API.Producers
 {
     public interface ITransactionProducer
     {
-        Task Main(long id);
+        Task NotifyTransactionAdded(TransactionModel transaction);
     }
 }

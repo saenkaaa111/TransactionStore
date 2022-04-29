@@ -23,6 +23,7 @@
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <TargetDatabase>TransactionStore.Db</TargetDatabase>
+    <Recovery>SIMPLE</Recovery>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -60,19 +61,20 @@
     <Folder Include="Properties" />
     <Folder Include="Procedures" />
     <Folder Include="Tables" />
+    <Folder Include="Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Transaction.sql" />
-    <Build Include="Procedures\Transaction_SelectByAccountId.sql" />
-    <Build Include="Procedures\Transaction_SelectByAccountIds.sql" />
+    <Build Include="Procedures\Transaction_SelectByAccountIdsWithSecondHalfOfTransfer.sql" />
     <Build Include="Tables\AccountTVP.sql" />
     <Build Include="Procedures\Transaction_Transfer.sql" />
     <Build Include="Procedures\Transaction_GetAccountBalance.sql" />
-    <Build Include="Procedures\Transaction_SelectByAccountIdMinimal.sql" />
+    <Build Include="Procedures\Transaction_SelectByAccountIds.sql" />
+    <Build Include="Procedures\Transaction_InsertDeposit.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Procedures\Transaction_Insert.sql" />
-    <None Include="Procedures\Transaction_SelectById.sql" />
+    <Build Include="Procedures\Transaction_Insert.sql" />
+    <Build Include="Procedures\Transaction_SelectById.sql" />
     <None Include="TransactionStore.DB.publish.xml" />
   </ItemGroup>
   <ItemGroup>
