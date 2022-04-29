@@ -1,5 +1,4 @@
 using AutoMapper;
-using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -62,7 +61,7 @@ namespace TransactionStore.BusinessLayer.Tests
             _calculationServiceMock.Setup(c => c.ConvertCurrency(transferModel.CurrencyFrom,
                 transferModel.CurrencyTo, transferModel.Amount)).Returns(convertedAmount);
             _balanceRepositoryMock.Setup(b => b.GetBalanceByAccountId(transferModel.AccountIdFrom)).ReturnsAsync((balance, dateTime));
-            
+
 
             // when
             var actual = await _transactionService.AddTransfer(transferModel);
@@ -81,7 +80,7 @@ namespace TransactionStore.BusinessLayer.Tests
             decimal balance, DateTime dateTime, List<long> expected)
         {
             //given            
-            _transactionRepositoryMock.Setup(w => w.AddTransfer(It.IsAny<TransferDto>(), dateTime )).ReturnsAsync(expected);
+            _transactionRepositoryMock.Setup(w => w.AddTransfer(It.IsAny<TransferDto>(), dateTime)).ReturnsAsync(expected);
             _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transferModel.AccountIdFrom))
                 .ReturnsAsync((balance, dateTime));
             var expectedMessage = "Insufficient funds";
@@ -104,7 +103,7 @@ namespace TransactionStore.BusinessLayer.Tests
             _transactionRepositoryMock.Setup(w => w.AddTransaction(transactionDto, dateTime)).ReturnsAsync(expected);
             _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transactionModel.AccountId))
                 .ReturnsAsync((balance, dateTime));
-            
+
             //when
             var actual = await _transactionService.Withdraw(transactionModel);
 
@@ -134,7 +133,7 @@ namespace TransactionStore.BusinessLayer.Tests
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             LoggerVerify("Error: Insufficient funds", LogLevel.Error);
         }
-        
+
         [TestCaseSource(typeof(WithdrawDateDoesntMatchTestcaseSource))]
         public async Task Withdraw_DateDoesntMatch_ShouldThrowDbTimeoutException(
             TransactionModel transactionModel, decimal balance, DateTime dateTime)
@@ -144,7 +143,6 @@ namespace TransactionStore.BusinessLayer.Tests
                 .Throws(new TransactionsConflictException("Flood crossing, try again"));
             _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transactionModel.AccountId))
                 .ReturnsAsync((balance, dateTime));
-            _balanceRepositoryMock.Setup(n => n.GetLastDate()).Returns(DateTime.Now);
             var expectedMessage = "Flood crossing, try again";
 
             //when
