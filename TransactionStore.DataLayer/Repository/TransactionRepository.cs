@@ -13,8 +13,6 @@ namespace TransactionStore.DataLayer.Repository
     {
         private const string _transactionAddDepositProcedure = "dbo.Transaction_InsertDeposit";
         private const string _transactionAddProcedure = "dbo.Transaction_Insert";
-        private const string _transactionGetByAccountIdsWithSecondHalfOfTransferProcedure =
-            "dbo.Transaction_SelectByAccountIdsWithSecondHalfOfTransfer";
         private const string _transactionGetByIdProcedure = "dbo.Transaction_SelectById";
         private const string _transactionTransfer = "dbo.Transaction_Transfer";
         private const string _transactionGetByAccountIdsProcedure = "dbo.Transaction_SelectByAccountIds";
@@ -148,28 +146,6 @@ namespace TransactionStore.DataLayer.Repository
             _logger.LogInformation($"Transaction by Id = {id} recieved");
 
             return transactionDto;
-        }
-
-        public async Task<List<TransactionDto>> GetTransactionsByAccountIdsWithSecondHalfOfTransfer(List<int> ids)
-        {
-            _logger.LogInformation("Connecting to the database");
-            using IDbConnection connection = Connection;
-            _logger.LogInformation("Connection made");
-
-            var tvpTable = new DataTable();
-            tvpTable.Columns.Add(new DataColumn("AccountId", typeof(int)));
-            ids.ForEach(id => tvpTable.Rows.Add(id));
-
-            var listTransactions = (await connection.QueryAsync<TransactionDto>(
-                    _transactionGetByAccountIdsWithSecondHalfOfTransferProcedure,
-                    new { tvp = tvpTable.AsTableValuedParameter("[dbo].[AccountTVP]") },
-                    commandType: CommandType.StoredProcedure
-               ))
-               .ToList();
-
-            _logger.LogInformation($"Transactions by AccountIds recieved");
-
-            return listTransactions;
         }
     }
 }

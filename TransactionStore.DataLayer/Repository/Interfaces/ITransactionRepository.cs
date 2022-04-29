@@ -9,6 +9,5 @@ namespace TransactionStore.DataLayer.Repository
         Task<List<long>> AddTransfer(TransferDto transaction, DateTime lastTransactionDate);
         Task<TransactionDto> GetTransactionById(long id);
         Task<List<TransactionDto>> GetTransactionsByAccountIds(List<int> ids);
-        Task<List<TransactionDto>> GetTransactionsByAccountIdsWithSecondHalfOfTransfer(List<int> ids);
     }
 }

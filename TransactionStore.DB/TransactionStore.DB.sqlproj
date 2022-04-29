@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Transaction.sql" />
-    <Build Include="Procedures\Transaction_SelectByAccountIdsWithSecondHalfOfTransfer.sql" />
     <Build Include="Tables\AccountTVP.sql" />
     <Build Include="Procedures\Transaction_Transfer.sql" />
     <Build Include="Procedures\Transaction_GetAccountBalance.sql" />
