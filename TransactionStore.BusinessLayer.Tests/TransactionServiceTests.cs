@@ -95,6 +95,27 @@ namespace TransactionStore.BusinessLayer.Tests
             LoggerVerify("Error: Insufficient funds", LogLevel.Error);
         }
 
+        [TestCaseSource(typeof(TransferDateDoesntMatchTestCaseSource))]
+        public async Task AddTransfer_DateDoesntMatch_ShouldThrowInsufficientFundsException(TransferModel transferModel,
+            decimal balance, DateTime dateTime, List<long> expected)
+        {
+            //given            
+            _transactionRepositoryMock.Setup(w => w.AddTransfer(It.IsAny<TransferDto>(), dateTime))
+                .Throws(new TransactionsConflictException("Flood crossing, try again"));
+            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(transferModel.AccountIdFrom))
+                .ReturnsAsync((balance, dateTime));
+            var expectedMessage = "Flood crossing, try again";
+
+            //when
+            DbTimeoutException? exception = Assert.ThrowsAsync<DbTimeoutException>(() =>
+            _transactionService.AddTransfer(transferModel));
+
+            // then
+            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
+            _balanceRepositoryMock.Verify(b => b.GetBalanceByAccountId(transferModel.AccountIdFrom), Times.Once);
+            LoggerVerify("Error: Flood crossing", LogLevel.Error);
+        }
+
         [TestCaseSource(typeof(WithdrawTestCaseSourse))]
         public async Task Withdraw_ValidRequestReceived_ShouldAddTransation(
             TransactionModel transactionModel, TransactionDto transactionDto, long expected, decimal balance, DateTime dateTime)
