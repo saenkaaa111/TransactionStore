@@ -250,29 +250,7 @@ namespace TransactionStore.BusinessLayer.Tests
             // then
             _balanceRepositoryMock.Verify(s => s.GetBalanceByAccountId(accountId), Times.Once);
             Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
-            LoggerVerify("Exception: Insufficient funds", LogLevel.Error);
-        }
-        
-        [TestCase(77, 100, 120)]
-        public async Task CheckDateAndBalance_DateDoesntMatch_ShouldThrowBDTimeoutException(int accountId, decimal amount, decimal amountForCheck)
-        {
-            //given
-            var date = DateTime.Now;
-            ArrayList array = new ArrayList() { amountForCheck, date};
-            _balanceRepositoryMock.Setup(w => w.GetBalanceByAccountId(accountId)).ReturnsAsync(array);
-            _balanceRepositoryMock.Setup(n => n.GetLastDate()).Returns(It.IsAny<DateTime>());            
-            var expectedMessage = "Flood crossing";
-
-            //when
-            DbTimeoutException? exception = Assert.ThrowsAsync<DbTimeoutException>(async () =>
-            _transactionService.CheckDateAndBalance(accountId, amount));
-
-            // then
-            //Assert.IsFalse(Action);
-            _balanceRepositoryMock.Verify(s => s.GetBalanceByAccountId(accountId), Times.Once);
-            _balanceRepositoryMock.Verify(n => n.GetLastDate(), Times.Once);
-            Assert.That(exception?.Message, Is.EqualTo(expectedMessage));
             LoggerVerify("Error: Insufficient funds", LogLevel.Error);
-        }        
+        }
     }
 }

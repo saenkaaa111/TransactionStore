@@ -1,9 +1,7 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 using Marvelous.Contracts.Enums;
 using Microsoft.Extensions.Logging;
 using System.Collections;
-using System.Data.SqlClient;
 using TransactionStore.BusinessLayer.Exceptions;
 using TransactionStore.BusinessLayer.Helpers;
 using TransactionStore.BusinessLayer.Models;
@@ -57,17 +55,22 @@ namespace TransactionStore.BusinessLayer.Services
             transfer.ConvertedAmount = convertResult;
 
             var lastTransactionDate = await CheckBalanceAndGetLastTransactionDate(transferModel.AccountIdFrom, transfer.Amount);
-
             try
             {
                 return await _transactionRepository.AddTransfer(transfer, lastTransactionDate);
             }
-            catch (SqlException ex)
+            catch (TransactionsConflictException)
             {
-                _logger.LogError("Error: Flood crossing");
-                throw new DbTimeoutException(ex.Message);
-            }                               
-                
+                try
+                {
+                    return await _transactionRepository.AddTransfer(transfer, lastTransactionDate);
+                }
+                catch (TransactionsConflictException ex)
+                {
+                    _logger.LogError("Error: Flood crossing");
+                    throw new DbTimeoutException(ex.Message);
+                }
+            }
         }
 
         public async Task<long> Withdraw(TransactionModel transactionModel)
@@ -80,16 +83,23 @@ namespace TransactionStore.BusinessLayer.Services
             var lastTransactionDate = await CheckBalanceAndGetLastTransactionDate(withdraw.AccountId, withdraw.Amount);
 
             withdraw.Amount = transactionModel.Amount *= -1;
-            
+
             try
             {
                 return await _transactionRepository.AddTransaction(withdraw, lastTransactionDate);
             }
-            catch (TransactionsConflictException ex)
+            catch (TransactionsConflictException)
             {
-                _logger.LogError("Error: Flood crossing");
-                throw new DbTimeoutException(ex.Message);
-            }         
+                try
+                {
+                    return await _transactionRepository.AddTransaction(withdraw, lastTransactionDate);
+                }
+                catch (TransactionsConflictException ex)
+                {
+                    _logger.LogError("Error: Flood crossing");
+                    throw new DbTimeoutException(ex.Message);
+                }
+            }
         }
 
         public async Task<ArrayList> GetTransactionsByAccountIds(List<int> ids)
@@ -159,19 +169,13 @@ namespace TransactionStore.BusinessLayer.Services
 
             if (accountBalance < amount)
             {
-                _logger.LogError("Exception: Flood crossing");
-                throw new DbTimeoutException("Flood crossing");
-                return false;
-            }
-            if ((decimal)accountBalanceAndDate.Result[0] < amount)
-            {
                 _logger.LogError("Error: Insufficient funds");
                 throw new InsufficientFundsException("Insufficient funds");
 
             }
             _logger.LogInformation("Correct information");
-            return lastTransactionDate;
 
+            return lastTransactionDate;
         }
     }
 }

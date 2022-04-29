@@ -70,7 +70,6 @@
     <Build Include="Procedures\Transaction_Transfer.sql" />
     <Build Include="Procedures\Transaction_GetAccountBalance.sql" />
     <Build Include="Procedures\Transaction_SelectByAccountIds.sql" />
-    <Build Include="Procedures\Transaction_GetLastDate.sql" />
     <Build Include="Procedures\Transaction_InsertDeposit.sql" />
   </ItemGroup>
   <ItemGroup>
